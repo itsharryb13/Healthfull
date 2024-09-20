@@ -1,4 +1,4 @@
-// File: /Users/auroba/Healthful/Healthfull/app/Registration/page.tsx
+// File: /workspaces/Healthfull/app/Registration/page.tsx
 import * as entry from '../../../../app/Registration/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
