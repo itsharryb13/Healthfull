@@ -1,10 +1,14 @@
 import Link from "next/link";
+import SignInNavBar from "../components/SignInNavBar";
+import { SignInBox } from "../components/SignInBox";
+import SignInText from "../components/SignInText";
 
 const SignIn = () => {
   return (
       <div>
-         
-          <Link href="/">Sign In Page</Link>
+        <SignInNavBar/>
+        <SignInText/>
+        <SignInBox/>       
       </div>
   );
 };
