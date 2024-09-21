@@ -557,6 +557,12 @@ video {
 .top-\[14px\] {
   top: 14px;
 }
+.top-2 {
+  top: 0.5rem;
+}
+.top-4 {
+  top: 1rem;
+}
 .z-10 {
   z-index: 10;
 }
@@ -631,14 +637,14 @@ video {
 .mb-0 {
   margin-bottom: 0px;
 }
+.ml-\[-30px\] {
+  margin-left: -30px;
+}
 .ml-\[22\.88px\] {
   margin-left: 22.88px;
 }
 .ml-\[2vw\] {
   margin-left: 2vw;
-}
-.ml-\[3vw\] {
-  margin-left: 3vw;
 }
 .mr-0 {
   margin-right: 0px;
@@ -724,6 +730,9 @@ video {
 .h-full {
   height: 100%;
 }
+.h-\[5\.5vw\] {
+  height: 5.5vw;
+}
 .w-\[146px\] {
   width: 146px;
 }
@@ -736,8 +745,8 @@ video {
 .w-\[16vw\] {
   width: 16vw;
 }
-.w-\[18vw\] {
-  width: 18vw;
+.w-\[19vw\] {
+  width: 19vw;
 }
 .w-\[20vw\] {
   width: 20vw;
@@ -793,6 +802,9 @@ video {
 .basis-auto {
   flex-basis: auto;
 }
+.flex-row {
+  flex-direction: row;
+}
 .flex-col {
   flex-direction: column;
 }
@@ -825,6 +837,9 @@ video {
 }
 .gap-\[4px\] {
   gap: 4px;
+}
+.gap-\[60px\] {
+  gap: 60px;
 }
 .gap-\[6vw\] {
   gap: 6vw;
@@ -870,6 +885,10 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(217 217 217 / var(--tw-border-opacity));
 }
+.border-\[\#FFFFFF\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
 .border-b-\[\#d9d9d9\] {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(217 217 217 / var(--tw-border-opacity));
@@ -892,6 +911,10 @@ video {
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-\[\#FFFFFF\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 .bg-contain {
   background-size: contain;
@@ -938,8 +961,8 @@ video {
 .pl-\[4vw\] {
   padding-left: 4vw;
 }
-.pl-\[64px\] {
-  padding-left: 64px;
+.pl-\[65px\] {
+  padding-left: 65px;
 }
 .pr-0 {
   padding-right: 0px;
@@ -1004,8 +1027,8 @@ video {
 .text-\[25px\] {
   font-size: 25px;
 }
-.text-\[3vw\] {
-  font-size: 3vw;
+.text-\[2vw\] {
+  font-size: 2vw;
 }
 .text-\[40px\] {
   font-size: 40px;
@@ -1091,6 +1114,9 @@ video {
 }
 .opacity-70 {
   opacity: 0.7;
+}
+.opacity-90 {
+  opacity: 0.9;
 }
 
 :root {
