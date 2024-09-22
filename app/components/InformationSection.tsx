@@ -1,4 +1,7 @@
 import { RecipeCard } from "./ReciepeCard";
+import { RecipeCard2 } from "./RecipeCard2";
+import { RecipeCard3 } from "./RecipeCard3";
+import { RecipeCard4 } from "./RecipeCard4";
 
 export function InformationSection(){
     return(
@@ -9,9 +12,9 @@ export function InformationSection(){
             </span>  
             <div className="flex flex-row gap-[60px]"> 
                 <RecipeCard/>
-                <RecipeCard/>
-                <RecipeCard/>
-                <RecipeCard/>
+                <RecipeCard2/>
+                <RecipeCard3/>
+                <RecipeCard4/>
             </div>
         </div>
          

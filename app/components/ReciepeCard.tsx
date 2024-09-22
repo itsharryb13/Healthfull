@@ -9,12 +9,12 @@ export function RecipeCard(){
         </div>
         <div className='flex w-[20vw] flex-col gap-[2vw] items-start shrink-0 flex-nowrap relative z-[1]'>
             <div className='flex items-start self-stretch shrink-0 flex-nowrap relative z-[2]'>
-                <span className="h-[2vw] grow shrink-0 basis-auto font-['Inter'] text-[1.6vw] font-normal leading-[2vw] text-[#1e1e1e] relative text-left whitespace-nowrap z-[3] pt-[1vw]">
+                <span className="h-[2vw] grow shrink-0 basis-auto font-['Inter'] text-[1.4vw] font-normal leading-[2vw] text-[#1e1e1e] relative text-left whitespace-nowrap z-[3] pt-[1vw]">
                     Breakfast Tacos
                 </span>
             </div>
             <div className='flex items-start self-stretch shrink-0 flex-nowrap relative z-[4]'>
-                <span className="flex w-[16vw] h-[4vw] justify-start items-start shrink-0 font-['Inter'] text-[1.3] font-normal leading-[22.4px] text-[#757575] relative text-left z-[5] pt-[1vw]">
+                <span className="flex w-[16vw] h-[4vw] justify-start items-start shrink-0 font-['Inter'] text-[1vw] font-normal leading-[20px] text-[#757575] relative text-left z-[5] pt-[1vw]">
                 Filled with eggs, pico de gallo,
               <br />
               and avocados - flavorful and <br />

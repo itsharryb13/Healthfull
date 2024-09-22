@@ -7,8 +7,7 @@ const SignIn = () => {
   return (
       <div>
         <SignInNavBar/>
-        <SignInText/>
-        <SignInBox/>       
+        <SignInText/>            
       </div>
   );
 };

@@ -1,15 +1,34 @@
 import Image from "next/image";
 import SignInImage from '../public/SignInImage.svg';
+import { SignInBox } from "./SignInBox";
+import RoundLogo from "../public/RoundLogo.svg";
+
+
 export default function SignInText() {
   return (
-    <div className='main-container flex w-[225px] h-[104px] flex-col gap-[4px] justify-center items-center flex-nowrap relative mx-auto my-0'>
-      <span className="flex w-[225px] h-[50px] justify-center items-start shrink-0 basis-auto font-['Inter'] text-[40px] font-normal leading-[50px] text-[#000] tracking-[-0.4px] relative text-center whitespace-nowrap">
-        Sign in
-      </span>
-      <div className='w-full h-full opacity-70 absolute top-0 left-0'>
-     <Image src={SignInImage} alt="logo" />
-     </div>
+    <div className='flex h-screen'>
+    <div className='w-1/2 h-full relative'>
+      <Image 
+        src={SignInImage} 
+        alt="logo" 
+        layout="fill"  
+        objectFit="cover" 
+      />
     </div>
-    
-  );
+    <div className='w-1/2 flex flex-col justify-center items-center bg-[#e5dece]'>
+    <div className='mb-[17px]'>
+          <Image 
+            src={RoundLogo} 
+            alt="Round Logo" 
+            height={150}
+            width={150}
+          />
+        </div>
+        <span className="font-['Inter'] text-[40px] font-normal leading-[50px] text-[#000] tracking-[-0.4px] text-center mb-[24px]">
+          Sign in
+        </span>
+        <SignInBox />
+      </div>
+    </div>
+);
 }
