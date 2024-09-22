@@ -5,7 +5,7 @@ export function Footer(){
     return(
     <div className='main-container flex w-full h-[304px] pt-[3vw] pr-[3vw] pb-[8vw] pl-[4vw] gap-[6vw] items-start flex-wrap bg-[#e5dece] border-solid border-b border-b-[#d9d9d9] relative overflow-hidden mx-auto my-0'>
        
-        <div className='flex w-[262px] flex-col gap-[2vw] pr-0 pb-[3vw] pl-0 flex-col items-start self-stretch shrink-0 '>
+        <div className='flex w-[262px] flex-col gap-[1vw] pr-0 pb-[3vw] pl-0 flex-col items-start self-stretch shrink-0 '>
 
             < div className='flex items-start self-stretch shrink-0 flex-nowrap relative z-[12]'>
                 <span className="h-[22px] shrink-0 basis-auto font-['Inter'] text-[1.5vw] font-semibold leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[13]">

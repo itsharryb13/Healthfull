@@ -4,7 +4,7 @@ import Dish1 from '../public/Dish1.svg'
 export function RecipeCard(){
     return(<>
      <div className='main-container flex w-[19vw] h-[25vw] pt-[2vw] pr-[16px] pb-[16px] pl-[2vw] flex-col gap-[16px] items-start flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
-        <div className='flex w-full h-[10vw] flex-col justify-center items-center self-stretch flex-nowrap bg-contain bg-no-repeat relative overflow-hidden'>
+        <div className='flex w-full h-[40%] flex-col justify-center items-center self-stretch flex-nowrap bg-contain bg-no-repeat relative overflow-hidden'>
             <Image src={Dish1} alt="dish 1" />
         </div>
         <div className='flex w-[20vw] flex-col gap-[2vw] items-start shrink-0 flex-nowrap relative z-[1]'>

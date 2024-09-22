@@ -8,31 +8,28 @@ import Link from  'next/link';
 
 export function NavBar(){
     return(
-        <nav className='flex w-full h-[5.5vw] main-containerNav relative mx-auto '>
+        <nav className='flex w-[15vw] h-[4vw] main-containerNav md:w-7vw md:h-1vw sm:w-57px sm:h-17px overflow-hidden shadow-md'>
             
-            <div className = 'w-full h-full absolute top-2 left-0'>
+            <div className = 'w-[14vw] h-[4vw] mx-auto absolute top-[.2vw] left-0 overflow-hidden'>
                 <Link href="/">
-                <Image src={Logo} alt="Logo" />
+                <Image src={Logo} alt="Logo" className="w-[12vw]"/>
                 </Link>
             </div>
 
 
-            <div className='flex w-[264px] h-[50px] gap-x-5 items-center flex-nowrap absolute top-4 right-10 '>
-
-                <div className='flex pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap rounded-[8px] relative overflow-hidden z-[3]'>
-                    <button className="flex pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-[8px] border-solid border border-[#FFFFFF] relative overflow-hidden z-[5] pointer">
+            <div className='flex w-[15vw] h-[2vw] gap-x-5 items-center flex-nowrap absolute top-[1vw] right-[1.8vw]'>
+                
+                    <button className="flex justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-[8px] border-solid border border-[#FFFFFF] relative overflow-hidden z-[5] pointer">
                         <Link href="../SignIn">
-                            <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#303030] relative text-left whitespace-nowrap">
+                            <span className="h-[1vw] shrink-0 basis-auto font-['Inter'] text-[1vw] font-normal leading-[16px] text-[#303030] relative text-left whitespace-nowrap">
                                 Sign In
                             </span>
                         </Link>
                     </button>    
-                </div>
 
-                <button className='flex pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[5] pointer'>
-                    
+                <button className='flex   justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[5] pointer'>
                     <Link href="../Registration">
-                    <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[6]">
+                    <span className="h-[1vw] shrink-0 basis-auto font-['Inter'] text-[1vw] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[6]">
                         Register
                     </span>
                     </Link>
