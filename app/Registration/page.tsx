@@ -1,11 +1,14 @@
-import Link from "next/link";
+//import Link from "next/link";
 import React, { useState } from "react";
+import { RegistrationNavBar } from "../components/RegistrationNavBar";
+import CreateAccountText from "../components/CreateAccountText";
 //import "./App.css";
 
 const Register = () => {
   return (
       <div>
-          <Link href="/">Registration Page</Link>
+        <RegistrationNavBar/>
+        <CreateAccountText/> 
       </div>
   );
 };
