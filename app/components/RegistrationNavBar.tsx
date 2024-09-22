@@ -5,7 +5,7 @@ import Link from  'next/link';
 
 export function RegistrationNavBar(){
     return(
-        <nav className='flex w-full h-[5.5vw] main-containerNav relative mx-auto '>
+        <nav className='flex w-full h-[4.0vw] main-containerNav relative mx-auto '>
 
             <div className = 'w-full h-full absolute top-2 left-0'>
                 <Link href="/">
