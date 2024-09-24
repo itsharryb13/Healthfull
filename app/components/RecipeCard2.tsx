@@ -3,7 +3,7 @@ import Dish2 from '../public/Dish2.svg'
 
 export function RecipeCard2(){
     return(<>
-     <div className='main-container flex w-[19vw] h-[25vw] pt-[2vw] pr-[16px] pb-[16px] pl-[2vw] flex-col gap-[16px] items-start flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
+     <div className='main-container flex w-[17vw] h-[23vw] pt-[1.5vw] pr-[13px] pb-[16px] pl-[2vw] flex-col gap-[14px] items-start flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
         <div className='flex w-full h-[10vw] flex-col justify-center items-center self-stretch flex-nowrap bg-contain bg-no-repeat relative overflow-hidden'>
             <Image src={Dish2} alt="dish 1" />
         </div>

@@ -8,7 +8,7 @@ import Link from  'next/link';
 
 export function NavBarH(){
     return(
-        <nav className='flex w-full h-[4vw] main-containerNav md:w-7vw md:h-1vw sm:w-57px sm:h-17px overflow-hidden shadow-md'>
+        <nav className='flex w-full h-[4vw] main-containerNav md:w-7vw md:h-1vw sm:w-57px sm:h-17px overflow-hidden'>
             
             <div className = 'w-[20%] h-[4vw] mx-auto absolute top-[.2vw] left-0 overflow-hidden'>
                 <Link href="/">

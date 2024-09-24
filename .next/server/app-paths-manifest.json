@@ -1,4 +1,7 @@
 {
+  "/HomePage/page": "app/HomePage/page.js",
   "/page": "app/page.js",
-  "/Registration/page": "app/Registration/page.js"
+  "/SignIn/page": "app/SignIn/page.js",
+  "/Registration/page": "app/Registration/page.js",
+  "/ResetPwd/page": "app/ResetPwd/page.js"
 }

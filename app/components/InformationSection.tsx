@@ -10,7 +10,7 @@ export function InformationSection(){
             <span className="h-[5vw] self-stretch shrink-0 basis-auto font-['Inter'] text-[3vw] font-['Inter'] leading-[38px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[1] justify-left pt-[1vw] pb-[6vw]">
                 Get Access to Thousands of Recipes
             </span>  
-            <div className="flex flex-row gap-[3vw]"> 
+            <div className="flex flex-row gap-[6vw]"> 
                 <RecipeCard/>
                 <RecipeCard2/>
                 <RecipeCard3/>

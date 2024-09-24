@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function RegistrationForm() {
   return (
     <div className='main-container w-[500px] h-[300px] relative mx-auto my-0'>
@@ -78,11 +79,13 @@ export default function RegistrationForm() {
         <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[38]' />
       </div>
     </div>
+    <Link href='../SignIn' className='w-full'>
     <button className='flex w-[459.021px] h-[33.143px] pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#d9d9d9] relative box-content overflow-hidden z-[2] pointer mt-[31.217px] mr-0 mb-0 ml-[45.908px]'>
       <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[3]">
         Register
       </span>
     </button>
+    </Link> 
     <span className="block h-[29.329px] font-['Inter'] text-[16px] font-normal leading-[22.4px] text-[#1e1e1e] relative text-left underline whitespace-nowrap z-[1] mt-[22.899px] mr-0 mb-0 ml-[45.15px]">
       Already have an account?
     </span>
