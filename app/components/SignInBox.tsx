@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SignInBox(){
     return(
-         <div className='main-container flex w-[520px] h-[315px] pt-[24px] pr-[24px] pb-[24px] pl-[24px] flex-col gap-[24px] items-start flex-nowrap bg-[#e5dece] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
+         <div className='main-container flex w-[25vw] h-[15vw] pt-[24px] pr-[24px] pb-[24px] pl-[24px] flex-col gap-[24px] items-start flex-nowrap bg-[#e5dece] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
       <div className='flex flex-col gap-[8px] items-start self-stretch shrink-0 flex-nowrap relative'>
         <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[1]">
           Username

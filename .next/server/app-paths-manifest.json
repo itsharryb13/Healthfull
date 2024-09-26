@@ -1,6 +1,6 @@
 {
-  "/HomePage/page": "app/HomePage/page.js",
   "/page": "app/page.js",
+  "/HomePage/page": "app/HomePage/page.js",
   "/SignIn/page": "app/SignIn/page.js",
   "/Registration/page": "app/Registration/page.js",
   "/ResetPwd/page": "app/ResetPwd/page.js"

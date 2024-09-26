@@ -1,4 +1,4 @@
-// File: /workspaces/Healthfull/app/ResetPwd/page.tsx
+// File: /Users/harry/Healthfull/app/ResetPwd/page.tsx
 import * as entry from '../../../../app/ResetPwd/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

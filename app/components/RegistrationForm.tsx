@@ -86,9 +86,13 @@ export default function RegistrationForm() {
       </span>
     </button>
     </Link> 
+
+    <Link href='../SignIn'>
     <span className="block h-[29.329px] font-['Inter'] text-[16px] font-normal leading-[22.4px] text-[#1e1e1e] relative text-left underline whitespace-nowrap z-[1] mt-[22.899px] mr-0 mb-0 ml-[45.15px]">
       Already have an account?
     </span>
+    </Link>
+    
     <div className='w-[544px] h-[650.396px] bg-[#e6e0d0] border-solid border border-[#d9d9d9] absolute top-0 left-0 box-content' />
   </div>
   );

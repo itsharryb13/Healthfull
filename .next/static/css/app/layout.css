@@ -536,8 +536,8 @@ video {
 .left-1\/2 {
   left: 50%;
 }
-.left-\[-0\.17\%\] {
-  left: -0.17%;
+.left-\[-0\.19\%\] {
+  left: -0.19%;
 }
 .left-\[0\.53\%\] {
   left: 0.53%;
@@ -575,8 +575,8 @@ video {
 .top-1\/2 {
   top: 50%;
 }
-.top-\[-0\.3\%\] {
-  top: -0.3%;
+.top-\[-0\.36\%\] {
+  top: -0.36%;
 }
 .top-\[\.2vw\] {
   top: .2vw;
@@ -595,12 +595,6 @@ video {
 }
 .top-\[1vw\] {
   top: 1vw;
-}
-.left-\[-0\.19\%\] {
-  left: -0.19%;
-}
-.top-\[-0\.36\%\] {
-  top: -0.36%;
 }
 .z-10 {
   z-index: 10;
@@ -739,8 +733,8 @@ video {
 .mb-\[24px\] {
   margin-bottom: 24px;
 }
-.ml-\[22\.88px\] {
-  margin-left: 22.88px;
+.ml-\[20\.96px\] {
+  margin-left: 20.96px;
 }
 .ml-\[28px\] {
   margin-left: 28px;
@@ -775,8 +769,8 @@ video {
 .mt-\[22\.899px\] {
   margin-top: 22.899px;
 }
-.mt-\[25\.842px\] {
-  margin-top: 25.842px;
+.mt-\[23\.883px\] {
+  margin-top: 23.883px;
 }
 .mt-\[2vw\] {
   margin-top: 2vw;
@@ -784,23 +778,11 @@ video {
 .mt-\[31\.217px\] {
   margin-top: 31.217px;
 }
-.mt-\[36\.132px\] {
-  margin-top: 36.132px;
-}
-.mt-\[47\.026px\] {
-  margin-top: 47.026px;
+.mt-\[33\.073px\] {
+  margin-top: 33.073px;
 }
 .mt-\[50px\] {
   margin-top: 50px;
-}
-.ml-\[20\.96px\] {
-  margin-left: 20.96px;
-}
-.mt-\[23\.883px\] {
-  margin-top: 23.883px;
-}
-.mt-\[33\.073px\] {
-  margin-top: 33.073px;
 }
 .mt-\[9\.51px\] {
   margin-top: 9.51px;
@@ -817,11 +799,11 @@ video {
 .h-\[0\.8vw\] {
   height: 0.8vw;
 }
-.h-\[10px\] {
-  height: 10px;
-}
 .h-\[10vw\] {
   height: 10vw;
+}
+.h-\[12px\] {
+  height: 12px;
 }
 .h-\[16px\] {
   height: 16px;
@@ -859,6 +841,9 @@ video {
 .h-\[304px\] {
   height: 304px;
 }
+.h-\[31\.404px\] {
+  height: 31.404px;
+}
 .h-\[315px\] {
   height: 315px;
 }
@@ -868,11 +853,8 @@ video {
 .h-\[33\.143px\] {
   height: 33.143px;
 }
-.h-\[331px\] {
-  height: 331px;
-}
-.h-\[37\.937px\] {
-  height: 37.937px;
+.h-\[350px\] {
+  height: 350px;
 }
 .h-\[40\%\] {
   height: 40%;
@@ -907,9 +889,6 @@ video {
 .h-\[5vw\] {
   height: 5vw;
 }
-.h-\[60px\] {
-  height: 60px;
-}
 .h-\[650\.396px\] {
   height: 650.396px;
 }
@@ -937,23 +916,11 @@ video {
 .h-screen {
   height: 100vh;
 }
-.h-\[12px\] {
-  height: 12px;
+.h-\[15px\] {
+  height: 15px;
 }
-.h-\[305px\] {
-  height: 305px;
-}
-.h-\[274px\] {
-  height: 274px;
-}
-.h-\[31\.404px\] {
-  height: 31.404px;
-}
-.h-\[320px\] {
-  height: 320px;
-}
-.h-\[350px\] {
-  height: 350px;
+.h-\[15vw\] {
+  height: 15vw;
 }
 .w-1\/2 {
   width: 50%;
@@ -1030,8 +997,8 @@ video {
 .w-\[472px\] {
   width: 472px;
 }
-.w-\[483px\] {
-  width: 483px;
+.w-\[483\.183px\] {
+  width: 483.183px;
 }
 .w-\[500px\] {
   width: 500px;
@@ -1042,17 +1009,14 @@ video {
 .w-\[520px\] {
   width: 520px;
 }
-.w-\[527\.444px\] {
-  width: 527.444px;
-}
 .w-\[52px\] {
   width: 52px;
 }
 .w-\[544px\] {
   width: 544px;
 }
-.w-\[572px\] {
-  width: 572px;
+.w-\[600px\] {
+  width: 600px;
 }
 .w-\[60vw\] {
   width: 60vw;
@@ -1087,20 +1051,11 @@ video {
 .w-full {
   width: 100%;
 }
-.w-\[483\.183px\] {
-  width: 483.183px;
+.w-\[10vw\] {
+  width: 10vw;
 }
-.w-\[524px\] {
-  width: 524px;
-}
-.w-\[525px\] {
-  width: 525px;
-}
-.w-\[530px\] {
-  width: 530px;
-}
-.w-\[600px\] {
-  width: 600px;
+.w-\[25vw\] {
+  width: 25vw;
 }
 .shrink-0 {
   flex-shrink: 0;
@@ -1167,17 +1122,11 @@ video {
 .gap-\[2vw\] {
   gap: 2vw;
 }
-.gap-\[3vw\] {
-  gap: 3vw;
-}
 .gap-\[6vw\] {
   gap: 6vw;
 }
 .gap-\[8px\] {
   gap: 8px;
-}
-.gap-\[5vw\] {
-  gap: 5vw;
 }
 .gap-x-5 {
   column-gap: 1.25rem;
@@ -1343,6 +1292,9 @@ video {
 .pl-\[24px\] {
   padding-left: 24px;
 }
+.pl-\[25px\] {
+  padding-left: 25px;
+}
 .pl-\[2vw\] {
   padding-left: 2vw;
 }
@@ -1378,6 +1330,9 @@ video {
 }
 .pr-\[24px\] {
   padding-right: 24px;
+}
+.pr-\[25px\] {
+  padding-right: 25px;
 }
 .pr-\[2vw\] {
   padding-right: 2vw;
@@ -1418,6 +1373,9 @@ video {
 .pt-\[24px\] {
   padding-top: 24px;
 }
+.pt-\[25px\] {
+  padding-top: 25px;
+}
 .pt-\[2vw\] {
   padding-top: 2vw;
 }
@@ -1435,15 +1393,6 @@ video {
 }
 .pt-\[8px\] {
   padding-top: 8px;
-}
-.pl-\[25px\] {
-  padding-left: 25px;
-}
-.pr-\[25px\] {
-  padding-right: 25px;
-}
-.pt-\[25px\] {
-  padding-top: 25px;
 }
 .text-left {
   text-align: left;
