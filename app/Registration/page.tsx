@@ -1,7 +1,7 @@
 //import Link from "next/link";
 import React, { useState } from "react";
-import { RegistrationNavBar } from "../components/RegistrationNavBar";
-import CreateAccountText from "../components/CreateAccountText";
+import { RegistrationNavBar } from "../components/Sign ( Register and reset password)/Register/RegistrationNavBar";
+import CreateAccountText from "../components/Sign ( Register and reset password)/Register/CreateAccountText";
 //import "./App.css";
 
 const Register = () => {

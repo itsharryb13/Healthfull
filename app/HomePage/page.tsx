@@ -1,6 +1,6 @@
-import { Footer } from "../components/Footer";
-import InfoHomePage from "../components/InfoHomePage";
-import { NavBarH } from "../components/NavbarH";
+import { Footer } from "../components/Shared/Footer";
+import InfoHomePage from "../components/HomePage/InfoHomePage";
+import { NavBarH } from "../components/Shared/NavbarH";
 
 export default function Homepage(){
     return(

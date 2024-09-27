@@ -21,15 +21,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/HomePage/page.js"
     ],
-    "/Registration/page": [
+    "/MyAccount/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Registration/page.js"
-    ],
-    "/ResetPwd/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/ResetPwd/page.js"
+      "static/chunks/app/MyAccount/page.js"
     ]
   }
 }
