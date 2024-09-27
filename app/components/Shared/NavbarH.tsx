@@ -19,12 +19,13 @@ export function NavBarH(){
 
 
             <div className='flex w-[90%] h-[2vw] gap-x-5 items-center flex-nowrap absolute top-[.8vw] right-0 '>
-
+            <Link href="../../NewRecipePage">
                 <button className='flex w-[9.13%] h-[52.87%] pt-[1vw] pr-[1vw] pb-[1vw] pl-[1vw] gap-[2vw] justify-center items-center flex-nowrap bg-[#f5f5f5]  rounded-[8px] border-none absolute top-[16.22%] left-[20%] z-[1] pointer'>
                     <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[1.2vw] font-semibold leading-[16px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[2]">
                         New Recipe
                     </span>
                 </button>
+                </Link>
                 
                 <button className='flex w-[9.13%] h-[52.87%] pt-[1vw] pr-[1vw] pb-[1vw] pl-[1vw] gap-[2vw] justify-center items-center flex-nowrap bg-[#f5f5f5]  rounded-[8px] border-none absolute top-[16.22%] left-[30%] z-[3] pointer'>
                     <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[1.2vw] font-semibold leading-[16px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[4]">
