@@ -46,13 +46,14 @@ export function NavBarH(){
                     </span>
                   </button>
                 </Link>
-      
+
+                <Link href="../../AllRecipePage">
                   <button className='flex w-[9.13%] h-[52.87%] pt-[1vw] pr-[1vw] pb-[1vw] pl-[1vw] gap-[2vw] justify-center items-center flex-nowrap bg-[#f5f5f5]  rounded-[8px] border-none absolute top-[16.22%] left-[10%] z-[7] pointer'>
                     <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[1.2vw] font-semibold leading-[16px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[8]">
                       All Recipes
                     </span>
                   </button>
-                
+                </Link>
 
                 <div className='flex w-[20.13%] h-[52.87%] pt-[1vw] pr-[1vw] pb-[1vw] pl-[1vw] gap-[2vw] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] absolute overflow-hidden top-[16.22%] right-[12.67%]  z-[7]'>
                   <input className='w-[20.13%] h-[52.87%] shrink-0 bg-transparent border-none' />
