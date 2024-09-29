@@ -16,15 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/SignIn/page.js"
     ],
-    "/HomePage/page": [
+    "/Registration/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/HomePage/page.js"
-    ],
-    "/AllRecipePage/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/AllRecipePage/page.js"
+      "static/chunks/app/Registration/page.js"
     ]
   }
 }

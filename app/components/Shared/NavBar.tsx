@@ -7,32 +7,28 @@ import Link from  'next/link';
 
 export function NavBar(){
     return(
-        <nav className='flex w-full h-[4vw] main-containerNav relative mx-auto overflow-hidden'>
+        <nav className='flex w-full h-[20%] main-containerNav relative mx-auto overflow-hidden'>
             
-            <div className = 'w-[14vw] h-[4vw] mx-auto absolute top-[.2vw] left-0 overflow-hidden'>
+            <div className = 'w-[20%] h-[95%] mx-auto absolute left-0 overflow-hidden'>
                 <Link href="/">
-                <Image src={Logo} alt="Logo" className="w-[12vw]"/>
+                <Image src={Logo} alt="Logo" className='w-[70%]  object-scale-down'/>
                 </Link>
             </div>
 
 
-            <div className='flex w-[15vw] h-[2vw] gap-x-5 items-center flex-nowrap absolute top-[1vw] right-[1.8vw]'>
-                
-                    <button className="flex justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-[8px] border-solid border border-[#FFFFFF] relative overflow-hidden z-[5] pointer">
-                        <Link href="../SignIn">
-                            <span className="h-[1vw] shrink-0 basis-auto font-['Inter'] text-[1vw] font-normal leading-[16px] text-[#303030] relative text-left whitespace-nowrap">
+            <div className='flex w-[40%] h-[95%] gap-x-5 items-center flex-nowrap absolute right-[2%]'>
+                <Link href="../SignIn"  className="flex h-[95%] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-lg border-solid border border-[#FFFFFF] relative overflow-hidden z-[5] pointer drop-shadow">
+                    <button className="h-full shrink-0 basis-auto font-['Inter'] text-lg font-normal leading-lg text-[#303030] relative text-left whitespace-nowrap">
                                 Sign In
-                            </span>
-                        </Link>
-                    </button>    
-
-                <button className='flex justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[5] pointer'>
-                    <Link href="../Registration">
-                    <span className="h-[1vw] shrink-0 basis-auto font-['Inter'] text-[1vw] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[6]">
+                    </button>
+                </Link>    
+                <Link href="../Registration" className='flex h-[95%] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-lg border-solid border border-[#2c2c2c] relative overflow-hidden z-[5] pointer'>
+                    <button className="h-full shrink-0 basis-auto font-['Inter'] lg:text-lg font-normal leading-lg text-[#f5f5f5] relative text-left whitespace-nowrap z-[6]">
+                    <span >
                         Register
                     </span>
-                    </Link>
-                </button>
+                    </button>
+                </Link>
             </div>
         </nav>
     );
