@@ -1,14 +1,50 @@
+"use client";
+import { error } from "console";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import firebase from "firebase/compat/app";
+import 'firebase/auth';
 import Link from "next/link";
+import React, {useRef} from 'react';
+import app from '/workspaces/Healthfull/firebase/firebaseConfig';
+
 
 export function SignInBox(){
+
+  const auth = getAuth();
+  const inputUserRef = useRef<HTMLInputElement>(null);
+  const inputPassRef = useRef<HTMLInputElement>(null);
+  
+  const handleClick = () => {
+    const email = inputUserRef.current?.value;
+    const pass = inputPassRef.current?.value;
+
+    if (email && pass) {
+      signInWithEmailAndPassword(auth, email, pass)
+      .then((userCredential) => {
+        // Successful sign-in
+        const user = userCredential.user;
+        console.log("Signing in ", email, " with password ", pass);
+      })
+      .catch((error) => {
+        // Failed sign-in
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.error(errorMessage);
+      });
+    } else {
+      console.error("Please enter a valid email and password.")
+    }
+  };
+  
     return(
-         <div className='main-container flex w-[25vw] h-[15vw] pt-[24px] pr-[24px] pb-[24px] pl-[24px] flex-col gap-[24px] items-start flex-nowrap bg-[#e5dece] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
+         <div className='main-container flex w-[520px] h-[315px] pt-[24px] pr-[24px] pb-[24px] pl-[24px] flex-col gap-[24px] items-start flex-nowrap bg-[#e5dece] rounded-[8px] border-solid border border-[#d9d9d9] relative mx-auto my-0'>
       <div className='flex flex-col gap-[8px] items-start self-stretch shrink-0 flex-nowrap relative'>
         <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[1]">
           Username
         </span>
         <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[2]'>
-          <input className='w-[472px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[4]' />
+          <input id="username" type="text" ref={inputUserRef}
+            className='w-[472px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[4]' />
           <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[3]">
             Username
           </span>
@@ -19,28 +55,28 @@ export function SignInBox(){
           Password
         </span>
         <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[7]'>
-          <input className='w-[472px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[9]' />
+          <input id="password" type="text" ref={inputPassRef}
+            className='w-[472px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[9]' />
           <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[8]">
             Password
           </span>
         </div>
       </div>
-      <Link href='../HomePage' className='w-full'>
-         <button className='flex gap-[16px] items-center self-stretch shrink-0 flex-nowrap border-none relative z-10 pointer w-full'>
-            <div className='flex pt-[12px] pr-[12px] pb-[11px] pl-[11px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[11]'>
-              <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[12]">
-                 Sign In
-              </span>
-             </div>
-         </button>
-       </Link>
-       <Link href='../ResetPwd' className='w-full'>
+      <Link href= '../HomePage'>
+      <button onClick={handleClick}
+        className='flex gap-[16px] items-center self-stretch shrink-0 flex-nowrap border-none relative z-10 pointer'>
+        <div className='flex pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[11]'>
+          <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[12]">
+            Sign In
+          </span>
+        </div>
+      </button>
+      </Link>
       <div className='flex items-start self-stretch shrink-0 flex-nowrap relative z-[13]'>
         <span className="h-[22px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left underline whitespace-nowrap z-[14]">
           Forgot password?
         </span>
       </div>
-      </Link>
     </div>
     );
 }
