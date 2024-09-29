@@ -1,99 +1,162 @@
-import Link from "next/link";
-export default function RegistrationForm() {
-  return (
-    <div className='main-container w-[500px] h-[300px] relative mx-auto my-0'>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[4] mt-[16.938px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[5]">
-        Name
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[6]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[7]">
-          Full Name
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[8]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[9] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-10">
-        Height
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] relative overflow-hidden z-[11]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[12]">
-          5’10”
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[13]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[14] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[15]">
-        Weight
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] relative overflow-hidden z-[16]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[17]">
-          180 lbs
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[18]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[19] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-20">
-        Age
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[21]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[22]">
-          Age
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[23]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[24] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[25]">
-        Email
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[26]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[27]">
-          email@example.com
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[28]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[29] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-30">
-        Username
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[31]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[32]">
-          Username
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[33]' />
-      </div>
-    </div>
-    <div className='flex w-[454.206px] h-[54.269px] flex-col gap-[8px] items-start flex-nowrap bg-[#e6e0d0] relative z-[34] mt-[19.978px] mr-0 mb-0 ml-[45.347px]'>
-      <span className="h-[22px] self-stretch shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[22px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[35]">
-        Password
-      </span>
-      <div className='flex pt-[12px] pr-[16px] pb-[12px] pl-[16px] items-center self-stretch shrink-0 flex-nowrap bg-[#fff] rounded-[8px] border-solid border border-[#d9d9d9] relative overflow-hidden z-[36]'>
-        <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#b3b3b3] relative text-left whitespace-nowrap z-[37]">
-          Password
-        </span>
-        <input className='w-[454.206px] h-[40px] shrink-0 bg-transparent border-none absolute top-0 left-0 z-[38]' />
-      </div>
-    </div>
-    <Link href='../SignIn' className='w-full'>
-    <button className='flex w-[459.021px] h-[33.143px] pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#d9d9d9] relative box-content overflow-hidden z-[2] pointer mt-[31.217px] mr-0 mb-0 ml-[45.908px]'>
-      <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[3]">
-        Register
-      </span>
-    </button>
-    </Link> 
+"use client";
 
-    <Link href='../SignIn'>
-    <span className="block h-[29.329px] font-['Inter'] text-[16px] font-normal leading-[22.4px] text-[#1e1e1e] relative text-left underline whitespace-nowrap z-[1] mt-[22.899px] mr-0 mb-0 ml-[45.15px]">
-      Already have an account?
-    </span>
-    </Link>
-    
-    <div className='w-[544px] h-[650.396px] bg-[#e6e0d0] border-solid border border-[#d9d9d9] absolute top-0 left-0 box-content' />
-  </div>
+import { useState, useEffect } from "react";
+import Link from "next/link";
+
+export default function RegistrationForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+  // Password validation
+  const validatePassword = () => {
+    let error = "";
+    if (password.length < 8) {
+      error = "Password must be at least 8 characters long.";
+    } else if (!/[A-Z]/.test(password)) {
+      error = "Password must contain at least one uppercase letter.";
+    } else if (!/[a-z]/.test(password)) {
+      error = "Password must contain at least one lowercase letter.";
+    } else if (!/[0-9]/.test(password)) {
+      error = "Password must contain at least one number.";
+    } else if (!/[!@#$%^&*]/.test(password)) {
+      error = "Password must contain at least one special character (!@#$%^&*).";
+    }
+    setPasswordError(error);
+    return error === "";
+  };
+
+  // Password matching validation
+  const validateConfirmPassword = () => {
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      return false;
+    } else {
+      setConfirmPasswordError("");
+      return true;
+    }
+  };
+
+  // Watch password and confirmPassword fields to reset errors when valid
+  useEffect(() => {
+    if (password.length >= 8 && passwordError) {
+      validatePassword(); // Reset error if password becomes valid
+    }
+  }, [password]);
+
+  useEffect(() => {
+    if (password === confirmPassword && confirmPasswordError) {
+      validateConfirmPassword(); // Reset error if passwords match
+    }
+  }, [confirmPassword]);
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const isPasswordValid = validatePassword();
+    const isConfirmPasswordValid = validateConfirmPassword();
+
+    if (isPasswordValid && isConfirmPasswordValid) {
+      alert("Form submitted successfully!");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="main-container w-[500px] relative mx-auto my-0 space-y-4">
+      {/* Name Field */}
+      <div className="w-full">
+        <label className="block text-[16px] font-normal text-[#1e1e1e]">Name</label>
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+        />
+      </div>
+
+      {/* Email Field */}
+      <div className="w-full">
+        <label className="block text-[16px] font-normal text-[#1e1e1e]">Email</label>
+        <input
+          type="email"
+          placeholder="email@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+        />
+      </div>
+
+      {/* Username Field */}
+      <div className="w-full">
+        <label className="block text-[16px] font-normal text-[#1e1e1e]">Username</label>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+        />
+      </div>
+
+      {/* Password Field */}
+      <div className="w-full">
+        <label className="block text-[16px] font-normal text-[#1e1e1e]">Password</label>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            validatePassword();
+          }}
+          className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+        />
+        {passwordError && (
+          <span className="block text-red-500 text-sm mt-1">
+            {passwordError}
+          </span>
+        )}
+      </div>
+
+      {/* Confirm Password Field */}
+      <div className="w-full">
+        <label className="block text-[16px] font-normal text-[#1e1e1e]">Confirm Password</label>
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            validateConfirmPassword();
+          }}
+          className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+        />
+        {confirmPasswordError && (
+          <span className="block text-red-500 text-sm mt-1">
+            {confirmPasswordError}
+          </span>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="w-full h-[40px] mt-[10px] p-[12px] bg-[#2c2c2c] text-white rounded-[12px] text-center flex justify-center items-center"
+      >
+        Register
+      </button>
+
+      {/* Sign In Link */}
+      <Link href="../SignIn">
+        <span className="block text-[16px] font-normal text-[#1e1e1e] underline text-right mt-4">
+          Already have an account?
+        </span>
+      </Link>
+    </form>
   );
 }
