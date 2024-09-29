@@ -4,7 +4,7 @@ import Image from 'next/image';
 export function Banner(){
     return(
 
-        <div className='main-container w-full h-full text-[0px] relative mx-auto my-0 pt-[5vw]'>
+        <div className='main-container w-full h-full  relative mx-auto my-0 pt-[5vw]'>
             <span className="flex w-[40vw] h-auto justify-left items-start font-['Inter'] text-[6vw] font-bold leading-[1.1] text-[#000] tracking-[-0.3vw] relative text-center whitespace-nowrap z-[2] pt-[2vw] ml-[2vw]">
                 Healthful.
             </span>

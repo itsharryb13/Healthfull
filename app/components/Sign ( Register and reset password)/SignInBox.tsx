@@ -5,7 +5,7 @@ import firebase from "firebase/compat/app";
 import 'firebase/auth';
 import Link from "next/link";
 import React, {useRef} from 'react';
-import app from '/workspaces/Healthfull/firebase/firebaseConfig';
+//import app from '/workspaces/Healthfull/firebase/firebaseConfig';
 
 
 export function SignInBox(){

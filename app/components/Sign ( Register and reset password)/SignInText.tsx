@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import SignInImage from '../../public/SignInImage.svg';
 import { SignInBox } from "../Sign ( Register and reset password)/SignInBox";
