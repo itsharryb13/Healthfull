@@ -1,8 +1,8 @@
-// File: /workspaces/Healthfull/app/Registration/page.tsx
-import * as entry from '../../../../app/Registration/page.js'
+// File: /workspaces/Healthfull/app/AllRecipePage/page.tsx
+import * as entry from '../../../../app/AllRecipePage/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../app/Registration/page.js')
+type TEntry = typeof import('../../../../app/AllRecipePage/page.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
