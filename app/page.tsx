@@ -1,5 +1,7 @@
 // this is the main landing page !!!
 // do not change the directory of this file.
+
+"use client"
 import { Banner } from "./components/Welcome page/Banner";
 import { InformationSection } from "./components/Welcome page/InformationSection";
 import { NavBar } from "./components/Shared/NavBar";

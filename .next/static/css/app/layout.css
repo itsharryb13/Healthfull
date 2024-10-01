@@ -553,9 +553,6 @@ video {
 .-top-12 {
   top: -3rem;
 }
-.bottom-0 {
-  bottom: 0px;
-}
 .left-0 {
   left: 0px;
 }
@@ -963,6 +960,9 @@ video {
 .mb-\[24px\] {
   margin-bottom: 24px;
 }
+.ml-2 {
+  margin-left: 0.5rem;
+}
 .ml-\[19px\] {
   margin-left: 19px;
 }
@@ -1025,6 +1025,9 @@ video {
 }
 .mt-\[40px\] {
   margin-top: 40px;
+}
+.mt-\[5\%\] {
+  margin-top: 5%;
 }
 .mt-\[50px\] {
   margin-top: 50px;
@@ -1110,6 +1113,9 @@ video {
 .h-\[2vw\] {
   height: 2vw;
 }
+.h-\[3\.5vw\] {
+  height: 3.5vw;
+}
 .h-\[31\.404px\] {
   height: 31.404px;
 }
@@ -1191,6 +1197,9 @@ video {
 .h-\[8\%\] {
   height: 8%;
 }
+.h-\[80\%\] {
+  height: 80%;
+}
 .h-\[80vw\] {
   height: 80vw;
 }
@@ -1205,9 +1214,6 @@ video {
 }
 .h-\[95\%\] {
   height: 95%;
-}
-.h-\[96\%\] {
-  height: 96%;
 }
 .h-auto {
   height: auto;
@@ -1359,9 +1365,6 @@ video {
 .w-\[45px\] {
   width: 45px;
 }
-.w-\[472px\] {
-  width: 472px;
-}
 .w-\[483\.183px\] {
   width: 483.183px;
 }
@@ -1376,6 +1379,9 @@ video {
 }
 .w-\[52px\] {
   width: 52px;
+}
+.w-\[60\%\] {
+  width: 60%;
 }
 .w-\[600px\] {
   width: 600px;
@@ -1721,6 +1727,9 @@ video {
 .p-\[12px\] {
   padding: 12px;
 }
+.p-\[24px\] {
+  padding: 24px;
+}
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -1874,6 +1883,9 @@ video {
 }
 .pt-0 {
   padding-top: 0px;
+}
+.pt-2 {
+  padding-top: 0.5rem;
 }
 .pt-4 {
   padding-top: 1rem;
@@ -2103,6 +2115,10 @@ video {
   --tw-text-opacity: 1;
   color: rgb(30 30 30 / var(--tw-text-opacity));
 }
+.text-\[\#2c2c2c\] {
+  --tw-text-opacity: 1;
+  color: rgb(44 44 44 / var(--tw-text-opacity));
+}
 .text-\[\#303030\] {
   --tw-text-opacity: 1;
   color: rgb(48 48 48 / var(--tw-text-opacity));
@@ -2233,6 +2249,11 @@ video {
   background-color: rgb(239 68 68 / 0.9);
 }
   
+  .hover\:text-\[\#1e1e1e\]:hover {
+  --tw-text-opacity: 1;
+  color: rgb(30 30 30 / var(--tw-text-opacity));
+}
+  
   .hover\:text-neutral-900:hover {
   --tw-text-opacity: 1;
   color: rgb(23 23 23 / var(--tw-text-opacity));
@@ -2240,6 +2261,11 @@ video {
   
   .hover\:underline:hover {
   text-decoration-line: underline;
+}
+  
+  .focus\:outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
   
   .focus-visible\:outline-none:focus-visible {

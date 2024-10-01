@@ -1,100 +1,120 @@
-"use client"
 import { RecipeCard } from "../Recipe Card/ReciepeCard";
-import { RecipeCard2 } from "../Recipe Card/RecipeCard2";
-import { RecipeCard3 } from "../Recipe Card/RecipeCard3";
-import { RecipeCard4 } from "../Recipe Card/RecipeCard4";
 import Autoplay from "embla-carousel-autoplay";
-import useEmblaCarousel from 'embla-carousel-react'
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-  } from "@/components/ui/carousel"
+import useEmblaCarousel from 'embla-carousel-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
-import{db} from '../../../firebaseConfig'
-import { URL } from "url";
+import { collection, getDocs } from "firebase/firestore"; // Firestore methods
+import { db, storage } from '../../../firebaseConfig'; // Firebase Firestore instance
+import {ref, getDownloadURL } from "firebase/storage"; // Firebase Storage methods
 
-interface RecipeListProps{
-    collectionName: string;
+// Props interface for the InformationSection component
+interface RecipeListProps {
+  collectionName: string; // Name of the Firestore collection to retrieve data from
 }
 
-interface Recipe{
-    id: string;
-    Name?:string;
-    Description?:string;
-    Picture?:string;
+// Interface representing a recipe object
+interface Recipe {
+  id: string;           // Unique identifier for each recipe
+  Name?: string;        // Optional name field for the recipe
+  Description?: string; // Optional description field for the recipe
+  Picture?: string;     // Optional picture field (initially a Firebase storage path, later a full URL)
 }
-  
 
-export function InformationSection( {collectionName} : RecipeListProps){
-    const[emblaRef] = useEmblaCarousel({loop:true}, [Autoplay()])
 
-    const[items, setItems] = useState<Recipe[]>([]);
-    const[loading, setLoading] = useState<boolean>(true);
-    const[error, setError] = useState<string | null>(null);
+// Main component that displays a list of recipes in a carousel
+export function InformationSection({ collectionName }: RecipeListProps) {
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay()]); // Carousel setup with autoplay
+  const [items, setItems] = useState<Recipe[]>([]); // State to hold the recipe data
+  const [loading, setLoading] = useState<boolean>(true); // Loading state for data fetching
+  const [error, setError] = useState<string | null>(null); // Error state for data fetching
 
-    useEffect(() =>{
-        const fetchData = async ()=>{
-            try{
-                const querySnapshot = await getDocs(collection(db,collectionName));
-                const data: Recipe[] = querySnapshot.docs.map((doc) => ({id:doc.id, ...doc.data()})) as Recipe[];
-                setItems(data);
-            }catch(error){
-                console.error("Error fetching data: ", error);
-                setError("Failed to Load Data")
-            }finally{
-                setLoading(false);
-            }
-        };
+  // Fetch data from Firestore and Firebase Storage
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch documents from Firestore collection
+        const querySnapshot = await getDocs(collection(db, collectionName));
+        const data: Recipe[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Recipe[];
 
-        fetchData();
-    }, [collectionName]);
+        // Map over the data and fetch the download URL for each image reference
+        const updatedData = await Promise.all(
+            data.map(async (recipe) => {
+              if (recipe.Picture) {
+                try {
+                    const imageRef = ref(storage, recipe.Picture);
+                    const imageURL = await getDownloadURL(imageRef);  // Convert URL
+                    return { ...recipe, Picture: imageURL };
+                  } catch (error) {
+                    console.error(`Error getting URL for ${recipe.Picture}: `, error);
+                    return recipe;  // Return recipe without changing Picture if URL fails
+                  }
+              }
+              return recipe; // Return the recipe if no picture is found
+            })
+          );
 
-    if(loading){
-        return <div>Loading...</div>
-    }
-    if(error){
-        return(
-            <>
-            <div className="information-cointainer flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[2%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow">
-                <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left pb-[2%]">
-                    {error}
-                </span>  
-            </div>
-             
-            </>
-        );
-    }
+        setItems(updatedData); // Update the items state with recipes and their images
+      } catch (error) {
+        console.error("Error fetching data: ", error); // Log the error to console
+        setError("Failed to Load Data"); // Set error message in state
+      } finally {
+        setLoading(false); // Set loading to false once fetching is done
+      }
+    };
 
-    return(
-        <>
-        <div className="information-cointainer flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[5%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow bottom-0">
-            <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-left whitespace-nowrap z-[1] justify-left pb-[2%]">
-                Get Access to Thousands of Recipes
-            </span>  
-            
-            <Carousel className=' w-[90%] h-full relative mr-[5%] ml-[5%] pt-[2%]' plugins={[Autoplay({delay:2000,}),]}>
-                <CarouselPrevious />
-                <CarouselContent>
-                    {items.map((item) => (
-                         <CarouselItem className='basis-1/4' key={item.id}> 
-                            <RecipeCard name={item.Name}
-                            description={item.Description}
-                            imageUrl={item.Picture}
-                            />
-                         </CarouselItem>
-                    ))}
-                   
-                </CarouselContent>
-                <CarouselNext />
-            </Carousel>
+    fetchData(); // Call fetchData on component mount
+  }, [collectionName]); // Re-run when collectionName changes
+
+  // Loading state rendering
+  if (loading) {
+    return (
+      <>
+        <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[2%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow">
+          <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left  pt-[5%] pb-[2%]">
+            Loading...
+          </span>
         </div>
-         
-        </>
+      </>
     );
+  }
 
+  // Error state rendering
+  if (error) {
+    return (
+      <>
+        <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[2%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow">
+          <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left pb-[2%]">
+            {error}
+          </span>
+        </div>
+      </>
+    );
+  }
 
+  // Main rendering of the carousel with recipe cards
+  return (
+    <>
+      <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[5%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow ">
+        <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left pt-[5%] pb-[2%]">
+          Get Access to Thousands of Recipes
+        </span>
+
+        <Carousel className="w-[90%] h-full relative mr-[5%] ml-[5%] pt-[2%]" plugins={[Autoplay({ delay: 2000 })]}>
+          <CarouselPrevious />
+          <CarouselContent>
+            {/* Map through the items (recipes) and render each one in the carousel */}
+            {items.map((item) => (
+              <CarouselItem className="basis-1/4" key={item.id}>
+                <RecipeCard name={item.Name} description={item.Description} imageUrl={item.Picture} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext />
+        </Carousel>
+      </div>
+    </>
+  );
 }
