@@ -63,7 +63,7 @@ export default function NewRecipeForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       let alertMessages = [];
@@ -76,22 +76,24 @@ export default function NewRecipeForm() {
       alert(alertMessages.join("\n"));
     } else {
       try {
+        const instructionsArray = instructions.split('\n').filter(step => step.trim() !== "");
+  
         const formData = {
           recipeName,
           recipeDescription,
-          hours,
-          minutes,
-          instructions,
-          portionSize,
+          hours: parseInt(hours), 
+          minutes: parseInt(minutes), 
+          instructions: instructionsArray, 
+          portionSize: parseInt(portionSize), 
           difficulty,
           tags,
           ingredientsList,
           imagePreview
         };
-
-        // Save data to Firestore
+  
+        // Save form data to Firestore
         await addDoc(collection(db, "recipes"), formData);
-
+  
         alert('Form submitted successfully!');
       } catch (err) {
         console.error("Error adding document: ", err);
@@ -300,11 +302,12 @@ export default function NewRecipeForm() {
       <div className='flex items-center'>
         <label className='w-1/3 text-lg font-semibold'>Instructions:</label>
         <textarea
-          className='flex-1 p-2 border rounded border-gray-400'
-          placeholder="Add instructions"
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-        />
+         className='flex-1 p-2 border rounded border-gray-400'
+         placeholder="Add each step on a new line"
+         value={instructions}
+         onChange={(e) => setInstructions(e.target.value)}
+         rows={6} 
+       />
       </div>
 
   
