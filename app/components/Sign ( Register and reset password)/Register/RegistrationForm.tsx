@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { auth, db } from "../../../../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 export default function RegistrationForm() {
   const [name, setName] = useState("");
@@ -11,8 +14,10 @@ export default function RegistrationForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
 
-  // Password validation
+  // Validate password
   const validatePassword = () => {
     let error = "";
     if (password.length < 8) {
@@ -30,7 +35,7 @@ export default function RegistrationForm() {
     return error === "";
   };
 
-  // Password matching validation
+  // Validate confirm password
   const validateConfirmPassword = () => {
     if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match.");
@@ -41,29 +46,71 @@ export default function RegistrationForm() {
     }
   };
 
-  // Watch password and confirmPassword fields to reset errors when valid
+  // Check if the username already exists in Firestore
+  const checkUsername = async () => {
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      setUsernameError("Username is already taken.");
+      return false;
+    } else {
+      setUsernameError("");
+      return true;
+    }
+  };
+
+  // Check if the email is already registered with Firebase Authentication
+  const checkEmail = async () => {
+    try {
+      // Attempt to create the user to trigger Firebase's email validation
+      await createUserWithEmailAndPassword(auth, email, password);
+      return true;
+    } catch (error: any) {
+      if (error.code === "auth/email-already-in-use") {
+        setEmailError("Email is already in use.");
+        return false;
+      }
+      setEmailError("Failed to register. Please try again.");
+      return false;
+    }
+  };
+
+  // Form submission handler
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const isPasswordValid = validatePassword();
+    const isConfirmPasswordValid = validateConfirmPassword();
+    const isUsernameValid = await checkUsername();
+    const isEmailValid = await checkEmail();
+
+    // If all validations pass, store user data in Firestore
+    if (isPasswordValid && isConfirmPasswordValid && isUsernameValid && isEmailValid) {
+      try {
+        await addDoc(collection(db, "users"), {
+          name,
+          email,
+          username,
+          createdAt: new Date(),
+        });
+        alert("User registered successfully!");
+      } catch (error) {
+        console.error("Error adding user to Firestore: ", error);
+      }
+    }
+  };
+
   useEffect(() => {
     if (password.length >= 8 && passwordError) {
-      validatePassword(); // Reset error if password becomes valid
+      validatePassword();
     }
   }, [password]);
 
   useEffect(() => {
     if (password === confirmPassword && confirmPasswordError) {
-      validateConfirmPassword(); // Reset error if passwords match
+      validateConfirmPassword();
     }
   }, [confirmPassword]);
-
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const isPasswordValid = validatePassword();
-    const isConfirmPasswordValid = validateConfirmPassword();
-
-    if (isPasswordValid && isConfirmPasswordValid) {
-      alert("Form submitted successfully!");
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit} className="main-container w-[500px] relative mx-auto my-0 space-y-4">
@@ -86,9 +133,17 @@ export default function RegistrationForm() {
           type="email"
           placeholder="email@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailError("");
+          }}
           className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
         />
+        {emailError && (
+          <span className="block text-red-500 text-sm mt-1">
+            {emailError}
+          </span>
+        )}
       </div>
 
       {/* Username Field */}
@@ -98,9 +153,17 @@ export default function RegistrationForm() {
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setUsernameError(""); // Clear username error on typing
+          }}
           className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
         />
+        {usernameError && (
+          <span className="block text-red-500 text-sm mt-1">
+            {usernameError}
+          </span>
+        )}
       </div>
 
       {/* Password Field */}
@@ -146,7 +209,7 @@ export default function RegistrationForm() {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full h-[40px] mt-[10px] p-[12px] bg-[#2c2c2c] text-white rounded-[12px] text-center flex justify-center items-center"
+        className="w-full h-[40px] mt-[10px] p-[12px] bg-[#2c2c2c] text-white rounded-[12px] text-center"
       >
         Register
       </button>
