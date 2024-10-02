@@ -6,11 +6,15 @@ import { Footer } from "../components/Shared/Footer";
 
 const NewRecipePage = () => {
  return (
-     <div>
-       <NavBarH/>  
-       <NewRecipeForm/>
-       <Footer/>
-     </div>
+  <div className='flex flex-col min-h-screen'>
+  <NavBarH />
+
+  <div className='flex-grow flex justify-center items-start mt-8 mb-8'>
+    <NewRecipeForm />
+  </div>
+ 
+  <Footer />
+</div>
  );
 };
 export default NewRecipePage;
