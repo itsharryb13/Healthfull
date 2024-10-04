@@ -14,7 +14,11 @@ export default function Home() {
   <>
   <NavBar/>
   <Banner/>
+<<<<<<< Updated upstream
   <InformationSection/>
+=======
+  <InformationSection collectionName="recipes"/>
+>>>>>>> Stashed changes
   <Footer/>
   </>
   );
