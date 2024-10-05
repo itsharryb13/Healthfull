@@ -16,9 +16,9 @@ export function NavBar(){
             </div>
 
 
-            <div className='flex w-[40%] h-[80%] gap-x-5 items-right flex-nowrap absolute right-[2%] pt-2'>
-                <Link href="../SignIn"  className="flex h-[95%] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-lg border-solid border border-[#FFFFFF] relative overflow-hidden drop-shadow">
-                    <button className="h-full shrink-0 basis-auto font-['Inter'] text-lg font-normal leading-lg text-[#303030] relative text-left whitespace-nowrap">
+            <div className='flex w-[40%] h-[80%] gap-x-5 items-right flex-nowrap absolute right-[2%] pt-2 '>
+                <Link href="../SignIn"  className="flex h-[95%] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-lg border-solid border border-[#FFFFFF] relative overflow-hidden drop-shadow hover:underline">
+                    <button className=" w- fullh-full shrink-0 basis-auto font-['Inter'] text-lg font-normal leading-lg text-[#303030] relative text-left whitespace-nowrap">
                                 Sign In
                     </button>
                 </Link>    

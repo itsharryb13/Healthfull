@@ -1,8 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-        domains:["healthful-bb936.appspot.com"]
-    }
+    images: {
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: '**',
+            port: '',
+            pathname: '/**', // This allows all paths from Google Drive
+          },
+        ],
+      },
 };
 
 export default nextConfig;

@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "/workspaces/Healthfull/firebaseConfig";
+import { db } from "../../../firebaseConfig";
 
 
 export default function NewRecipeForm() {

@@ -16,7 +16,7 @@ export default function Home() {
   <>
   <NavBar/>
   <Banner/>
-  <InformationSection collectionName="Recipes"/>
+  <InformationSection collectionName="recipes"/>
   <Footer/>
   </>
   );

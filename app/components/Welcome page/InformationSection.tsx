@@ -15,9 +15,9 @@ interface RecipeListProps {
 // Interface representing a recipe object
 interface Recipe {
   id: string;           // Unique identifier for each recipe
-  Name?: string;        // Optional name field for the recipe
-  Description?: string; // Optional description field for the recipe
-  Picture?: string;     // Optional picture field (initially a Firebase storage path, later a full URL)
+  recipeName?: string;        // Optional name field for the recipe
+  recipeDescription?: string; // Optional description field for the recipe
+  imagePreview?: string;     // Optional picture field (initially a Firebase storage path, later a full URL)
 }
 
 
@@ -42,13 +42,13 @@ export function InformationSection({ collectionName }: RecipeListProps) {
         // Map over the data and fetch the download URL for each image reference
         const updatedData = await Promise.all(
             data.map(async (recipe) => {
-              if (recipe.Picture) {
+              if (recipe.imagePreview) {
                 try {
-                    const imageRef = ref(storage, recipe.Picture);
+                    const imageRef = ref(storage, recipe.imagePreview);
                     const imageURL = await getDownloadURL(imageRef);  // Convert URL
                     return { ...recipe, Picture: imageURL };
                   } catch (error) {
-                    console.error(`Error getting URL for ${recipe.Picture}: `, error);
+                    console.error(`Error getting URL for ${recipe.imagePreview}: `, error);
                     return recipe;  // Return recipe without changing Picture if URL fails
                   }
               }
@@ -108,7 +108,7 @@ export function InformationSection({ collectionName }: RecipeListProps) {
             {/* Map through the items (recipes) and render each one in the carousel */}
             {items.map((item) => (
               <CarouselItem className="basis-1/4" key={item.id}>
-                <RecipeCard name={item.Name} description={item.Description} imageUrl={item.Picture} />
+                <RecipeCard name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
               </CarouselItem>
             ))}
           </CarouselContent>

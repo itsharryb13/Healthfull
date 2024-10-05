@@ -16,14 +16,13 @@ export default function SignInNavBar() {
 
         <div className='flex w-[15vw] h-[2vw] gap-x-5 items-center flex-nowrap absolute top-[1vw] right-[1.8vw]'>
 
-            <button className='flex pt-[5px] pr-[5px] pb-[5px] pl-[5px] gap-[8px] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[5] pointer'>
-                
-                <Link href="../Registration">
-                <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[15px] font-normal leading-[16px] text-[#f5f5f5] relative text-left whitespace-nowrap z-[6]">
-                    Register
-                </span>
-                </Link>
-            </button>
+            <Link href="../Registration" className='flex h-[95%] justify-center items-right grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-lg border-solid border border-[#2c2c2c] relative overflow-hidden'>
+                <button className="h-full shrink-0 basis-auto font-['Inter'] lg:text-lg font-normal leading-lg text-[#f5f5f5] relative text-center whitespace-nowrap z-[6]">
+                    <span >
+                        Register
+                    </span>
+                </button>
+            </Link>
         </div>
     </nav>
 );
