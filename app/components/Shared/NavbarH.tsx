@@ -26,7 +26,7 @@ export function NavBarH() {
             {/* Menu Buttons */}
             <div className="flex gap-x-[6vw] md:gap-x-[4vw] md:text-2xl items-center">
                 
-                <Link href="../../AllRecipePage">
+                <Link href="../AllRecipe">
                     <button className="btn-nav hover:underline">All Recipes</button>
                 </Link>
 

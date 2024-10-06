@@ -109,7 +109,7 @@ export function InformationSection({ collectionName }: RecipeListProps) {
             {/* Map through the items (recipes) and render each one in the carousel */}
             {items.map((item) => (
               <CarouselItem className="basis-1/4" key={item.id}>
-                <RecipeCard name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+                <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
               </CarouselItem>
             ))}
           </CarouselContent>

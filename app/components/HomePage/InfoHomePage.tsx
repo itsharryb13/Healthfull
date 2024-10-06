@@ -11,7 +11,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 
 // Interface representing a recipe object
 interface Recipe {
-  id?: string;
+  id: string;
   recipeName?: string;
   recipeDescription?: string;
   imagePreview?: string;
@@ -93,7 +93,7 @@ export default function InfoHomePage() {
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
-                  <RecipeCard name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+                  <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -111,7 +111,7 @@ export default function InfoHomePage() {
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
-                  <RecipeCard name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+                  <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
                 </CarouselItem>
               ))}
             </CarouselContent>
