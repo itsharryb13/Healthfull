@@ -1,76 +1,126 @@
-// AllRecipes.js
-export default function AllRecipes() {
-  return (
-    <div className="main-container w-[1614px] h-[1220px] relative mx-auto my-0 flex flex-row gap-[2vw]">
-      {/* Filters Section on the Left */}
-      <div className="w-[381px] h-[660px] bg-[#e5dece] rounded-[21px] pt-[1.5vw] pb-[1vw] flex flex-col items-center relative"> {/* Centered Filters section */}
-        {/* Centered Filters Header */}
-        <span className="block h-[45px] font-['Inter'] text-[32px] font-normal leading-[38.4px] text-[#000] relative text-center whitespace-nowrap z-[1] mt-0 mb-[20px]">
-          Filters
-        </span>
-        {/* Filter Items Left-Aligned */}
-        <div className="w-full flex flex-col items-start pl-[30px] pr-[20px]"> {/* Container for left-aligned items */}
-          {[
-            "Dairy-Free",
-            "Gluten-Free",
-            "Vegan",
-            "Breakfast",
-            "Lunch",
-            "Dinner",
-          ].map((filter, index) => (
-            <span
-              key={index}
-              className="flex items-center h-[25px] font-['Inter'] text-[24px] font-semibold leading-[25px] text-[#000] tracking-[-0.48px] relative text-left whitespace-nowrap z-[27] mt-[20px] mr-0 mb-0 gap-[10px]"
-            >
-              <div className="w-[40px] h-[24px] bg-[#2c2c2c] rounded-full border-solid border border-[#2c2c2c] relative overflow-hidden">
-                <div className="w-[18px] h-[18px] bg-gray-300 rounded-full relative z-[26] mt-[3px] ml-[19px]" />
-              </div>
-              {filter}
-            </span>
-          ))}
-        </div>
-        {/* Centered Clear Filter Button */}
-        <div className="flex w-[113px] pt-[12px] pr-[12px] pb-[12px] pl-[12px] gap-[8px] justify-center items-center flex-nowrap bg-[#2c2c2c] rounded-[8px] border-solid border border-[#2c2c2c] relative overflow-hidden z-[2] mt-[50px]">
-          <span className="h-[16px] shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#f5f5f5] relative text-center whitespace-nowrap z-[3]">
-            Clear Filter
-          </span>
-        </div>
-      </div>
+"use client";
 
-      {/* All Recipes Section on the Right */}
-      <div className="w-[1185px] h-[1100px] bg-[#e5dece] rounded-[21px] pt-[1vw] pb-[1vw] flex flex-col items-center justify-between">
-        {/* Search Bar and Header */}
-        <div className="relative w-full flex flex-col items-center">
-          <span className="font-['Inter'] text-[32px] font-normal leading-[38.4px] text-[#000] text-center mb-[20px]">
-            All Recipes
-          </span>
-          <div className="flex w-[325px] h-[40px] pt-[14px] pr-[16px] pb-[12px] pl-[16px] gap-[10px] items-center bg-white rounded-full border border-gray-300 absolute top-[-0px] right-[5%] overflow-hidden z-[31]">
-            <span className="h-[16px] grow shrink-0 basis-auto font-['Inter'] text-[16px] font-normal leading-[16px] text-[#1e1e1e] relative text-left whitespace-nowrap z-[32]">
-              Search for recipes
-            </span>
-            <div className="w-[16px] h-[16px] shrink-0 relative overflow-hidden z-[33] bg-gray-200 rounded-full" />
-          </div>
-        </div>
-        {/* Pagination Section Moved Up */}
-        <div className="flex w-[276px] gap-[8px] items-center flex-nowrap relative z-[36] mt-[40px] mx-auto">
-          {["1", "2", "3", "...", "67", "68"].map((item, index) => (
-            <div
-              key={index}
-              className={`flex w-[${item === "..." ? "47px" : "44px"}] pt-[8px] pr-[12px] pb-[8px] pl-[12px] flex-col justify-center items-center ${
-                item === "1" ? "bg-[#2c2c2c]" : "bg-gray-200"
-              } rounded-[8px] relative z-[${37 + index * 2}]`}
-            >
-              <span
-                className={`h-[16px] shrink-0 font-['Inter'] text-[16px] ${
-                  item === "..." ? "font-bold" : "font-normal"
-                } leading-[16px] text-[#${item === "1" ? "f5f5f5" : "1e1e1e"}]`}
-              >
-                {item}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+
+import React, { useEffect, useState } from 'react';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "/workspaces/Healthfull/firebaseConfig";
+import { RecipeCard } from '../Recipe Card/ReciepeCard';
+
+
+interface Recipe {
+ id: string;
+ recipeName: string;
+ recipeDescription?: string;
+ imagePreview?: string;
+ tags?: string[];
+}
+
+
+export default function AllRecipes() {
+ const [recipes, setRecipes] = useState<Recipe[]>([]);
+ const [loading, setLoading] = useState(true);
+ const [filters, setFilters] = useState<string[]>([]);
+ const filterOptions = ["Dairy-Free", "Gluten-Free", "Vegan", "Breakfast", "Lunch", "Dinner"];
+
+
+ useEffect(() => {
+   const fetchPublishedRecipes = async () => {
+     try {
+       const recipesRef = collection(db, "recipes");
+       const q = query(recipesRef, where("status", "==", "published"));
+       const querySnapshot = await getDocs(q);
+       const recipesData: Recipe[] = querySnapshot.docs.map(doc => ({
+         id: doc.id,
+         ...doc.data()
+       })) as Recipe[];
+       setRecipes(recipesData);
+     } catch (error) {
+       console.error("Error fetching recipes: ", error);
+     } finally {
+       setLoading(false);
+     }
+   };
+
+
+   fetchPublishedRecipes();
+ }, []);
+
+
+ const handleFilterChange = (filter: string) => {
+   if (filters.includes(filter)) {
+     setFilters(filters.filter(f => f !== filter));
+   } else {
+     setFilters([...filters, filter]);
+   }
+ };
+
+
+ const filteredRecipes = filters.length === 0
+   ? recipes
+   : recipes.filter(recipe => filters.every(filter => recipe.tags?.includes(filter)));
+
+
+ return (
+   <div className="flex flex-col items-center w-full min-h-[100vh]">
+     {/* Main Container */}
+     <div className="flex flex-row gap-6 w-11/12 p-6 bg-[#e5dece] rounded-lg mt-8 min-h-[90vh]">
+      
+       {/* Filters Section */}
+       <div className="filters w-1/4 bg-[#f5f5f5] p-6 rounded-lg shadow-md">
+         <h2 className="text-2xl font-semibold mb-4">Filters</h2>
+         <div className="flex flex-col space-y-2">
+           {filterOptions.map(option => (
+             <label key={option} className="flex items-center space-x-2">
+               <input
+                 type="checkbox"
+                 checked={filters.includes(option)}
+                 onChange={() => handleFilterChange(option)}
+                 className="w-4 h-4"
+               />
+               <span className="text-lg">{option}</span>
+             </label>
+           ))}
+         </div>
+         <button
+           onClick={() => setFilters([])}
+           className="mt-6 px-4 py-2 bg-black text-white rounded"
+         >
+           Clear Filter
+         </button>
+       </div>
+
+
+       {/* Recipes Section */}
+       <div className="recipes w-3/4 bg-[#fdf9f3] p-6 rounded-lg shadow-md">
+         <div className="flex justify-between items-center mb-6">
+           <h2 className="text-3xl font-semibold">All Recipes</h2>
+           <input
+             type="text"
+             placeholder="Search for recipes"
+             className="px-4 py-2 border rounded w-1/3"
+           />
+         </div>
+
+
+         <div className="recipe-cards grid grid-cols-4 gap-10">
+           {loading ? (
+             <p>Loading recipes...</p>
+           ) : filteredRecipes.length > 0 ? (
+             filteredRecipes.map((recipe) => (
+               <RecipeCard
+                 id={recipe.id}
+                 key={recipe.id}
+                 name={recipe.recipeName}
+                 imageUrl={recipe.imagePreview}
+                 description={recipe.recipeDescription}
+               />
+             ))
+           ) : (
+             <p>No recipes found matching the filters.</p>
+           )}
+         </div>
+       </div>
+     </div>
+   </div>
+ );
 }
