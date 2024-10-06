@@ -3,7 +3,7 @@ import RoundLogo from "../../public/RoundLogo.svg";
 
 export function Footer(){
     return(
-    <div className='main-container flex w-full h-[15vw] pt-[3vw] pr-[3vw] pb-[8vw] pl-[4vw] gap-[6vw] items-start flex-wrap bg-[#e5dece] border-solid border-b border-b-[#d9d9d9] relative overflow-hidden mx-auto my-0'>
+    <div className='main-container flex w-full h-[15vw] pt-[3vw] pr-[3vw] pb-[8vw] pl-[4vw] gap-[6vw] items-start flex-wrap bg-[#e5dece] border-solid border-b border-b-[#d9d9d9] relative overflow-hidden mx-auto bottom-0'>
        
         <div className='flex w-auto  h-[90%] gap-[1vw] pb-[5%] pt[5%] flex-col items-start self-stretch shrink-0'>
 

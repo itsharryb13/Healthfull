@@ -44,6 +44,7 @@ export function InformationSection({ collectionName }: RecipeListProps) {
             data.map(async (recipe) => {
               if (recipe.imagePreview) {
                 try {
+                  console.log(recipe.imagePreview);
                     const imageRef = ref(storage, recipe.imagePreview);
                     const imageURL = await getDownloadURL(imageRef);  // Convert URL
                     return { ...recipe, Picture: imageURL };

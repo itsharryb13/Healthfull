@@ -1,6 +1,10 @@
+
 import Image from "next/image";
 import saveButton from "../../public/save-button.svg";
 import removeButton from "../../public/remove.svg";
+import { db } from "../../../firebaseConfig";
+import { addDoc, collection } from "firebase/firestore";
+import useAuth from "@/lib/useAuth";
 
 interface RecipeCardProps {
   id?: string; // id of the recipe
@@ -11,16 +15,16 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ name, imageUrl, description, onSave }: RecipeCardProps) {
+  const auth = useAuth();
   return (
     <>
-      <div className='main-container flex flex-row w-[20vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1 overflow-hidden'>
+      <div className='main-container flex flex-row w-[20vw] h-[20vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1 overflow-hidden'>
         <div className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
           <Image
             src={imageUrl || "/default-image.svg"}
             alt={name ?? "item"}
             fill
             sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
-            objectFit="cover"
           />
         </div>
         <div className="flex w-[50%] h-full flex-col relative justify-center items-center">

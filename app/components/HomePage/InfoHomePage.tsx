@@ -11,7 +11,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 
 // Interface representing a recipe object
 interface Recipe {
-  id: string;
+  id?: string;
   recipeName?: string;
   recipeDescription?: string;
   imagePreview?: string;
@@ -133,16 +133,20 @@ export default function InfoHomePage() {
               onChange={(e) => setIngredient(e.target.value)}
             />
             <input
+              type="number"
               className="flex-1 p-2 border rounded border-gray-400"
               placeholder="Quantity"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
+              min="1"
+              step="1"
             />
             <select
               className='flex-1 p-2 border rounded border-gray-400'
               value={measurement}
               onChange={(e) => setMeasurement(e.target.value)}
             >
+              <option value="--">Please select from here</option>
               <option value="kg">KG</option>
               <option value="g">Grams</option>
               <option value="lb">Pound</option>
