@@ -16,7 +16,7 @@ export default function NewRecipeForm() {
  const [measurement, setMeasurement] = useState('Select Measurement');
  const [quantity, setQuantity] = useState('');
  const [instructions, setInstructions] = useState('');
- const [tags, setTags] = useState('');
+ const [tags, setTags] = useState<string[]>([]);
  const [portionSize, setPortionSize] = useState('');
  const [difficulty, setDifficulty] = useState('Intermediate');
  const [ingredientsList, setIngredientsList] = useState<string[]>([]);
@@ -31,9 +31,6 @@ export default function NewRecipeForm() {
    ingredients: '',
    portionSize: ''
  });
-
-
-
 
  const validateForm = (recipeStatus: string) => {
    const newErrors: any = {};
@@ -191,6 +188,15 @@ export default function NewRecipeForm() {
    }
  };
 
+ const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const { value, checked } = event.target;
+  if (checked) {
+    setTags([...tags, value]); // Add tag to array if checked
+  } else {
+    setTags(tags.filter(tag => tag !== value)); // Remove tag from array if unchecked
+  }
+};
+
 
  // clear all fields
  const handleCancel = () => {
@@ -202,7 +208,7 @@ export default function NewRecipeForm() {
    setMeasurement('Select Measurement');
    setQuantity('');
    setInstructions('');
-   setTags('');
+   setTags([]);
    setPortionSize('');
    setDifficulty('Intermediate');
    setIngredientsList([]);
@@ -337,22 +343,8 @@ export default function NewRecipeForm() {
          ))}
        </div>
      </div>
-
-
-     <div className='flex items-center'>
-       <label className='w-1/3 text-lg font-semibold'>Tags:</label>
-       <input
-         className='flex-1 p-2 border rounded border-gray-400'
-         placeholder="Add tags, separated by commas"
-         value={tags}
-         onChange={(e) => setTags(e.target.value)}
-       />
-     </div>
-
-
-
-
-     <div className='flex items-center'>
+    
+     <div className='flex flex-col'>
        <label className='w-1/3 text-lg font-semibold'>Instructions:</label>
        <textarea
         className='flex-1 p-2 border rounded border-gray-400'
@@ -362,6 +354,74 @@ export default function NewRecipeForm() {
         rows={6}
       />
      </div>
+
+      {/* Tags Checkboxes */}
+      <div className='flex flex-col '>
+        <label className='text-lg font-semibold'>Tags:</label>
+        <div className='grid grid-cols-2 gap-2'>
+          <label>
+            <input
+              type="checkbox"
+              value="Dairy-Free"
+              onChange={handleTagChange}
+              checked={tags.includes("Dairy-Free")}
+              className='mr-2'
+            />
+            Dairy-Free
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Gluten-Free"
+              onChange={handleTagChange}
+              checked={tags.includes("Gluten-Free")}
+              className='mr-2'
+            />
+            Gluten-Free
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Vegan"
+              onChange={handleTagChange}
+              checked={tags.includes("Vegan")}
+              className='mr-2'
+            />
+            Vegan
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Breakfast"
+              onChange={handleTagChange}
+              checked={tags.includes("Breakfast")}
+              className='mr-2'
+            />
+            Breakfast
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Lunch"
+              onChange={handleTagChange}
+              checked={tags.includes("Lunch")}
+              className='mr-2'
+            />
+            Lunch
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Dinner"
+              onChange={handleTagChange}
+              checked={tags.includes("Dinner")}
+              className='mr-2'
+            />
+            Dinner
+          </label>
+        </div>
+      </div>
+
 
 
       <div className='flex items-center'>

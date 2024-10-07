@@ -5,6 +5,8 @@ import { auth } from '../../../firebaseConfig';
 import Link from "next/link";
 import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 export function SignInBox() {
   const inputUserRef = useRef<HTMLInputElement>(null);
@@ -81,7 +83,7 @@ export function SignInBox() {
             onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
             className='ml-2 text-[#2c2c2c] hover:text-[#1e1e1e]'
           >
-            {showPassword ? "Hide" : "Show"}
+           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
           </button>
         </div>
       </div>

@@ -102,13 +102,12 @@ export default function AllRecipes() {
          </div>
 
 
-         <div className="recipe-cards grid grid-cols-4 gap-10">
+         <div className="recipe-cards grid grid-cols-3 gap-10">
            {loading ? (
              <p>Loading recipes...</p>
            ) : filteredRecipes.length > 0 ? (
              filteredRecipes.map((recipe) => (
                <RecipeCard
-                 id={recipe.id}
                  key={recipe.id}
                  name={recipe.recipeName}
                  imageUrl={recipe.imagePreview}

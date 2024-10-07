@@ -4,7 +4,6 @@ import saveButton from "../../public/save-button.svg";
 import removeButton from "../../public/remove.svg";
 
 interface RecipeCardProps {
- id: string; // Recipe ID
  name?: string; // Name of the recipe
  imageUrl?: string; // URL of the recipe image
  description?: string; // Description of the recipe
