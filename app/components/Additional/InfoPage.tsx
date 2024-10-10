@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, storage } from '../../../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
 
 
 
@@ -106,95 +108,95 @@ export default function InfoPage() {
         <div className="flex flex-col justify-left mt-10 bottom-0 gap-y-[5%]">
           <label className="text-lg font-semibold pt-[2%] ">Allergies (select all that Apply)</label>
           
-          <RadioGroup defaultValue="option-one" className="flex flex-row mt-4 gap-x-[5%]">
+          <div className="flex flex-row mt-4 gap-x-[5%]">
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
+            <Checkbox value="option-one" id="option-one" />
             <label htmlFor="option-one">Milk</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
+            <Checkbox value="option-two" id="option-two" />
             <label htmlFor="option-two">Peanuts</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
-            <label htmlFor="option-one">Eggs</label>
+            <Checkbox value="option-one" id="option-one" />
+            <label htmlFor="option-three">Eggs</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Tree Nuts</label>
+            <Checkbox value="option-two" id="option-two" />
+            <label htmlFor="option-four">Tree Nuts</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
-            <label htmlFor="option-one">Soy</label>
+            <Checkbox value="option-one" id="option-one" />
+            <label htmlFor="option-five">Soy</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Wheat (Gluten)</label>
+            <Checkbox value="option-two" id="option-two" />
+            <label htmlFor="option-six">Wheat (Gluten)</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Shell Fish</label>
+            <Checkbox value="option-two" id="option-two" />
+            <label htmlFor="option-seven">Shell Fish</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Sesame</label>
+            <Checkbox value="option-two" id="option-two" />
+            <label htmlFor="option-eight">Sesame</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Mustard</label>
+            <Checkbox value="option-two" id="option-two" />
+            <label htmlFor="option-nine">Mustard</label>
           </div>
-        </RadioGroup>
+        </div>
 
         <label className="text-lg font-semibold pt-[2%] ">Health Issues (select all that Apply)</label>
-          
-          <RadioGroup defaultValue="option-one" className="flex flex-row mt-4 gap-x-[5%]">
+          {/* adding health issue */}
+          <div className="flex flex-row mt-4 gap-x-[5%]">
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
+            <Checkbox value="option-one" id="option-one" />
             <label htmlFor="option-one">Milk</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
+            <Checkbox value="option-two" id="option-two" />
             <label htmlFor="option-two">Peanuts</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
-            <label htmlFor="option-one">Eggs</label>
+            <Checkbox value="option-three" id="option-three" />
+            <label htmlFor="option-three">Eggs</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Tree Nuts</label>
+            <Checkbox value="option-four" id="option-four" />
+            <label htmlFor="option-four">Tree Nuts</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
-            <label htmlFor="option-one">Soy</label>
+            <Checkbox value="option-five" id="option-five" />
+            <label htmlFor="option-five">Soy</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Wheat (Gluten)</label>
+            <Checkbox value="option-six" id="option-six" />
+            <label htmlFor="option-six">Wheat (Gluten)</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Shell Fish</label>
+            <Checkbox value="option-seven" id="option-seven" />
+            <label htmlFor="option-seven">Shell Fish</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Sesame</label>
+            <Checkbox value="option-eight" id="option-eight" />
+            <label htmlFor="option-eight">Sesame</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <label htmlFor="option-two">Mustard</label>
+            <Checkbox value="option-nine" id="option-nine" />
+            <label htmlFor="option-nine">Mustard</label>
           </div>
-        </RadioGroup>
+        </div>
 
 
-        <label className="text-lg font-semibold mb-1">Other :</label>
+        <label className="text-lg font-semibold mb-1 pt-[2%]">Other :</label>
         <input className="w-full p-2 border rounded border-gray-400" placeholder="Allergies/ Health Issues" />
         
         </div>
 
 
         {/* Save Button */}
-        <div className="flex justify-center pt-[6%]">
+        <div className="flex justify-center pt-[4%]">
           <button type="button" className="w-1/2 p-2 bg-gray-800 text-white rounded">
             Save Profile
           </button>

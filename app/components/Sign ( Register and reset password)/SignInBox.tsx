@@ -1,18 +1,41 @@
 "use client";
 
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../../firebaseConfig';
+import { browserLocalPersistence, inMemoryPersistence, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
-import React, { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import React, { useRef, useState, useEffect } from 'react';
+import { User } from "firebase/auth";
+import { auth } from '../../../firebaseConfig';
+import { useRouter } from "next/navigation";
+//import { cookies } from "next/headers";
 
 export function SignInBox() {
   const inputUserRef = useRef<HTMLInputElement>(null);
   const inputPassRef = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  
+  useEffect(() => {
+    console.log("before redirect and prefetching");
+    router.prefetch('/Homepage');
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        // User is already signed in, redirecting to HomePage
+        router.push('/HomePage');
+        console.log("after redirect");
+        const username = auth.currentUser?.email;
+        console.log(username);
+      }
+    });
+    console.log("after after redirect");
+    // Cleanup function to prevent memory leaks
+    return unsubscribe;
+  }, [auth]);
+
+  // As httpOnly cookies are to be used, do not persist any state client side.
+  auth.setPersistence(inMemoryPersistence);
 
   // Handle sign-in button click
   const handleClick = () => {
@@ -20,12 +43,16 @@ export function SignInBox() {
     const pass = inputPassRef.current?.value;
 
     if (email && pass) {
+      router.prefetch('/Homepage');
       signInWithEmailAndPassword(auth, email, pass)
         .then((userCredential) => {
           // Successful sign-in
           const user = userCredential.user;
-          console.log("Signing in ", email, " with password ", pass);
-          window.location.href = '../HomePage'; // Redirect to home page
+          //console.log("Signing in ", email, " with password ", pass);
+          return user.getIdToken(true).then(function (token) {
+              // set the session cookie
+              document.cookie = '__session=' + token + ';max-age=3600';
+          });
         })
         .catch((error) => {
           // Handle sign-in error
@@ -83,7 +110,7 @@ export function SignInBox() {
             onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
             className='ml-2 text-[#2c2c2c] hover:text-[#1e1e1e]'
           >
-           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            {showPassword ? "Hide" : "Show"}
           </button>
         </div>
       </div>

@@ -11,8 +11,23 @@ import Image from "next/image";
 import Logo from '../../public/Logo.svg';
 import RoundLogo from '../../public/RoundLogo.svg';
 import Link from 'next/link';
+import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
 
 export function NavBarH() {
+
+
+    const [showAdditional, setAdditional] = useState();
+
+    const handleClickSetting = () => {
+        window.location.href= "../../additionalInfo";
+    };
+    const handleSignOut = () => {
+        signOut(auth);
+        window.location.href= "/";
+    };
+
     return (
         <nav className="flex w-full h-[4vw] items-center justify-between px-[2vw] md:px-[1vw]">
             
@@ -34,9 +49,9 @@ export function NavBarH() {
                     <button className="btn-nav hover:underline">New Recipe</button>
                 </Link>
 
-                <button className="btn-nav hover:underline">Macros</button>
+                {/* <button className="btn-nav hover:underline">Macros</button>
 
-                <button className="btn-nav hover:underline">Planner</button>
+                <button className="btn-nav hover:underline">Planner</button> */}
 
                 <Link href="../../MyAccount">
                     <button className="btn-nav hover:underline">My Account</button>
@@ -56,8 +71,8 @@ export function NavBarH() {
                 <DropdownMenu>
                   <DropdownMenuTrigger><Image src={RoundLogo} alt="Round Logo" className="flex justify-center items-center w-[3vw] h-[3vw] rounded-full" /></DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem className="hover:underline">Settings</DropdownMenuItem>
-                    <DropdownMenuItem className="hover:underline">Logout</DropdownMenuItem>
+                    <DropdownMenuItem className="hover:underline" onClick={handleClickSetting}>Settings</DropdownMenuItem>
+                    <DropdownMenuItem className="hover:underline" onClick={handleSignOut}>Logout</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
             </div>

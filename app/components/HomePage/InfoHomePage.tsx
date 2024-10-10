@@ -6,8 +6,9 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db, storage } from '../../../firebaseConfig';
+import { db, storage, auth } from '../../../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
+import useAuth from "@/lib/useAuth";
 
 // Interface representing a recipe object
 interface Recipe {
@@ -46,6 +47,8 @@ export default function InfoHomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // const user = auth(useAuth);
+        // console.log("user: ", auth);
         const querySnapshot = await getDocs(collection(db, "recipes"));
         const data: Recipe[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -93,7 +96,7 @@ export default function InfoHomePage() {
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
-                  <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+                  <RecipeCard ID={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -111,7 +114,7 @@ export default function InfoHomePage() {
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
-                  <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+                  <RecipeCard ID={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -185,3 +188,8 @@ export default function InfoHomePage() {
 }
 
 {/* TODO: make grocery pane load the stuff stored on the database and let person add the grocery items to it*/}
+
+
+
+
+{/**  */}

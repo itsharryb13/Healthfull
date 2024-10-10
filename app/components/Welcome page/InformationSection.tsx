@@ -1,8 +1,9 @@
 import { RecipeCard } from "../Recipe Card/ReciepeCard";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from 'embla-carousel-react';
+import { EmblaPluginType } from 'embla-carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore"; // Firestore methods
 import { db, storage } from '../../../firebaseConfig'; // Firebase Firestore instance
 import {ref, getDownloadURL } from "firebase/storage"; // Firebase Storage methods
@@ -20,10 +21,23 @@ interface Recipe {
   imagePreview?: string;     // Optional picture field (initially a Firebase storage path, later a full URL)
 }
 
-
 // Main component that displays a list of recipes in a carousel
 export function InformationSection({ collectionName }: RecipeListProps) {
-  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay()]); // Carousel setup with autoplay
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({delay: 200})]); // Carousel setup with autoplay
+
+  const stopAutoplay = () => {
+    if (emblaApi && emblaApi.plugins().autoplay) {
+      emblaApi.plugins().autoplay.stop();
+    }
+  };
+
+  const startAutoplay = () => {
+    if (emblaApi && emblaApi.plugins().autoplay) {
+      emblaApi.plugins().autoplay.reset();
+    }
+  };
+
+
   const [items, setItems] = useState<Recipe[]>([]); // State to hold the recipe data
   const [loading, setLoading] = useState<boolean>(true); // Loading state for data fetching
   const [error, setError] = useState<string | null>(null); // Error state for data fetching
@@ -98,18 +112,18 @@ export function InformationSection({ collectionName }: RecipeListProps) {
   // Main rendering of the carousel with recipe cards
   return (
     <>
-      <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[5%] pr-[2%] pl-[2%] gap-[5%] items-start shrink-0 flex-nowrap relative drop-shadow ">
+      <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[5%] pr-[2%] pl-[2%] gap-[5%] items-start relative drop-shadow ">
         <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left pt-[5%] pb-[2%]">
           Get Access to Thousands of Recipes
         </span>
 
-        <Carousel className="w-[90%] h-full relative mr-[5%] ml-[5%] pt-[2%]" plugins={[Autoplay({ delay: 2000 })]}>
+        <Carousel  className="w-[90%] h-full relative mr-[5%] ml-[5%] pt-[2%]" plugins={[Autoplay({ delay: 8000})]} onMouseEnter={stopAutoplay} onMouseLeave={startAutoplay}>
           <CarouselPrevious />
           <CarouselContent>
             {/* Map through the items (recipes) and render each one in the carousel */}
             {items.map((item) => (
-              <CarouselItem className="basis-1/4" key={item.id}>
-                <RecipeCard id={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+              <CarouselItem className="basis-1/3" key={item.id}>
+                <RecipeCard ID={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -119,3 +133,8 @@ export function InformationSection({ collectionName }: RecipeListProps) {
     </>
   );
 }
+
+{/* TODO: Do a stop carousel autoplay when mouse enter the carousel.
+  
+  
+  */}

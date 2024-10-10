@@ -2,6 +2,5 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/SignIn/page": "app/SignIn/page.js",
   "/HomePage/page": "app/HomePage/page.js",
-  "/NewRecipePage/page": "app/NewRecipePage/page.js",
-  "/AllRecipesPage/page": "app/AllRecipesPage/page.js"
+  "/page": "app/page.js"
 }

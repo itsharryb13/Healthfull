@@ -21,16 +21,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/HomePage/page.js"
     ],
-    "/NewRecipePage/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/NewRecipePage/page.js"
-    ],
-    "/AllRecipesPage/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/AllRecipesPage/page.js"
-    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
