@@ -218,7 +218,7 @@ export default function NewRecipeForm() {
 
 
  return (
-   <form className='flex flex-col space-y-4 p-10 bg-[#e5dece] rounded-lg max-w-4xl mx-auto'>
+   <form className='flex flex-col space-y-6 p-10 bg-[#e5dece] rounded-lg w-[96%] mx-auto'>
      <div className='flex'>
     
        <div className='flex flex-col items-center mr-8'>

@@ -35,7 +35,7 @@ export function SignInBox() {
   }, [auth]);
 
   // As httpOnly cookies are to be used, do not persist any state client side.
-  auth.setPersistence(inMemoryPersistence);
+  auth.setPersistence(browserLocalPersistence);
 
   // Handle sign-in button click
   const handleClick = () => {

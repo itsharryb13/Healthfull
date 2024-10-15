@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { collection,query,arrayUnion,where, getDocs,getDoc,doc, updateDoc, arrayRemove } from "firebase/firestore";
+import { collection,query,arrayUnion,where, getDocs,getDoc,doc, updateDoc, arrayRemove, getFirestore } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 
 interface RecipeCardProps {
@@ -28,19 +28,19 @@ interface RecipeCardProps {
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
-export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCardProps) {
+export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) {
 
   const auth = getAuth();
   const user = auth.currentUser;
-  const [showSavedStatus, setSavedStatus] = useState<Checked>(false);
-  const [showEverydayStatus, setEverydayStatus] = useState<Checked>(false);
-  const [showMStatus, setMStatus] = useState<Checked>(false);
-  const [showTStatus, setTStatus] = useState<Checked>(false);
-  const [showWStatus, setWStatus] = useState<Checked>(false);
-  const [showThStatus, setThStatus] = useState<Checked>(false);
-  const [showFStatus, setFStatus] = useState<Checked>(false);
-  const [showSStatus, setSStatus] = useState<Checked>(false);
-  const [showSunStatus, setSunStatus] = useState<Checked>(false);
+  const [showSavedStatus, setSavedStatus] = useState<Checked>();
+  const [showEverydayStatus, setEverydayStatus] = useState<Checked>();
+  const [showMStatus, setMStatus] = useState<Checked>();
+  const [showTStatus, setTStatus] = useState<Checked>();
+  const [showWStatus, setWStatus] = useState<Checked>();
+  const [showThStatus, setThStatus] = useState<Checked>();
+  const [showFStatus, setFStatus] = useState<Checked>();
+  const [showSStatus, setSStatus] = useState<Checked>();
+  const [showSunStatus, setSunStatus] = useState<Checked>();
 
   // Reusable function for handling day status change
   const addDayStatus = async (status: Checked, setStatus: React.Dispatch<React.SetStateAction<Checked>>, container: string ) => {
@@ -59,55 +59,62 @@ export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCa
           const userdata = userDocument.docs[0];
           const user = userdata.ref;
 
+          console.log(userdata.data().SavedRecipe.includes(ID));
+
           if(container == "Everyday"){
             await updateDoc(user, {
-              EverydayForWeek: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              EverydayForWeek: arrayUnion(ID)
             });
+            setSavedStatus(true);
           }  if(container == "Saved") {
             await updateDoc(user, {
               SavedRecipe:arrayUnion(ID)
             });
           } if(container == "Monday") {
             await updateDoc(user, {
-              MondayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              MondayMeals: arrayUnion(ID)
+             
             });
             setSavedStatus(true);
+
           } if(container == "Tuesday") {
             await updateDoc(user, {
-              TuesdayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              TuesdayMeals: arrayUnion(ID)
+             
             });
             setSavedStatus(true);
+
           } if(container == "Wednesday") {
             await updateDoc(user, {
-              WednesdayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              WednesdayMeals: arrayUnion(ID)              
             });
             setSavedStatus(true);
+
           } if(container == "Thursday") {
             await updateDoc(user, {
-              ThursdayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              ThursdayMeals: arrayUnion(ID)
+            
             });
             setSavedStatus(true);
+
           } if(container == "Friday") {
             await updateDoc(user, {
-              FridayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              FridayMeals: arrayUnion(ID)
+             
             });
-            setSavedStatus(true);
+            setFStatus(true);
+
           } if(container == "Saturday") {
             await updateDoc(user, {
-              SaturdayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              SaturdayMeals: arrayUnion(ID)
+             
             });
             setSavedStatus(true);
+
            } if(container == "Sunday") {
             await updateDoc(user, {
-              SundayMeals: arrayUnion(ID),
-              SavedRecipe:arrayUnion(ID)
+              SundayMeals: arrayUnion(ID)
+              
             });
             setSavedStatus(true);
           }
@@ -141,7 +148,7 @@ export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCa
       
         if(container == "Everyday"){
           await updateDoc(user, {
-            EverydayForWeek: arrayRemove(ID),
+            EverydayForWeek: arrayRemove(ID)
           });
           
         } if(container == "Saved") {
@@ -152,30 +159,37 @@ export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCa
           await updateDoc(user, {
             MondayMeals: arrayRemove(ID)
           });
+          //setMStatus(false);
         }if(container == "Tuesday") {
           await updateDoc(user, {
             TuesdayMeals: arrayRemove(ID)
           });
+          //setTStatus(false);
         }if(container == "Wednesday") {
           await updateDoc(user, {
             WednesdayMeals: arrayRemove(ID)
           });
+          //setWStatus(false);
         } if(container == "Thursday") {
           await updateDoc(user, {
             ThursdayMeals: arrayRemove(ID)
           });
+          //setThStatus(false);
         }if(container == "Friday") {
           await updateDoc(user, {
             FridayMeals: arrayRemove(ID)
           });
+          //setFStatus(false);
         } if(container == "Saturday") {
           await updateDoc(user, {
             SaturdayMeals: arrayRemove(ID)
           });
+          //setSStatus(false);
         }if(container == "Sunday") {
           await updateDoc(user, {
             SundayMeals: arrayRemove(ID)
           });
+          //setSunStatus(false);
         }
 
       }
@@ -186,104 +200,123 @@ export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCa
       
     }
   
-};
+  };
 
-
+  useEffect(() => {
+    // Fetch the initial recipe status
+    const fetchRecipeStatus = async () => {
+      if (!user) {
+        // No signed-in user
+        return;
+      }
   
-  useEffect(()=> {
-    // const fetchRecipeStatus = async () => {
-    //   if (user && ID) {
-    //     const userDocRef = doc(db, "users", user.uid);
-    //     const userDoc = await getDoc(userDocRef);
-    //     if (userDoc.exists()) {
-    //       const userData = userDoc.data();
-
-    //       // Set status based on Firebase arrays
-    //       setSavedStatus(userData.SavedRecipe?.includes(ID) || false);
-    //       setEverydayStatus(userData.EverydayForWeek?.includes(ID) || false);
-    //       setMStatus(userData.MondayMeals?.includes(ID) || false);
-    //       setTStatus(userData.TuesdayMeals?.includes(ID) || false);
-    //       setWStatus(userData.WednesdayMeals?.includes(ID) || false);
-    //       setThStatus(userData.ThursdayMeals?.includes(ID) || false);
-    //       setFStatus(userData.FridayMeals?.includes(ID) || false);
-    //       setSStatus(userData.SaturdayMeals?.includes(ID) || false);
-    //       setSunStatus(userData.SundayMeals?.includes(ID) || false);
-    //     }
-    //   }
-    // };
-
-    //fetchRecipeStatus();
-
-    if(showEverydayStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Everyday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Everyday");
-    }
-
-    if(showSavedStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Saved");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Saved");
-    }
-
-    if(showMStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Monday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Monday");
-    }
-
-    if(showTStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Tuesday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Tuesday");
-    }
-
-    if(showWStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Wednesday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Wednesday");
-    }
-
-    if(showThStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Thursday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Thursday");
-    }
-
-    if(showFStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Friday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Friday");
-    }
-
-    if(showSStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Saturday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Saturday");
-    }
-    if(showSunStatus== true){
-      addDayStatus(showEverydayStatus,setEverydayStatus, "Sunday");
-    }else{
-      removeDayStatus(showEverydayStatus,setEverydayStatus, "Sunday");
-    }
-    
-  },[showEverydayStatus, showSavedStatus,showMStatus,showTStatus,showWStatus, showTStatus,showFStatus,showSStatus,showSunStatus, user,ID
+      try {
+        const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
+        const userDocument = await getDocs(DocumentSearch);
+  
+        if (!userDocument.empty) {
+          const userData = userDocument.docs[0];
+          setSavedStatus(userData.data().SavedRecipe?.includes(ID) || false);
+          setEverydayStatus(userData.data().EverydayForWeek?.includes(ID) || false);
+          setMStatus(userData.data().MondayMeals?.includes(ID) || false);
+          setTStatus(userData.data().TuesdayMeals?.includes(ID) || false);
+          setWStatus(userData.data().WednesdayMeals?.includes(ID) || false);
+          setThStatus(userData.data().ThursdayMeals?.includes(ID) || false);
+          setFStatus(userData.data().FridayMeals?.includes(ID) || false);
+          setSStatus(userData.data().SaturdayMeals?.includes(ID) || false);
+          setSunStatus(userData.data().SundayMeals?.includes(ID) || false);
+        } else {
+          alert("No matching user document found.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchRecipeStatus();
+  }, [user, ID]);
+  
+  // This effect handles changes to the status once it's set
+  useEffect(() => {
+    const handleStatusChange = async () => {
+      if (!user) return; // Ensure user is logged in
+  
+      if (showEverydayStatus) {
+        await addDayStatus(showEverydayStatus, setEverydayStatus, "Everyday");
+      } else {
+        await removeDayStatus(showEverydayStatus, setEverydayStatus, "Everyday");
+      }
+  
+      if (showSavedStatus) {
+        await addDayStatus(showSavedStatus, setSavedStatus, "Saved");
+      } else {
+        await removeDayStatus(showSavedStatus, setSavedStatus, "Saved");
+      }
+  
+      if (showMStatus) {
+        await addDayStatus(showMStatus, setMStatus, "Monday");
+      } else {
+        await removeDayStatus(showMStatus, setMStatus, "Monday");
+      }
+  
+      if (showTStatus) {
+        await addDayStatus(showTStatus, setTStatus, "Tuesday");
+      } else {
+        await removeDayStatus(showTStatus, setTStatus, "Tuesday");
+      }
+  
+      if (showWStatus) {
+        await addDayStatus(showWStatus, setWStatus, "Wednesday");
+      } else {
+        await removeDayStatus(showWStatus, setWStatus, "Wednesday");
+      }
+  
+      if (showThStatus) {
+        await addDayStatus(showThStatus, setThStatus, "Thursday");
+      } else {
+        await removeDayStatus(showThStatus, setThStatus, "Thursday");
+      }
+  
+      if (showFStatus) {
+        await addDayStatus(showFStatus, setFStatus, "Friday");
+      } else {
+        await removeDayStatus(showFStatus, setFStatus, "Friday");
+      }
+  
+      if (showSStatus) {
+        await addDayStatus(showSStatus, setSStatus, "Saturday");
+      } else {
+        await removeDayStatus(showSStatus, setSStatus, "Saturday");
+      }
+  
+      if (showSunStatus) {
+        await addDayStatus(showSunStatus, setSunStatus, "Sunday");
+      } else {
+        await removeDayStatus(showSunStatus, setSunStatus, "Sunday");
+      }
+    };
+  
+    handleStatusChange();
+  }, [
+    showEverydayStatus,
+    showSavedStatus,
+    showMStatus,
+    showTStatus,
+    showWStatus,
+    showThStatus,
+    showFStatus,
+    showSStatus,
+    showSunStatus,
+    user,
+    ID
   ]);
-  
-  // useEffect(()=> {
-
-
-  //   handleDayStatusChange(showMStatus, setMStatus);
-    
-
-  // }, [showMStatus]);
 
   return (
     <>
-      <div className='main-container flex flex-row w-[20vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
+      <div className='main-container flex flex-row w-[18vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
         <div className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
           <Image
-            src={imageUrl || "/default-image.svg"}
+            src={imageUrl || '/image'}
             alt={name ?? "item"}
             fill
             sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
@@ -356,21 +389,12 @@ export function RecipeCard({ ID, name, imageUrl, description, onSave }: RecipeCa
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-
-
-        {/* <button
-          onClick={onSave}
-          className="w-[10%] absolute bottom-[5%] right-[5%] bg-transparent border-none cursor-pointer"
-        >
-          
-        </button> */}
       </div>
     </>
   );
 }
 {/*
-    TODO: set the status of the button based on the firebase array.
+    TODO: work on read writes to get a sweet spot for each thing .
 
     */}
 
