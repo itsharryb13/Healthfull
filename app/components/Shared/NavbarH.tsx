@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
+import router from "next/router";
 
 export function NavBarH() {
 
@@ -49,7 +50,9 @@ export function NavBarH() {
                     <button className="btn-nav hover:underline">New Recipe</button>
                 </Link>
 
-                <button className="btn-nav hover:underline">Macros</button>
+                <Link href="../RecipePage">
+                    <button className="btn-nav hover:underline">Macros</button>
+                </Link>
 
                 <button className="btn-nav hover:underline">Planner</button>
 
