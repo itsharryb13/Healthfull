@@ -16,15 +16,32 @@
       "static/chunks/main-app.js",
       "static/chunks/app/HomePage/page.js"
     ],
+    "/MyAccount/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/MyAccount/page.js"
+    ],
     "/AllRecipesPage/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/AllRecipesPage/page.js"
     ],
+<<<<<<< Updated upstream
     "/RecipePage/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/RecipePage/page.js"
+=======
+    "/Planner/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Planner/page.js"
+    ],
+    "/NewRecipePage/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/NewRecipePage/page.js"
+>>>>>>> Stashed changes
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",

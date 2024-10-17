@@ -50,11 +50,20 @@ export function NavBarH() {
                     <button className="btn-nav hover:underline">New Recipe</button>
                 </Link>
 
+<<<<<<< Updated upstream
                 <Link href="../RecipePage">
                     <button className="btn-nav hover:underline">Macros</button>
                 </Link>
+=======
+                
 
+                <button className="btn-nav hover:underline">Macros</button>
+>>>>>>> Stashed changes
+
+                <Link href="../../Planner">
                 <button className="btn-nav hover:underline">Planner</button>
+                </Link>
+               
 
                 <Link href="../../MyAccount">
                     <button className="btn-nav hover:underline">My Account</button>

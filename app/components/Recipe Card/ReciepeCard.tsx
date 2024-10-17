@@ -31,16 +31,95 @@ type Checked = DropdownMenuCheckboxItemProps["checked"];
 export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) {
 
   const auth = getAuth();
-  const user = auth.currentUser;
-  const [showSavedStatus, setSavedStatus] = useState<Checked>();
-  const [showEverydayStatus, setEverydayStatus] = useState<Checked>();
-  const [showMStatus, setMStatus] = useState<Checked>();
-  const [showTStatus, setTStatus] = useState<Checked>();
-  const [showWStatus, setWStatus] = useState<Checked>();
-  const [showThStatus, setThStatus] = useState<Checked>();
-  const [showFStatus, setFStatus] = useState<Checked>();
-  const [showSStatus, setSStatus] = useState<Checked>();
-  const [showSunStatus, setSunStatus] = useState<Checked>();
+  const user = auth.currentUser ;
+  const [showSavedStatus, setSavedStatus] = useState<boolean>(false);
+  const [showEverydayStatus, setEverydayStatus] = useState<boolean>(false);
+  const [showMStatus, setMStatus] = useState<boolean>(false);
+  const [showTStatus, setTStatus] = useState<boolean>(false);
+  const [showWStatus, setWStatus] = useState<boolean>(false);
+  const [showThStatus, setThStatus] = useState<boolean>(false);
+  const [showFStatus, setFStatus] = useState<boolean>(false);
+  const [showSStatus, setSStatus] = useState<boolean>(false);
+  const [showSunStatus, setSunStatus] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false); // Track initialization
+
+  // Function to fetch the initial recipe status
+  const fetchRecipeStatus = async () => {
+    if (!user) return; // No signed-in user
+
+    try {
+      const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
+      const userDocument = await getDocs(DocumentSearch);
+
+      if (!userDocument.empty) {
+        const userData = userDocument.docs[0].data();
+        setSavedStatus(userData.SavedRecipe?.includes(ID) || false);
+        setEverydayStatus(userData.EverydayForWeek?.includes(ID) || false);
+        setMStatus(userData.MondayMeals?.includes(ID) || false);
+        setTStatus(userData.TuesdayMeals?.includes(ID) || false);
+        setWStatus(userData.WednesdayMeals?.includes(ID) || false);
+        setThStatus(userData.ThursdayMeals?.includes(ID) || false);
+        setFStatus(userData.FridayMeals?.includes(ID) || false);
+        setSStatus(userData.SaturdayMeals?.includes(ID) || false);
+        setSunStatus(userData.SundayMeals?.includes(ID) || false);
+        setIsInitialized(true); // Mark as initialized
+      } else {
+        alert("No matching user document found.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  // Effect to fetch recipe status on mount
+  useEffect(() => {
+    fetchRecipeStatus();
+  }, [user, ID]);
+
+  // Effect to handle changes to the status once it's set
+  useEffect(() => {
+    if (!isInitialized) return; // Ensure initialization is complete
+
+    const handleStatusChange = async () => {
+      if (!user) return; // Ensure user is logged in
+
+      const updates = [
+        { status: showEverydayStatus, setStatus: setEverydayStatus, container: "Everyday" },
+        { status: showSavedStatus, setStatus: setSavedStatus, container: "Saved" },
+        { status: showMStatus, setStatus: setMStatus, container: "Monday" },
+        { status: showTStatus, setStatus: setTStatus, container: "Tuesday" },
+        { status: showWStatus, setStatus: setWStatus, container: "Wednesday" },
+        { status: showThStatus, setStatus: setThStatus, container: "Thursday" },
+        { status: showFStatus, setStatus: setFStatus, container: "Friday" },
+        { status: showSStatus, setStatus: setSStatus, container: "Saturday" },
+        { status: showSunStatus, setStatus: setSunStatus, container: "Sunday" },
+      ];
+
+      for (const { status, setStatus, container } of updates) {
+        if (status) {
+          await addDayStatus(status, setStatus as React.Dispatch<React.SetStateAction<boolean>>, container);
+        } else {
+          await removeDayStatus(status, setStatus as React.Dispatch<React.SetStateAction<boolean>>, container);
+        }
+      }
+    };
+
+    handleStatusChange();
+  }, [
+    showEverydayStatus,
+    showSavedStatus,
+    showMStatus,
+    showTStatus,
+    showWStatus,
+    showThStatus,
+    showFStatus,
+    showSStatus,
+    showSunStatus,
+    user,
+    ID,
+    isInitialized,
+  ]);
+
 
   // Reusable function for handling day status change
   const addDayStatus = async (status: Checked, setStatus: React.Dispatch<React.SetStateAction<Checked>>, container: string ) => {
@@ -202,115 +281,6 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
   
   };
 
-  useEffect(() => {
-    // Fetch the initial recipe status
-    const fetchRecipeStatus = async () => {
-      if (!user) {
-        // No signed-in user
-        return;
-      }
-  
-      try {
-        const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
-        const userDocument = await getDocs(DocumentSearch);
-  
-        if (!userDocument.empty) {
-          const userData = userDocument.docs[0];
-          setSavedStatus(userData.data().SavedRecipe?.includes(ID) || false);
-          setEverydayStatus(userData.data().EverydayForWeek?.includes(ID) || false);
-          setMStatus(userData.data().MondayMeals?.includes(ID) || false);
-          setTStatus(userData.data().TuesdayMeals?.includes(ID) || false);
-          setWStatus(userData.data().WednesdayMeals?.includes(ID) || false);
-          setThStatus(userData.data().ThursdayMeals?.includes(ID) || false);
-          setFStatus(userData.data().FridayMeals?.includes(ID) || false);
-          setSStatus(userData.data().SaturdayMeals?.includes(ID) || false);
-          setSunStatus(userData.data().SundayMeals?.includes(ID) || false);
-        } else {
-          alert("No matching user document found.");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-  
-    fetchRecipeStatus();
-  }, [user, ID]);
-  
-  // This effect handles changes to the status once it's set
-  useEffect(() => {
-    const handleStatusChange = async () => {
-      if (!user) return; // Ensure user is logged in
-  
-      if (showEverydayStatus) {
-        await addDayStatus(showEverydayStatus, setEverydayStatus, "Everyday");
-      } else {
-        await removeDayStatus(showEverydayStatus, setEverydayStatus, "Everyday");
-      }
-  
-      if (showSavedStatus) {
-        await addDayStatus(showSavedStatus, setSavedStatus, "Saved");
-      } else {
-        await removeDayStatus(showSavedStatus, setSavedStatus, "Saved");
-      }
-  
-      if (showMStatus) {
-        await addDayStatus(showMStatus, setMStatus, "Monday");
-      } else {
-        await removeDayStatus(showMStatus, setMStatus, "Monday");
-      }
-  
-      if (showTStatus) {
-        await addDayStatus(showTStatus, setTStatus, "Tuesday");
-      } else {
-        await removeDayStatus(showTStatus, setTStatus, "Tuesday");
-      }
-  
-      if (showWStatus) {
-        await addDayStatus(showWStatus, setWStatus, "Wednesday");
-      } else {
-        await removeDayStatus(showWStatus, setWStatus, "Wednesday");
-      }
-  
-      if (showThStatus) {
-        await addDayStatus(showThStatus, setThStatus, "Thursday");
-      } else {
-        await removeDayStatus(showThStatus, setThStatus, "Thursday");
-      }
-  
-      if (showFStatus) {
-        await addDayStatus(showFStatus, setFStatus, "Friday");
-      } else {
-        await removeDayStatus(showFStatus, setFStatus, "Friday");
-      }
-  
-      if (showSStatus) {
-        await addDayStatus(showSStatus, setSStatus, "Saturday");
-      } else {
-        await removeDayStatus(showSStatus, setSStatus, "Saturday");
-      }
-  
-      if (showSunStatus) {
-        await addDayStatus(showSunStatus, setSunStatus, "Sunday");
-      } else {
-        await removeDayStatus(showSunStatus, setSunStatus, "Sunday");
-      }
-    };
-  
-    handleStatusChange();
-  }, [
-    showEverydayStatus,
-    showSavedStatus,
-    showMStatus,
-    showTStatus,
-    showWStatus,
-    showThStatus,
-    showFStatus,
-    showSStatus,
-    showSunStatus,
-    user,
-    ID
-  ]);
-
   return (
     <>
       <div className='main-container flex flex-row w-[18vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
@@ -394,7 +364,8 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
   );
 }
 {/*
-    TODO: work on read writes to get a sweet spot for each thing .
+  
+    TODO: work on read writes to get a sweet spot for each thing.
 
     */}
 
