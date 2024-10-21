@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog"
 import { collection,query,arrayUnion,where, getDocs,getDoc,doc, updateDoc, arrayRemove, getFirestore } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import { useRouter } from "next/navigation"; 
+
 
 interface RecipeCardProps {
   ID?: string; // id of the recipe
@@ -42,6 +44,7 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
   const [showSStatus, setSStatus] = useState<boolean>(false);
   const [showSunStatus, setSunStatus] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // Track initialization
+  const router = useRouter(); 
 
   // Function to fetch the initial recipe status
   const fetchRecipeStatus = async () => {
@@ -281,10 +284,22 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
   
   };
 
+  // Function to navigate to recipe page
+  const handleCardClick = () => {
+    if (ID) {
+      router.push(`/recipes/${ID}`); 
+    } else {
+      console.error("Invalid recipe ID");
+    }
+  };
+
+
   return (
     <>
       <div className='main-container flex flex-row w-[18vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
-        <div className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
+        <div 
+         onClick={handleCardClick}
+        className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
           <Image
             src={imageUrl || '/image'}
             alt={name ?? "item"}
@@ -293,7 +308,9 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
             objectFit="cover"
           />
         </div>
-        <div className="flex w-[50%] h-full flex-col relative justify-center items-center">
+        <div 
+         onClick={handleCardClick}
+        className="flex w-[50%] h-full flex-col relative justify-center items-center">
           <div className="flex flex-col justify-center items-center h-[20%] self-stretch pt-[1%] pb-[1%]">
             <span className="font-['Inter'] text-center text-[2vw] font-normal leading-lg text-[#1e1e1e]">
               {name || "Unnamed Item"}

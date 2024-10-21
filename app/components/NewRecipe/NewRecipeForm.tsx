@@ -94,66 +94,75 @@ export default function NewRecipeForm() {
 
  // Submit handler for both draft and publish
  const handleSubmit = async (recipeStatus: string) => {
-   
-   if (!validateForm(recipeStatus) && recipeStatus == "published") {
-       alert("Failed to publish recipe, please check for missing fields.");
+  if (!validateForm(recipeStatus) && recipeStatus === "published") {
+    alert("Failed to publish recipe, please check for missing fields.");
+    return;
+  } else if (!validateForm(recipeStatus) && recipeStatus === "draft") {
+    alert("Failed to save draft, please fill in at least one field.");
+    return;
+  }
+
+  try {
+    const instructionsArray = instructions
+      .split('\n')
+      .filter((step) => step.trim() !== "");
+
+    const formData = {
+      recipeName,
+      recipeDescription,
+      hours: parseInt(hours) || 0,
+      minutes: parseInt(minutes) || 0,
+      instructions: instructionsArray,
+      portionSize: parseInt(portionSize) || 0,
+      difficulty,
+      tags,
+      ingredientsList,
+      imagePreview,
+      status: recipeStatus,
+      likes: 0,
+    };
+
+    // Save form data to Firestore
+    const docRef = await addDoc(collection(db, "recipes"), formData);
+    const recipeId = docRef.id;
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert('No user logged in, cannot save recipe to profile');
       return;
-   } else if (!validateForm(recipeStatus) && recipeStatus == "draft"){
-       alert("Failed to save draft, please fill in at least one field.");
-       return;
-   }
-    try {
-     const instructionsArray = instructions.split('\n').filter(step => step.trim() !== "");
-      const formData = {
-       recipeName,
-       recipeDescription,
-       hours: parseInt(hours) || 0, 
-       minutes: parseInt(minutes) || 0, 
-       instructions: instructionsArray,
-       portionSize: parseInt(portionSize) || 0, 
-       difficulty,
-       tags,
-       ingredientsList,
-       imagePreview,
-       status: recipeStatus,
-       likes: 0, 
-     };
-      // Save form data to Firestore
-     const docRef = await addDoc(collection(db, "recipes"), formData);
-     const recipeId = docRef.id;
-      const auth = getAuth();
-     const user = auth.currentUser;
-      if (!user) {
-       alert('No user logged in, cannot save recipe to profile');
-       return;
-     }
-      const usersRef = collection(db, "users");
-     const q = query(usersRef, where("uid", "==", user.uid));
-     const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
-       alert("No matching user document found.");
-       return;
-     }
-      const userDoc = querySnapshot.docs[0];
-     const userRef = userDoc.ref;
-      if (recipeStatus === 'published') {
-       // Add the recipe ID to the "publishedRecipes" array
-       await updateDoc(userRef, {
-         publishedRecipes: arrayUnion(recipeId) 
-       });
-       alert('Recipe published successfully!');
-     } else if (recipeStatus === 'draft') {
-       // Add the recipe ID to the "draftRecipes" array
-       await updateDoc(userRef, {
-         draftRecipes: arrayUnion(recipeId) 
-       });
-       alert('Recipe saved as draft successfully!');
-     }
-   } catch (err: any) {
-     console.error("Error adding document: ", err);
-     alert("Error submitting form");
-   }
- };
+    }
+
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert("No matching user document found.");
+      return;
+    }
+
+    const userDoc = querySnapshot.docs[0];
+    const userRef = userDoc.ref;
+
+    if (recipeStatus === 'published') {
+      await updateDoc(userRef, {
+        publishedRecipes: arrayUnion(recipeId),
+      });
+      alert('Recipe published successfully!');
+      handleCancel(); // Clear the form after publishing
+    } else if (recipeStatus === 'draft') {
+      await updateDoc(userRef, {
+        draftRecipes: arrayUnion(recipeId),
+      });
+      alert('Recipe saved as draft successfully!');
+    }
+  } catch (err: any) {
+    console.error("Error adding document: ", err);
+    alert("Error submitting form");
+  }
+};
 
 
  const handleAddIngredient = () => {
@@ -269,6 +278,7 @@ export default function NewRecipeForm() {
              className='flex-1 p-2 border rounded border-gray-400 w-1/2'
              placeholder="Hours"
              type="number"
+             min="0"
              value={hours}
              onChange={(e) => setHours(e.target.value)}
            />
@@ -276,6 +286,7 @@ export default function NewRecipeForm() {
              className='flex-1 p-2 border rounded border-gray-400 w-1/2'
              placeholder="Minutes"
              type="number"
+             min="0"
              value={minutes}
              onChange={(e) => setMinutes(e.target.value)}
            />
@@ -283,9 +294,6 @@ export default function NewRecipeForm() {
          </div>
        </div>
      </div>
-
-
-
 
      <div>
        <label className='text-lg font-semibold'>Ingredients:</label>
@@ -301,6 +309,7 @@ export default function NewRecipeForm() {
            className='flex-1 p-2 border rounded border-gray-400'
            placeholder="Quantity"
            value={quantity}
+           min="0"
            onChange={(e) => setQuantity(e.target.value)}
          />
      
@@ -465,3 +474,4 @@ export default function NewRecipeForm() {
    </form>
  );
 }
+
