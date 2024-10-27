@@ -27,6 +27,7 @@ interface Recipe {
 interface Comment {
   id: string;
   user: string;
+  userUid: string; 
   text: string;
   timestamp: Timestamp;
 }
@@ -84,6 +85,23 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     });
   };
 
+  const getUsername = async (uid: string) => {
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("uid", "==", uid)); 
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.username || "Anonymous";
+      }
+      return "Anonymous"; 
+    } catch (error) {
+      console.error("Error fetching username:", error);
+      return "Anonymous";
+    }
+  };
+
   const handleAddComment = async () => {
     if (!newComment.trim()) {
       alert("Comment cannot be empty.");
@@ -93,12 +111,15 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       alert("You need to be logged in to comment.");
       return;
     }
+
+    const username = await getUsername(user.uid);
   
     try {
       const commentsRef = collection(db, "recipes", params.id, "comments");
       await addDoc(commentsRef, {
-        user: user.displayName || user.email || "Unknown User", // Fetch username properly
+        user: username,
         text: newComment,
+        userUid: user.uid,
         timestamp: Timestamp.now(),
       });
       setNewComment('');
@@ -119,6 +140,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       alert("Comment deleted successfully!");
     } catch (error) {
       console.error("Error deleting comment:", error);
+      alert("Failed to delete comment. Please try again.");
     }
   };
 
@@ -260,30 +282,32 @@ export default function RecipePage({ params }: { params: { id: string } }) {
               <h2 className="text-2xl font-semibold mb-4">Comments</h2>
               <div className="space-y-4">
                  {comments.length > 0 ? (
-                    comments.map((comment) => (
-              <div key={comment.id} className="border-b pb-2 mb-2 flex justify-between">
-              <div>
-                  <p className="text-lg font-semibold">{comment.user}</p>
-                  <p className="text-gray-700">{comment.text}</p>
-                  <p className="text-sm text-gray-500">
-              {new Date(comment.timestamp.toDate()).toLocaleString()}
-            </p>
-          </div>
-
-          {user && (comment.user === user.displayName || comment.user === user.email) && (
-            <button
-              onClick={() => handleDeleteComment(comment.id)}
-              className="text-red-500 hover:text-red-700"
-            >
-              Delete
-            </button>
-          )}
-        </div>
-          ))
-          ) : (
-            <p>No comments yet. Be the first to comment!</p>
-          )}
-        </div>
+                     comments.map((comment) => (
+                      <div key={comment.id} className="border-b pb-2 mb-2 flex justify-between">
+                        <div>
+                          <p className="text-lg font-semibold">{comment.user}</p>
+                          <p className="text-gray-700">{comment.text}</p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(comment.timestamp.toDate()).toLocaleString()}
+                          </p>
+                        </div>
+              
+                        {/* Check if the current user matches the comment's owner UID */}
+                        {user && comment.userUid === user.uid && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p>No comments yet. Be the first to comment!</p>
+                  )}
+                </div>
+            
 
         <div className="mt-4">
           <textarea
