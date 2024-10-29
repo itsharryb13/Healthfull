@@ -21,6 +21,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/HomePage/page.js"
     ],
+    "/Planner/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Planner/page.js"
+    ],
+    "/AllRecipesPage/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/AllRecipesPage/page.js"
+    ],
     "/recipes/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
