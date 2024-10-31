@@ -1,4 +1,4 @@
-// File: /workspaces/Healthfull/app/recipes/[id]/page.tsx
+// File: /Users/harry/Healthfull/app/recipes/[id]/page.tsx
 import * as entry from '../../../../../app/recipes/[id]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

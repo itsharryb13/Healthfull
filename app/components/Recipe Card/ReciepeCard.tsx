@@ -5,17 +5,8 @@ import removeButton from "../../public/remove.svg";
 import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { DropdownMenu, DropdownMenuArrowProps, DropdownMenuCheckboxItemProps, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel, DropdownMenuSubTrigger} from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { collection,query,arrayUnion,where, getDocs,getDoc,doc, updateDoc, arrayRemove, getFirestore } from "firebase/firestore";
+import { DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel} from "@/components/ui/dropdown-menu";
+import { collection,query,arrayUnion,where, getDocs,getDoc,doc, updateDoc, arrayRemove } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useRouter } from "next/navigation"; 
 
@@ -25,12 +16,12 @@ interface RecipeCardProps {
  name?: string; // Name of the recipe
  imageUrl?: string; // URL of the recipe image
  description?: string; // Description of the recipe
- onSave?: () => void; // Optional save function
+ onSaveButton?: boolean; // Optional save function
 }
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
-export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) {
+export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: RecipeCardProps) {
 
   const auth = getAuth();
   const user = auth.currentUser ;
@@ -44,16 +35,16 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
   const [showSStatus, setSStatus] = useState<boolean>(false);
   const [showSunStatus, setSunStatus] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // Track initialization
+  const [displayButton, setdisplayButton] = useState<boolean>(true);
+  
   const router = useRouter(); 
 
   // Function to fetch the initial recipe status
   const fetchRecipeStatus = async () => {
-    if (!user) return; // No signed-in user
-
+    if (!user){ return;} else{
     try {
       const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
       const userDocument = await getDocs(DocumentSearch);
-
       if (!userDocument.empty) {
         const userData = userDocument.docs[0].data();
         setSavedStatus(userData.SavedRecipe?.includes(ID) || false);
@@ -72,19 +63,26 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
+    }
   };
 
   // Effect to fetch recipe status on mount
   useEffect(() => {
     fetchRecipeStatus();
-  }, [user, ID]);
+    if(onSaveButton == false){
+      setdisplayButton(false);
+    }
+  }, [user]);
 
   // Effect to handle changes to the status once it's set
   useEffect(() => {
     if (!isInitialized) return; // Ensure initialization is complete
 
     const handleStatusChange = async () => {
-      if (!user) return; // Ensure user is logged in
+      if (!user){
+        alert("No user logged in, cannot retrieve saved recipes.");
+        return;
+      } // Ensure user is logged in
 
       const updates = [
         { status: showEverydayStatus, setStatus: setEverydayStatus, container: "Everyday" },
@@ -108,6 +106,8 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
     };
 
     handleStatusChange();
+
+   
   }, [
     showEverydayStatus,
     showSavedStatus,
@@ -129,6 +129,7 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
       if (!user) {
         alert('No Signed in yet, Please sign in and try again');
         setStatus(false);
+        return;
         // Reset the status to false if no user is signed in
       }else{
         try{
@@ -298,7 +299,7 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
     <>
       <div className='main-container flex flex-row w-[18vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
         <div 
-         onClick={handleCardClick}
+         onDoubleClick={handleCardClick}
         className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
           <Image
             src={imageUrl || '/image'}
@@ -309,7 +310,7 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
           />
         </div>
         <div 
-         onClick={handleCardClick}
+        onDoubleClick={handleCardClick}
         className="flex w-[50%] h-full flex-col relative justify-center items-center">
           <div className="flex flex-col justify-center items-center h-[20%] self-stretch pt-[1%] pb-[1%]">
             <span className="font-['Inter'] text-center text-[2vw] font-normal leading-lg text-[#1e1e1e]">
@@ -323,8 +324,9 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
           </div>
         </div>
 
-        <DropdownMenu  >
-          <DropdownMenuTrigger className="w-[6%] absolute right-[.5%] bg-transparent cursor-pointer">
+        
+        {displayButton ? (<DropdownMenu  >
+          <DropdownMenuTrigger className="w-[6%] absolute right-[.5%] bg-transparent cursor-pointer" >
           <Image
             src={saveButton}
             alt="Save Recipe"
@@ -376,13 +378,16 @@ export function RecipeCard({ ID, name, imageUrl, description}: RecipeCardProps) 
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      ) : null }
+
+        
       </div>
     </>
   );
 }
 {/*
   
-    TODO: work on read writes to get a sweet spot for each thing.
+    TODO: bug with recipe card that open without user data ( nOT SIGNED IN PAGE).
 
     */}
 

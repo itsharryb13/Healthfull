@@ -26,6 +26,21 @@
       "static/chunks/main-app.js",
       "static/chunks/app/recipes/[id]/page.js"
     ],
+    "/MyAccount/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/MyAccount/page.js"
+    ],
+    "/NewRecipePage/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/NewRecipePage/page.js"
+    ],
+    "/AllRecipesPage/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/AllRecipesPage/page.js"
+    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

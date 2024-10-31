@@ -16,7 +16,7 @@ interface Recipe {
   minutes: number;
   likes: number;
   portionSize: number;
-  ingredientsList: string[];
+  ingredientsList: Ingredients[];
   instructions: string[];
   difficulty: string;
   tags: string[];
@@ -32,13 +32,27 @@ interface Comment {
   timestamp: Timestamp;
 }
 
+interface Ingredients{
+  name: string;
+  quantity: number;
+  measurement: string;
+}
+
+// function servingSizeManipulator(Ingridients: Ingredients[] , portionSize: number){
+
+
+
+// }
+
 export default function RecipePage({ params }: { params: { id: string } }) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [relatedRecipes, setRelatedRecipes] = useState<Recipe[]>([]);
+  const [adjustedIngredients, setAdjustedIngredients] = useState<Ingredients[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [userHasLiked, setUserHasLiked] = useState(false);
+  const [portionSize, setPortionSize] = useState<number>(0);
   const auth = getAuth();
   const user = auth.currentUser;
   const router = useRouter();
@@ -69,6 +83,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
         .filter((r) => r.ID !== params.id);
 
       setRelatedRecipes(related);
+      
     } catch (error) {
       console.error("Error fetching related recipes:", error);
     }
@@ -208,6 +223,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
             setRecipe(data);
             fetchRelatedRecipes(data.tags);
             fetchComments(); 
+            setPortionSize(data.portionSize);
           } else {
             console.error("Invalid recipe data structure!");
             router.push("/404");
@@ -225,6 +241,17 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   
     fetchRecipe();
   }, [params.id, router]);
+
+  useEffect(() => {
+    if (recipe) {
+      const updatedIngredients = recipe.ingredientsList.map((ingredient) => ({
+        ...ingredient,
+        quantity: (ingredient.quantity / recipe.portionSize) * portionSize,
+      }));
+      setAdjustedIngredients(updatedIngredients);
+    }
+  }, [portionSize, recipe]);
+
 
   if (loading) return <div>Loading...</div>;
 
@@ -248,22 +275,30 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                   <p className="text-lg mb-2"><strong>Prep Time:</strong> {recipe.hours}h {recipe.minutes}m</p>
                   <p className="text-lg mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
                   <p className="text-lg mb-2"><strong>Likes:</strong> {recipe.likes}</p>
+                  <div className="flex flex-row gap-x-[4vw]">
                   <button
                     onClick={handleLike}
-                    className={`mt-2 px-4 py-2 ${
+                    className={` w-[20%] h-[10%] mt-2 px-4 py-2 ${
                     userHasLiked ? "bg-gray-500" : "bg-gray-800"
                     } text-white rounded`}
                     >
                     {userHasLiked ? "Unlike" : "Like"}
                   </button>
+                  <div className="flex flex-row h-[10%] gap-x-1">
+                    <input type="number" className="flex w-[90%] h-full mt-2 px-4 py-2 rounded border-gray-400" placeholder="Quantity" value={portionSize} onChange={(e) => setPortionSize(e.target.valueAsNumber)} min="1" step="1" />
+                    <p className="text mb-2" > Please Select the serving size</p>
+                  </div>
+                  </div>
+                 
+                  
                 </div>
               </div>
 
               <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
                 <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
                 <ul className="list-disc list-inside">
-                  {recipe.ingredientsList.map((ingredient, index) => (
-                    <li key={index} className="text-lg">{ingredient}</li>
+                  {adjustedIngredients.map((ingredient, index) => (
+                    <li key={index} className="text-lg">{ingredient.name} ({ingredient.quantity} {ingredient.measurement})</li>
                   ))}
                 </ul>
               </div>
@@ -352,3 +387,12 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+/*
+TODO: Get the picture diplay working on the page
+*/
+
+
+
+
+
+

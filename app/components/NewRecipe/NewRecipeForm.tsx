@@ -1,13 +1,17 @@
 "use client"
-import React, { useState } from 'react';
-import { collection, addDoc, doc, updateDoc, arrayUnion, query, where, getDocs} from "firebase/firestore";
-import { db } from "../../../firebaseConfig";
+import React, { useState, useRef } from 'react';
+import { collection, addDoc, updateDoc, arrayUnion, query, where, getDocs } from "firebase/firestore";
+import { db, storage } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { ref, uploadString, getDownloadURL  } from 'firebase/storage';
 
 
 
 
 export default function NewRecipeForm() {
+  const [image, setImage] = useState<any>("");
+  let uuid = crypto.randomUUID();
+  const storageRef = ref(storage, uuid);
  const [recipeName, setRecipeName] = useState('');
  const [recipeDescription, setRecipeDescription] = useState('');
  const [hours, setHours] = useState('');
@@ -20,7 +24,8 @@ export default function NewRecipeForm() {
  const [portionSize, setPortionSize] = useState('');
  const [difficulty, setDifficulty] = useState('Intermediate');
  const [ingredientsList, setIngredientsList] = useState<string[]>([]);
- const [imagePreview, setImagePreview] = useState<string | null>(null);
+ const [imagePreview, setImagePreview] = useState<string>("");
+ const [Loading, setLoading] = useState<boolean>(false);
 
 
  const [errors, setErrors] = useState({
@@ -91,6 +96,23 @@ export default function NewRecipeForm() {
    return isValid;
  };
 
+ const handleUpload = async () => {
+  try {
+    if (image) {
+      // Upload image to Firebase Storage
+      await uploadString(storageRef, image, "data_url");
+      const url = await getDownloadURL(storageRef);
+      console.log("URL from storage:", url);
+      setImagePreview(url); // Set the preview image URL after upload
+      setLoading(true);
+    } else {
+      console.log("No image to upload");
+    }
+  } catch (error) {
+    console.log("Upload error:", error);
+  }
+};
+
 
  // Submit handler for both draft and publish
  const handleSubmit = async (recipeStatus: string) => {
@@ -103,7 +125,10 @@ export default function NewRecipeForm() {
   }
 
   try {
-    const instructionsArray = instructions
+    await handleUpload();
+    console.log("image preview: ", imagePreview);
+    if(Loading){
+      const instructionsArray = instructions
       .split('\n')
       .filter((step) => step.trim() !== "");
 
@@ -121,7 +146,6 @@ export default function NewRecipeForm() {
       status: recipeStatus,
       likes: 0,
     };
-
     // Save form data to Firestore
     const docRef = await addDoc(collection(db, "recipes"), formData);
     const recipeId = docRef.id;
@@ -158,6 +182,10 @@ export default function NewRecipeForm() {
       });
       alert('Recipe saved as draft successfully!');
     }
+    }
+    
+
+    
   } catch (err: any) {
     console.error("Error adding document: ", err);
     alert("Error submitting form");
@@ -186,15 +214,16 @@ export default function NewRecipeForm() {
  };
 
 
- const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-   const file = e.target.files?.[0];
-   if (file) {
-     const reader = new FileReader();
-     reader.onloadend = () => {
-       setImagePreview(reader.result as string);
-     };
-     reader.readAsDataURL(file);
-   }
+ const handleImageUpload = (e: any) => {
+  const reader = new FileReader();
+        
+  if(e.target.files && e.target.files[0]){
+      reader.readAsDataURL(e.target.files[0]);
+  }
+  reader.onload = (readerEvent: any) => {
+      setImage(readerEvent.target.result);
+      console.log("picked images >>>", readerEvent.target.result);
+  };
  };
 
  const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,7 +250,7 @@ export default function NewRecipeForm() {
    setPortionSize('');
    setDifficulty('Intermediate');
    setIngredientsList([]);
-   setImagePreview(null);
+   setImagePreview("");
    alert('Form cleared');
  };
 
@@ -233,8 +262,8 @@ export default function NewRecipeForm() {
        <div className='flex flex-col items-center mr-8'>
          <label className='text-lg font-semibold mb-2'>Upload an Image:</label>
          <div className='w-[200px] h-[200px] bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center mb-4'>
-           {imagePreview ? (
-             <img src={imagePreview} alt="Preview" className='w-full h-full object-cover rounded-lg' />
+           {image ? (
+             <img src={image} alt="Preview" className='w-full h-full object-cover rounded-lg' />
            ) : (
              <span className='text-gray-400'>No image uploaded</span>
            )}
