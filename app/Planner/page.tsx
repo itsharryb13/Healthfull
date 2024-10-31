@@ -9,12 +9,13 @@ import { collection, getDocs, doc, getDoc, query, where } from "firebase/firesto
 import { db } from "../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 
-// Interface for Recipe
+// Interface for Recipe with calories
 interface Recipe {
   id: string;
   recipeName?: string;
   recipeDescription?: string;
   imagePreview?: string;
+  calories?: number;
 }
 
 export default function Planner() {
@@ -36,6 +37,15 @@ export default function Planner() {
   const [sundayRecipes, setSundayRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // State for daily calorie totals
+  const [mondayCalories, setMondayCalories] = useState(0);
+  const [tuesdayCalories, setTuesdayCalories] = useState(0);
+  const [wednesdayCalories, setWednesdayCalories] = useState(0);
+  const [thursdayCalories, setThursdayCalories] = useState(0);
+  const [fridayCalories, setFridayCalories] = useState(0);
+  const [saturdayCalories, setSaturdayCalories] = useState(0);
+  const [sundayCalories, setSundayCalories] = useState(0);
+
   useEffect(() => {
     const fetchDayRecipes = async () => {
       const auth = getAuth();
@@ -55,19 +65,20 @@ export default function Planner() {
           const userData = userSnapshot.docs[0].data();
 
           const dayKeys = [
-            { key: "MondayMeals", setter: setMondayRecipes },
-            { key: "TuesdayMeals", setter: setTuesdayRecipes },
-            { key: "WednesdayMeals", setter: setWednesdayRecipes },
-            { key: "ThursdayMeals", setter: setThursdayRecipes },
-            { key: "FridayMeals", setter: setFridayRecipes },
-            { key: "SaturdayMeals", setter: setSaturdayRecipes },
-            { key: "SundayMeals", setter: setSundayRecipes },
+            { key: "MondayMeals", setter: setMondayRecipes, calorieSetter: setMondayCalories },
+            { key: "TuesdayMeals", setter: setTuesdayRecipes, calorieSetter: setTuesdayCalories },
+            { key: "WednesdayMeals", setter: setWednesdayRecipes, calorieSetter: setWednesdayCalories },
+            { key: "ThursdayMeals", setter: setThursdayRecipes, calorieSetter: setThursdayCalories },
+            { key: "FridayMeals", setter: setFridayRecipes, calorieSetter: setFridayCalories },
+            { key: "SaturdayMeals", setter: setSaturdayRecipes, calorieSetter: setSaturdayCalories },
+            { key: "SundayMeals", setter: setSundayRecipes, calorieSetter: setSundayCalories },
           ];
 
-          // Fetch each day's recipes from Firestore and set state
-          for (const { key, setter } of dayKeys) {
+          // Fetch each day's recipes and calculate calories
+          for (const { key, setter, calorieSetter } of dayKeys) {
             const recipeIds: string[] = userData[key] || [];
             const fetchedRecipes: Recipe[] = [];
+            let dayCalories = 0;
 
             for (const recipeId of recipeIds) {
               const recipeRef = doc(db, "recipes", recipeId);
@@ -75,48 +86,26 @@ export default function Planner() {
 
               if (recipeSnapshot.exists()) {
                 const recipeData = recipeSnapshot.data();
+                const recipeCalories = recipeData.calories || 0;
+                dayCalories += recipeCalories;
+
                 fetchedRecipes.push({
                   id: recipeId,
                   recipeName: recipeData.recipeName,
                   recipeDescription: recipeData.recipeDescription,
                   imagePreview: recipeData.imagePreview,
+                  calories: recipeCalories,
                 });
               } else {
-                console.error('No recipe found with ID: ${recipeId}');
+                console.error(`No recipe found with ID: ${recipeId}`);
               }
             }
 
-            // Set the state for each day
+            // Set recipes and calorie count for the day
             setter(fetchedRecipes);
+            calorieSetter(dayCalories);
           }
 
-          // Fetch recipes for "EverydayForWeek" and add to each day's list
-          const everydayRecipeIds: string[] = userData["EverydayForWeek"] || [];
-          for (const recipeId of everydayRecipeIds) {
-            const recipeRef = doc(db, "recipes", recipeId);
-            const recipeSnapshot = await getDoc(recipeRef);
-
-            if (recipeSnapshot.exists()) {
-              const recipeData = recipeSnapshot.data();
-              const newRecipe: Recipe = {
-                id: recipeId,
-                recipeName: recipeData.recipeName,
-                recipeDescription: recipeData.recipeDescription,
-                imagePreview: recipeData.imagePreview,
-              };
-
-              // Add the recipe to each day's list, ensuring no duplicates
-              setMondayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setTuesdayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setWednesdayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setThursdayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setFridayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setSaturdayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-              setSundayRecipes((prev) => prev.some((r) => r.id === recipeId) ? prev : [...prev, newRecipe]);
-            } else {
-              console.error('No recipe found with ID: ${recipeId}');
-            }
-          }
         } else {
           console.error("No matching user document found.");
         }
@@ -138,11 +127,11 @@ export default function Planner() {
     );
   }
 
-  const renderCarousel = (recipes: Recipe[], emblaRef, dayName: string) => {
+  const renderCarousel = (recipes: Recipe[], emblaRef, dayName: string, dayCalories: number) => {
     if (recipes.length === 0) {
       return (
         <div className="carousel-container w-full h-48 mx-auto py-8 flex items-center justify-center relative drop-shadow bg-f5f5f5 rounded-lg text-center">
-          <p className="text-lg text-gray-500">{dayName} is currently empty.</p>
+          <p className="text-lg text-gray-500">{`${dayName} is currently empty.`}</p>
         </div>
       );
     }
@@ -179,36 +168,30 @@ export default function Planner() {
     <>
       <NavBarH />
       <div className="scroll-container w-full h-screen mx-auto py-8 px-8 gap-8 items-start relative drop-shadow bg-[#ffffff] rounded-lg overflow-y-scroll max-h-screen">
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Monday</h3>
-          {renderCarousel(mondayRecipes, emblaRef1, "Monday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Tuesday</h3>
-          {renderCarousel(tuesdayRecipes, emblaRef2, "Tuesday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Wednesday</h3>
-          {renderCarousel(wednesdayRecipes, emblaRef3, "Wednesday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Thursday</h3>
-          {renderCarousel(thursdayRecipes, emblaRef4, "Thursday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Friday</h3>
-          {renderCarousel(fridayRecipes, emblaRef5, "Friday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Saturday</h3>
-          {renderCarousel(saturdayRecipes, emblaRef6, "Saturday")}
-        </div>
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold mb-4">Sunday</h3>
-          {renderCarousel(sundayRecipes, emblaRef7, "Sunday")}
-        </div>
+        {[
+          { day: "Monday", recipes: mondayRecipes, calories: mondayCalories, emblaRef: emblaRef1 },
+          { day: "Tuesday", recipes: tuesdayRecipes, calories: tuesdayCalories, emblaRef: emblaRef2 },
+          { day: "Wednesday", recipes: wednesdayRecipes, calories: wednesdayCalories, emblaRef: emblaRef3 },
+          { day: "Thursday", recipes: thursdayRecipes, calories: thursdayCalories, emblaRef: emblaRef4 },
+          { day: "Friday", recipes: fridayRecipes, calories: fridayCalories, emblaRef: emblaRef5 },
+          { day: "Saturday", recipes: saturdayRecipes, calories: saturdayCalories, emblaRef: emblaRef6 },
+          { day: "Sunday", recipes: sundayRecipes, calories: sundayCalories, emblaRef: emblaRef7 },
+        ].map(({ day, recipes, calories, emblaRef }, index) => (
+          <div key={index} className="mb-8 text-center">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-semibold">
+                {day} {calories}/2000
+              </h3>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Add to Grocery List
+              </button>
+            </div>
+            {renderCarousel(recipes, emblaRef, day, calories)}
+          </div>
+        ))}
       </div>
       <Footer />
     </>
   );
 }
+
