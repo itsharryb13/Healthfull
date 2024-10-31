@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { NavBarH } from "../components/Shared/NavbarH";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { RecipeCard } from "../components/Recipe Card/ReciepeCard";
 import { Footer } from "../components/Shared/Footer";
 import useEmblaCarousel from "embla-carousel-react";
 import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { EmblaViewportRefType } from 'embla-carousel-react';
 
 // Interface for Recipe with calories
 interface Recipe {
@@ -127,7 +128,12 @@ export default function Planner() {
     );
   }
 
-  const renderCarousel = (recipes: Recipe[], emblaRef, dayName: string, dayCalories: number) => {
+  const renderCarousel = (
+    recipes: Recipe[], 
+    emblaRef: EmblaViewportRefType, 
+    dayName: string, 
+    dayCalories: number
+  ) => {
     if (recipes.length === 0) {
       return (
         <div className="carousel-container w-full h-48 mx-auto py-8 flex items-center justify-center relative drop-shadow bg-f5f5f5 rounded-lg text-center">
@@ -135,7 +141,7 @@ export default function Planner() {
         </div>
       );
     }
-
+  
     return (
       <div className="carousel-container w-[80%] h-auto mx-auto py-8 items-center justify-center relative drop-shadow bg-f5f5f5 rounded-lg">
         <div className="embla" ref={emblaRef}>
