@@ -709,6 +709,9 @@ video {
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -843,6 +846,9 @@ video {
 }
 .mt-\[9\.51px\] {
   margin-top: 9.51px;
+}
+.mt-3 {
+  margin-top: 0.75rem;
 }
 .block {
   display: block;
@@ -1111,6 +1117,9 @@ video {
 .w-full {
   width: 100%;
 }
+.w-\[25\%\] {
+  width: 25%;
+}
 .min-w-0 {
   min-width: 0px;
 }
@@ -1336,6 +1345,11 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+.space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
 .self-stretch {
   align-self: stretch;

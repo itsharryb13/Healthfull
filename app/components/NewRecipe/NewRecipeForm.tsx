@@ -1,14 +1,39 @@
 "use client"
-import React, { useState, useRef } from 'react';
-import { collection, addDoc, updateDoc, arrayUnion, query, where, getDocs } from "firebase/firestore";
+import React, { useState, useRef, useEffect } from 'react';
+import { collection, addDoc, updateDoc, arrayUnion, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { db, storage } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { ref, uploadString, getDownloadURL  } from 'firebase/storage';
+import { useRouter } from "next/router";
+
+interface Ingredient {
+  name: string;
+  quantity: number;
+  measurement: string | null;
+}
+
+interface Recipe {
+  recipeName: string;
+  recipeDescription: string;
+  hours: number;
+  minutes: number;
+  portionSize: number;
+  instructions: string[];
+  difficulty: string;
+  tags: string[];
+  ingredientsList: Ingredient[];
+  imagePreview: string;
+}
+
+// Define the props interface to include docNumber as an optional prop
+interface NewRecipeFormProps {
+  docNumber?: string;
+  draftData?: Recipe | null;
+}
 
 
 
-
-export default function NewRecipeForm() {
+export default function NewRecipeForm({ docNumber, draftData }: NewRecipeFormProps) {
   const [image, setImage] = useState<any>("");
   let uuid = crypto.randomUUID();
   const storageRef = ref(storage, uuid);
@@ -23,9 +48,10 @@ export default function NewRecipeForm() {
  const [tags, setTags] = useState<string[]>([]);
  const [portionSize, setPortionSize] = useState('');
  const [difficulty, setDifficulty] = useState('Intermediate');
- const [ingredientsList, setIngredientsList] = useState<string[]>([]);
+ const [ingredientsList, setIngredientsList] = useState<Ingredient[]>([]);
  const [imagePreview, setImagePreview] = useState<string>("");
  const [Loading, setLoading] = useState<boolean>(false);
+
 
 
  const [errors, setErrors] = useState({
@@ -36,6 +62,12 @@ export default function NewRecipeForm() {
    ingredients: '',
    portionSize: ''
  });
+
+ type Ingredient = {
+  name: string;
+  quantity: number;
+  measurement: string | null;
+};
 
  const validateForm = (recipeStatus: string) => {
    const newErrors: any = {};
@@ -68,6 +100,11 @@ export default function NewRecipeForm() {
        newErrors.ingredients = 'Please add at least one ingredient.';
        isValid = false;
      }
+     if (!image) {
+      newErrors.image = 'Image is required for publishing.';
+      isValid = false;
+    }
+     
    }
 
 
@@ -114,22 +151,23 @@ export default function NewRecipeForm() {
 };
 
 
- // Submit handler for both draft and publish
- const handleSubmit = async (recipeStatus: string) => {
-  if (!validateForm(recipeStatus) && recipeStatus === "published") {
-    alert("Failed to publish recipe, please check for missing fields.");
-    return;
-  } else if (!validateForm(recipeStatus) && recipeStatus === "draft") {
-    alert("Failed to save draft, please fill in at least one field.");
+const handleSubmit = async (recipeStatus: string) => {
+  if (!validateForm(recipeStatus)) {
+    const errorMessage =
+      recipeStatus === "published"
+        ? "Failed to publish recipe, please check for missing fields."
+        : "Failed to save draft, please fill in at least one field.";
+    alert(errorMessage);
     return;
   }
 
   try {
-    await handleUpload();
-    console.log("image preview: ", imagePreview);
-    if(Loading){
-      const instructionsArray = instructions
-      .split('\n')
+    if (recipeStatus === "published") {
+      await handleUpload();
+    }
+
+    const instructionsArray = instructions
+      .split("\n")
       .filter((step) => step.trim() !== "");
 
     const formData = {
@@ -146,67 +184,62 @@ export default function NewRecipeForm() {
       status: recipeStatus,
       likes: 0,
     };
-    // Save form data to Firestore
-    const docRef = await addDoc(collection(db, "recipes"), formData);
-    const recipeId = docRef.id;
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+    let recipeRef;
+    if (docNumber) {
+      // Update existing recipe if docNumber is provided
+      recipeRef = doc(db, "recipes", docNumber);
+      await updateDoc(recipeRef, formData);
+      alert("Recipe updated successfully!");
+    } else {
+      // Add new recipe if no docNumber
+      recipeRef = await addDoc(collection(db, "recipes"), formData);
+      alert("Recipe saved successfully!");
 
-    if (!user) {
-      alert('No user logged in, cannot save recipe to profile');
-      return;
+      // Update the user’s document to include this recipe ID in `draftRecipes`
+      if (recipeStatus === "draft") {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+          const userSnapshot = await getDocs(userQuery);
+          if (!userSnapshot.empty) {
+            const userDocRef = userSnapshot.docs[0].ref;
+            await updateDoc(userDocRef, {
+              draftRecipes: arrayUnion(recipeRef.id),
+            });
+          } else {
+            console.error("No matching user document found for saving draft.");
+          }
+        }
+      }
     }
 
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      alert("No matching user document found.");
-      return;
-    }
-
-    const userDoc = querySnapshot.docs[0];
-    const userRef = userDoc.ref;
-
-    if (recipeStatus === 'published') {
-      await updateDoc(userRef, {
-        publishedRecipes: arrayUnion(recipeId),
-      });
-      alert('Recipe published successfully!');
-      handleCancel(); // Clear the form after publishing
-    } else if (recipeStatus === 'draft') {
-      await updateDoc(userRef, {
-        draftRecipes: arrayUnion(recipeId),
-      });
-      alert('Recipe saved as draft successfully!');
-    }
-    }
-    
-
-    
+    handleCancel(); // Clear form after save or update
   } catch (err: any) {
-    console.error("Error adding document: ", err);
+    console.error("Error submitting form:", err);
     alert("Error submitting form");
   }
 };
 
 
- const handleAddIngredient = () => {
-   if (!ingredient || !quantity) {
-     alert('Please fill out both the ingredient and quantity fields.');
-     return;
-   }  
-   const newIngredient = measurement && measurement !== 'Select Measurement'
-     ? `${ingredient} (${quantity} ${measurement})`
-     : `${ingredient} (${quantity})`;
-   
-   setIngredientsList([...ingredientsList, newIngredient]);
-   setIngredient('');
-   setMeasurement('Select Measurement');
-   setQuantity('');
- };
+const handleAddIngredient = () => {
+  if (!ingredient || !quantity) {
+    alert('Please fill out both the ingredient and quantity fields.');
+    return;
+  }
+
+  const newIngredient: Ingredient = {
+    name: ingredient,
+    quantity: parseFloat(quantity), 
+    measurement: measurement && measurement !== 'Select Measurement' ? measurement : null,
+  };
+
+  setIngredientsList([...ingredientsList, newIngredient]);
+  setIngredient('');
+  setMeasurement('Select Measurement');
+  setQuantity('');
+};
 
 
  const handleRemoveIngredient = (index: number) => {
@@ -250,9 +283,26 @@ export default function NewRecipeForm() {
    setPortionSize('');
    setDifficulty('Intermediate');
    setIngredientsList([]);
-   setImagePreview("");
+   setImagePreview('');
+   setImage('');
    alert('Form cleared');
  };
+
+ useEffect(() => {
+  if (draftData) {
+    // Populate fields with draft data if it exists
+    setRecipeName(draftData.recipeName);
+    setRecipeDescription(draftData.recipeDescription);
+    setHours(draftData.hours.toString());
+    setMinutes(draftData.minutes.toString());
+    setPortionSize(draftData.portionSize.toString());
+    setInstructions(draftData.instructions.join("\n"));
+    setDifficulty(draftData.difficulty);
+    setTags(draftData.tags);
+    setIngredientsList(draftData.ingredientsList);
+    setImagePreview(draftData.imagePreview);
+  }
+}, [draftData]);
 
 
  return (
@@ -285,9 +335,6 @@ export default function NewRecipeForm() {
            />
          </div>
 
-
-
-
          <div className='flex items-center'>
            <label className='w-1/3 text-lg font-semibold'>Description:</label>
            <textarea
@@ -297,7 +344,6 @@ export default function NewRecipeForm() {
              onChange={(e) => setRecipeDescription(e.target.value)}
            />
          </div>
-
 
   
          <div className='flex items-center'>
@@ -368,18 +414,20 @@ export default function NewRecipeForm() {
          </button>
        </div>
        <div className='mt-4'>
-         {ingredientsList.map((ingredient, index) => (
-           <div key={index} className='flex items-center space-x-2 mb-2'>
-             <span className='bg-gray-100 p-2 rounded'>{ingredient}</span>
-             <button
-               type="button"
-               onClick={() => handleRemoveIngredient(index)}
-               className='text-red-500'>
-               &times;
-             </button>
-           </div>
-         ))}
-       </div>
+  {ingredientsList.map((ingredient, index) => (
+    <div key={index} className='flex items-center space-x-2 mb-2'>
+      <span className='bg-gray-100 p-2 rounded'>
+        {ingredient.name} ({ingredient.quantity} {ingredient.measurement || ''})
+      </span>
+      <button
+        type="button"
+        onClick={() => handleRemoveIngredient(index)}
+        className='text-red-500'>
+        &times;
+      </button>
+      </div>
+     ))}
+</div>
      </div>
     
      <div className='flex flex-col'>
