@@ -1,11 +1,9 @@
 "use client";
 
-
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { RecipeCard } from '../Recipe Card/ReciepeCard';
-
 
 interface Recipe {
  id?: string;
@@ -15,13 +13,12 @@ interface Recipe {
  tags?: string[];
 }
 
-
 export default function AllRecipes() {
  const [recipes, setRecipes] = useState<Recipe[]>([]);
  const [loading, setLoading] = useState(true);
  const [filters, setFilters] = useState<string[]>([]);
+ const [searchQuery, setSearchQuery] = useState('');
  const filterOptions = ["Dairy-Free", "Gluten-Free", "Vegan", "Breakfast", "Lunch", "Dinner"];
-
 
  useEffect(() => {
    const fetchPublishedRecipes = async () => {
@@ -41,10 +38,8 @@ export default function AllRecipes() {
      }
    };
 
-
    fetchPublishedRecipes();
  }, []);
-
 
  const handleFilterChange = (filter: string) => {
    if (filters.includes(filter)) {
@@ -54,11 +49,15 @@ export default function AllRecipes() {
    }
  };
 
+ const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+   setSearchQuery(event.target.value);
+ };
 
- const filteredRecipes = filters.length === 0
-   ? recipes
-   : recipes.filter(recipe => filters.every(filter => recipe.tags?.includes(filter)));
-
+ const filteredRecipes = recipes.filter(recipe => {
+   const matchesFilters = filters.length === 0 || filters.every(filter => recipe.tags?.includes(filter));
+   const matchesSearch = recipe.recipeName?.toLowerCase().includes(searchQuery.toLowerCase());
+   return matchesFilters && matchesSearch;
+ });
 
  return (
    <div className="flex flex-col items-center w-full h-[70vw] pb-[2%] overflow-hidden">
@@ -89,7 +88,6 @@ export default function AllRecipes() {
          </button>
        </div>
 
-
        {/* Recipes Section */}
        <div className="recipes w-[88%] bg-[#fdf9f3] p-6 rounded-lg max-h-full shadow-md overflow-y-scroll">
          <div className="flex justify-between items-center mb-6">
@@ -97,10 +95,11 @@ export default function AllRecipes() {
            <input
              type="text"
              placeholder="Search for recipes"
+             value={searchQuery}
+             onChange={handleSearchChange}
              className="px-4 py-2 border rounded w-1/3"
            />
          </div>
-
 
          <div className="recipe-cards grid grid-cols-3 gap-10">
            {loading ? (
@@ -108,6 +107,7 @@ export default function AllRecipes() {
            ) : filteredRecipes.length > 0 ? (
              filteredRecipes.map((recipe) => (
                <RecipeCard
+                 key={recipe.id}
                  ID={recipe.id}
                  name={recipe.recipeName}
                  imageUrl={recipe.imagePreview}
