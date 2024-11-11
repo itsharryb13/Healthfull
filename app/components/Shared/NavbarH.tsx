@@ -57,8 +57,10 @@ export function NavBarH() {
       const filteredResults = recipes.filter(
         (recipe) =>
           recipe.recipeName.toLowerCase().includes(lowerCaseValue) ||
-          recipe.ingredientsList?.some((ingredient) =>
-            ingredient.toLowerCase().includes(lowerCaseValue)
+          recipe.ingredientsList?.some(
+            (ingredient) =>
+              typeof ingredient === "string" &&
+              ingredient.toLowerCase().includes(lowerCaseValue)
           )
       );
       setSearchResults(filteredResults);
@@ -158,6 +160,8 @@ export function NavBarH() {
     </nav>
   );
 }
+
+
 {/* TODO: change the picture based on the profile picture of the user */}
 {/* TODO: make the logot and settings button in dropdown menu working */}
 {/* TODO: make the search bar query the database for the recipe or ingedients */}

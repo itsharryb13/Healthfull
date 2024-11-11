@@ -10,6 +10,7 @@ import { Footer } from "@/app/components/Shared/Footer";
 import { RecipeCard } from "@/app/components/Recipe Card/ReciepeCard";
 import Link from "next/link";
 import NewRecipeForm from "@/app/components/NewRecipe/NewRecipeForm";
+import { jsPDF } from "jspdf"; // Import jsPDF for PDF generation
 
 interface Recipe {
   recipeName: string;
@@ -36,17 +37,11 @@ interface Comment {
   timestamp: Timestamp;
 }
 
-interface Ingredients{
+interface Ingredients {
   name: string;
   quantity: number;
   measurement: string;
 }
-
-// function servingSizeManipulator(Ingridients: Ingredients[] , portionSize: number){
-
-
-
-// }
 
 export default function RecipePage({ params }: { params: { id: string } }) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -98,7 +93,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     const commentsRef = collection(db, "recipes", params.id, "comments");
     onSnapshot(commentsRef, (snapshot) => {
       const fetchedComments = snapshot.docs.map((doc) => ({
-        id: doc.id, // Include the comment's ID
+        id: doc.id,
         ...doc.data(),
       })) as Comment[];
       setComments(fetchedComments);
@@ -195,7 +190,25 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       alert("Something went wrong. Please try again.");
     }
   };
-  
+
+  const handlePdfDownload = () => {
+    if (!recipe) return;
+    const doc = new jsPDF();
+    doc.text(`Recipe: ${recipe.recipeName}`, 10, 10);
+    doc.text(`Description: ${recipe.recipeDescription}`, 10, 20);
+    doc.text(`Servings: ${portionSize}`, 10, 30);
+    doc.text(`Prep Time: ${recipe.hours}h ${recipe.minutes}m`, 10, 40);
+    doc.text(`Difficulty Level: ${recipe.difficulty}`, 10, 50);
+
+    let yOffset = 60;
+    doc.text("Ingredients:", 10, yOffset);
+    adjustedIngredients.forEach((ingredient, index) => {
+      yOffset += 10;
+      doc.text(`${index + 1}. ${ingredient.name} (${ingredient.quantity} ${ingredient.measurement})`, 10, yOffset);
+    });
+
+    doc.save(`${recipe.recipeName}.pdf`);
+  };
 
   useEffect(() => {
     const checkIfUserLiked = async () => {
@@ -206,7 +219,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
         const q = query(likesRef, where("userId", "==", user.uid));
         const querySnapshot = await getDocs(q);
   
-        setUserHasLiked(!querySnapshot.empty); // Set to true if the user has liked
+        setUserHasLiked(!querySnapshot.empty);
       } catch (error) {
         console.error("Error checking like status:", error);
       }
@@ -248,30 +261,6 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   }, [params.id, router]);
 
   useEffect(() => {
-    const fetchRecipeData = async () => {
-      try {
-        const docRef = doc(db, "recipes", params.id);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data() as Recipe;
-          setRecipe(data);
-
-          if (data.status === "draft") {
-            setDraftRecipeData(data); // Set draft data to pass down to form
-          }
-        } else {
-          console.error("Recipe not found!");
-        }
-      } catch (error) {
-        console.error("Error fetching recipe data:", error);
-      }
-    };
-
-    fetchRecipeData();
-  }, [params.id]);
-
-  useEffect(() => {
     if (recipe) {
       const updatedIngredients = recipe.ingredientsList.map((ingredient) => ({
         ...ingredient,
@@ -281,170 +270,167 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     }
   }, [portionSize, recipe]);
 
-
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen">
-    <NavBarH />
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-10">
-      <div className="col-span-2">
-        {recipe ? (
-          recipe.status === "draft" ? (
-            // Render the NewRecipeForm if the recipe is a draft
-            <NewRecipeForm docNumber={recipe.ID} draftData={draftRecipeData} />
-          ) : (
-            <>
-              {/* Main published recipe content */}
-              <div className="flex items-center bg-[#e5dece] rounded-lg gap-10 p-6 mb-10">
-                <img
-                  src={recipe.imageUrl}
-                  alt={recipe.recipeName}
-                  className="w-96 h-96 object-cover rounded-lg"
-                />
-                <div className="flex-1">
-                  <h1 className="text-5xl font-bold mb-5">{recipe.recipeName}</h1>
-                  <p className="text-xl mb-4">{recipe.recipeDescription}</p>
-                  <p className="text-lg mb-2"><strong>Servings:</strong> {recipe.portionSize}</p>
-                  <p className="text-lg mb-2"><strong>Prep Time:</strong> {recipe.hours}h {recipe.minutes}m</p>
-                  <p className="text-lg mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
-                  <p className="text-lg mb-2"><strong>Likes:</strong> {recipe.likes}</p>
+      <NavBarH />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-10">
+        <div className="col-span-2">
+          {recipe ? (
+            recipe.status === "draft" ? (
+              <NewRecipeForm docNumber={recipe.ID} draftData={draftRecipeData} />
+            ) : (
+              <>
+                <div className="flex items-center bg-[#e5dece] rounded-lg gap-10 p-6 mb-10">
+                  <img
+                    src={recipe.imageUrl}
+                    alt={recipe.recipeName}
+                    className="w-96 h-96 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <h1 className="text-5xl font-bold mb-5">{recipe.recipeName}</h1>
+                    <p className="text-xl mb-4">{recipe.recipeDescription}</p>
+                    <p className="text-lg mb-2"><strong>Servings:</strong> {recipe.portionSize}</p>
+                    <p className="text-lg mb-2"><strong>Prep Time:</strong> {recipe.hours}h {recipe.minutes}m</p>
+                    <p className="text-lg mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
+                    <p className="text-lg mb-2"><strong>Likes:</strong> {recipe.likes}</p>
 
-                  <div className="flex flex-row gap-x-[4vw]">
-                    {/* Like Button */}
-                    <button
-                      onClick={handleLike}
-                      className={`w-[20%] h-[10%] mt-2 px-4 py-2 ${
-                        userHasLiked ? "bg-gray-500" : "bg-gray-800"
-                      } text-white rounded`}
-                    >
-                      {userHasLiked ? "Unlike" : "Like"}
-                    </button>
+                    <div className="flex flex-row gap-x-[4vw]">
+                      <button
+                        onClick={handleLike}
+                        className={`w-[20%] h-[10%] mt-2 px-4 py-2 ${
+                          userHasLiked ? "bg-gray-500" : "bg-gray-800"
+                        } text-white rounded`}
+                      >
+                        {userHasLiked ? "Unlike" : "Like"}
+                      </button>
 
-                    <div className="flex flex-row h-[10%] gap-x-1">
-                      <input
-                        type="number"
-                        className="flex w-[25%] h-full mt-3 px-2 py-2 rounded border-gray-400"
-                        placeholder="Quantity"
-                        value={portionSize}
-                        onChange={(e) => setPortionSize(e.target.valueAsNumber)}
-                        min="1"
-                        step="1"
-                      />
-                      <p className="text mt-4"> Please select the serving size</p>
+                      <div className="flex flex-row h-[10%] gap-x-1 items-center">
+                        <input
+                          type="number"
+                          className="flex w-[25%] h-full mt-3 px-2 py-2 rounded border-gray-400"
+                          placeholder="Quantity"
+                          value={portionSize}
+                          onChange={(e) => setPortionSize(e.target.valueAsNumber)}
+                          min="1"
+                          step="1"
+                        />
+                        <p className="text mt-4">Please select the serving size</p>
+                        
+                        <button
+                          onClick={handlePdfDownload}
+                          className="bg-gray-800 text-white px-4 py-2 rounded ml-4 mt-3"
+                        >
+                          PDF
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
-                <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
-                <ul className="list-disc list-inside">
-                  {adjustedIngredients.map((ingredient, index) => (
-                    <li key={index} className="text-lg">
-                      {ingredient.name} ({ingredient.quantity} {ingredient.measurement})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
-                <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
-                <div className="space-y-4">
-                  {recipe.instructions.map((step, index) => (
-                    <p key={index} className="text-lg">
-                      {index + 1}. {step}
-                    </p>
-                  ))}
+                <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
+                  <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
+                  <ul className="list-disc list-inside">
+                    {adjustedIngredients.map((ingredient, index) => (
+                      <li key={index} className="text-lg">
+                        {ingredient.name} ({ingredient.quantity} {ingredient.measurement})
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
 
-              {/* Comments Section */}
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-14.1">
-                <h2 className="text-2xl font-semibold mb-4">Comments</h2>
-                <div className="space-y-4">
-                  {comments.length > 0 ? (
-                    comments.map((comment) => (
-                      <div key={comment.id} className="border-b pb-2 mb-2 flex justify-between">
-                        <div>
-                          <p className="text-lg font-semibold">{comment.user}</p>
-                          <p className="text-gray-700">{comment.text}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(comment.timestamp.toDate()).toLocaleString()}
-                          </p>
+                <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
+                  <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
+                  <div className="space-y-4">
+                    {recipe.instructions.map((step, index) => (
+                      <p key={index} className="text-lg">
+                        {index + 1}. {step}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-[#e5dece] rounded-lg p-6 mb-14.1">
+                  <h2 className="text-2xl font-semibold mb-4">Comments</h2>
+                  <div className="space-y-4">
+                    {comments.length > 0 ? (
+                      comments.map((comment) => (
+                        <div key={comment.id} className="border-b pb-2 mb-2 flex justify-between">
+                          <div>
+                            <p className="text-lg font-semibold">{comment.user}</p>
+                            <p className="text-gray-700">{comment.text}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(comment.timestamp.toDate()).toLocaleString()}
+                            </p>
+                          </div>
+                          {user && comment.userUid === user.uid && (
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
+                      ))
+                    ) : (
+                      <p>No comments yet. Be the first to comment!</p>
+                    )}
+                  </div>
 
-                        {/* Check if the current user matches the comment's owner UID */}
-                        {user && comment.userUid === user.uid && (
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <p>No comments yet. Be the first to comment!</p>
-                  )}
+                  <div className="mt-4">
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder="Write your comment..."
+                    />
+                    <button
+                      onClick={handleAddComment}
+                      className="mt-2 px-4 py-2 bg-gray-800 text-white rounded"
+                    >
+                      Add Comment
+                    </button>
+                  </div>
                 </div>
-
-                <div className="mt-4">
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Write your comment..."
-                  />
-                  <button
-                    onClick={handleAddComment}
-                    className="mt-2 px-4 py-2 bg-gray-800 text-white rounded"
-                  >
-                    Add Comment
-                  </button>
-                </div>
-              </div>
-            </>
-          )
-        ) : (
-          <div>Loading...</div>
-        )}
-      </div>
-
-      {/* Right column: Related recipes or other sidebar content */}
-      <div className="col-span-1 flex flex-col h-full space-y-8">
-        {/* Nutrients Section */}
-        <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-hidden">
-          <h2 className="text-2xl font-semibold mb-2">Nutrients</h2>
-          <label className="text"> The nutrition facts go here </label>
+              </>
+            )
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
 
-        {/* Related Recipes Section */}
-        <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-y-auto">
-          <h2 className="text-2xl font-semibold mb-4">Related Recipes</h2>
-          <div className="space-y-4">
-            {relatedRecipes.length > 0 ? (
-              relatedRecipes.map((relatedRecipe) => (
-                <RecipeCard
-                  key={relatedRecipe.ID}
-                  ID={relatedRecipe.ID}
-                  name={relatedRecipe.recipeName}
-                  imageUrl={relatedRecipe.imageUrl}
-                  description={relatedRecipe.recipeDescription}
-                />
-              ))
-            ) : (
-              <p>No related recipes found.</p>
-            )}
+        <div className="col-span-1 flex flex-col h-full space-y-8">
+          <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-hidden">
+            <h2 className="text-2xl font-semibold mb-2">Nutrients</h2>
+            <label className="text"> The nutrition facts go here </label>
+          </div>
+          <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-y-auto">
+            <h2 className="text-2xl font-semibold mb-4">Related Recipes</h2>
+            <div className="space-y-4">
+              {relatedRecipes.length > 0 ? (
+                relatedRecipes.map((relatedRecipe) => (
+                  <RecipeCard
+                    key={relatedRecipe.ID}
+                    ID={relatedRecipe.ID}
+                    name={relatedRecipe.recipeName}
+                    imageUrl={relatedRecipe.imageUrl}
+                    description={relatedRecipe.recipeDescription}
+                  />
+                ))
+              ) : (
+                <p>No related recipes found.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
-    <Footer />
-  </div>
-);
+  );
 }
+
 /*
 TODO: Get the picture diplay working on the page
 */
