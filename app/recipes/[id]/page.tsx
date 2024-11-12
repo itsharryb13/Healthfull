@@ -10,6 +10,7 @@ import { Footer } from "@/app/components/Shared/Footer";
 import { RecipeCard } from "@/app/components/Recipe Card/ReciepeCard";
 import Link from "next/link";
 import NewRecipeForm from "@/app/components/NewRecipe/NewRecipeForm";
+import NutritionAPI from "../NutritionAPI";
 
 interface Recipe {
   recipeName: string;
@@ -61,6 +62,39 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   const user = auth.currentUser;
   const router = useRouter();
   const [draftRecipeData, setDraftRecipeData] = useState<Recipe | null>(null);
+  const [nutritionFacts, setNutritionFacts] = useState<String | null>(null);
+
+  // Used as a test placeholder
+  //const ingredientsList = ["3 large eggs", "5 grams green onion", ];
+
+  const ingredientsList: string[] = adjustedIngredients.map((Ingredients) => Ingredients.quantity + Ingredients.measurement + " " + Ingredients.name);
+
+  const fetchNutritionFacts = async () => {
+    try {
+      // Make an API call to your backend to fetch the nutrition facts
+      console.log("Calling OpenAI API");
+
+      setNutritionFacts(await NutritionAPI(ingredientsList));
+      console.log("nutritionfacts: " + nutritionFacts);
+    } catch (error) {
+      console.error('Error fetching nutrition facts:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNutritionFacts();
+    console.log("nutritionfacts again" + nutritionFacts);
+
+    const nutritionFactsDisplay = nutritionFacts?.split(',').join('\n');
+    console.log("nutritionFactsDisplay: " + nutritionFactsDisplay);
+    const nutritionOutput = document.getElementById('output');
+  
+    const forcedString: string = nutritionFactsDisplay as string;
+    console.log("forcedString: " + forcedString);
+    if (nutritionOutput) {
+      nutritionOutput.textContent = forcedString;
+    };
+  }, []);
 
   const isRecipe = (data: DocumentData): data is Recipe => {
     return (
@@ -424,7 +458,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
         {/* Nutrients Section */}
         <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-hidden">
           <h2 className="text-2xl font-semibold mb-2">Nutrients</h2>
-          <label className="text"> The nutrition facts go here </label>
+          <label>{nutritionFacts}</label>
         </div>
 
         {/* Related Recipes Section */}
