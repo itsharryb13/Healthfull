@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useRef, useEffect } from 'react';
-import { collection, addDoc, updateDoc, arrayUnion, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, arrayUnion, query, where, getDocs, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db, storage } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { ref, uploadString, getDownloadURL  } from 'firebase/storage';
@@ -27,7 +27,7 @@ interface Recipe {
 
 // Define the props interface to include docNumber as an optional prop
 interface NewRecipeFormProps {
-  docNumber?: string;
+  docNumber: string; 
   draftData?: Recipe | null;
 }
 
@@ -151,7 +151,30 @@ export default function NewRecipeForm({ docNumber, draftData }: NewRecipeFormPro
 };
 
 
+
+const removeDraftFromUser = async (draftId: string) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+    const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+    const userSnapshot = await getDocs(userQuery);
+
+    if (!userSnapshot.empty) {
+      const userDocRef = userSnapshot.docs[0].ref;
+      const userDoc = await getDoc(userDocRef);
+      const currentDrafts = userDoc.data()?.draftRecipes || [];
+
+      const updatedDrafts = currentDrafts.filter((id: string) => id !== draftId);
+      await updateDoc(userDocRef, { draftRecipes: updatedDrafts });
+    }
+  }
+};
+
+
 const handleSubmit = async (recipeStatus: string) => {
+  console.log(`Submitting recipe with status: ${recipeStatus}`); // Debug log
+  console.log(`docNumber: ${docNumber}`); // Log to check docNumber value
+
   if (!validateForm(recipeStatus)) {
     const errorMessage =
       recipeStatus === "published"
@@ -162,7 +185,8 @@ const handleSubmit = async (recipeStatus: string) => {
   }
 
   try {
-    if (recipeStatus === "published") {
+    // Upload the image if publishing and an image exists
+    if (recipeStatus === "published" && image) {
       await handleUpload();
     }
 
@@ -182,21 +206,14 @@ const handleSubmit = async (recipeStatus: string) => {
       ingredientsList,
       imagePreview,
       status: recipeStatus,
-      likes: 0,
+      likes: 0
     };
 
-    let recipeRef;
-    if (docNumber) {
-      // Update existing recipe if docNumber is provided
-      recipeRef = doc(db, "recipes", docNumber);
-      await updateDoc(recipeRef, formData);
-      alert("Recipe updated successfully!");
-    } else {
-      // Add new recipe if no docNumber
-      recipeRef = await addDoc(collection(db, "recipes"), formData);
-      alert("Recipe saved successfully!");
-
-      // Update the user’s document to include this recipe ID in `draftRecipes`
+     if (!docNumber) {
+      const docRef = await addDoc(collection(db, "recipes"), formData);
+      console.log(`Created new recipe with ID: ${docRef.id}`);
+      
+      // Update user's drafts if saving as draft
       if (recipeStatus === "draft") {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -206,18 +223,29 @@ const handleSubmit = async (recipeStatus: string) => {
           if (!userSnapshot.empty) {
             const userDocRef = userSnapshot.docs[0].ref;
             await updateDoc(userDocRef, {
-              draftRecipes: arrayUnion(recipeRef.id),
+              draftRecipes: arrayUnion(docRef.id)
             });
-          } else {
-            console.error("No matching user document found for saving draft.");
           }
         }
       }
+    } else {
+      // If docNumber exists, update existing document
+      const recipeRef = doc(db, "recipes", docNumber);
+      await updateDoc(recipeRef, formData);
+      console.log(`Updated recipe with ID: ${docNumber}`);
     }
 
-    handleCancel(); // Clear form after save or update
-  } catch (err: any) {
-    console.error("Error submitting form:", err);
+    if (recipeStatus === "published") {
+      if (docNumber) {
+        await removeDraftFromUser(docNumber);
+      }
+      alert("Recipe published successfully!");
+    } else {
+      alert(docNumber ? "Draft updated successfully!" : "Draft saved successfully!");
+    }
+
+  } catch (err) {
+    console.error("Error in handleSubmit:", err);
     alert("Error submitting form");
   }
 };
@@ -290,19 +318,22 @@ const handleAddIngredient = () => {
 
  useEffect(() => {
   if (draftData) {
-    // Populate fields with draft data if it exists
-    setRecipeName(draftData.recipeName);
-    setRecipeDescription(draftData.recipeDescription);
-    setHours(draftData.hours.toString());
-    setMinutes(draftData.minutes.toString());
-    setPortionSize(draftData.portionSize.toString());
-    setInstructions(draftData.instructions.join("\n"));
-    setDifficulty(draftData.difficulty);
-    setTags(draftData.tags);
-    setIngredientsList(draftData.ingredientsList);
-    setImagePreview(draftData.imagePreview);
+    // Populate form with draft data, including the ID
+    setRecipeName(draftData.recipeName || '');
+    setRecipeDescription(draftData.recipeDescription || '');
+    setHours(draftData.hours?.toString() || '');
+    setMinutes(draftData.minutes?.toString() || '');
+    setPortionSize(draftData.portionSize?.toString() || '');
+    setInstructions(draftData.instructions?.join("\n") || '');
+    setDifficulty(draftData.difficulty || 'Intermediate');
+    setTags(draftData.tags || []);
+    setIngredientsList(draftData.ingredientsList || []);
+    setImagePreview(draftData.imagePreview || '');
   }
 }, [draftData]);
+useEffect(() => {
+  console.log("Received docNumber:", docNumber);
+}, [docNumber]);
 
 
  return (

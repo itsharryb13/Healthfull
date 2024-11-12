@@ -1,8 +1,8 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/SignIn/page": "app/SignIn/page.js",
-  "/HomePage/page": "app/HomePage/page.js",
+  "/MyAccount/page": "app/MyAccount/page.js",
+  "/AllRecipesPage/page": "app/AllRecipesPage/page.js",
   "/recipes/[id]/page": "app/recipes/[id]/page.js",
-  "/AllRecipesPage/page": "app/AllRecipesPage/page.js"
+  "/NewRecipePage/page": "app/NewRecipePage/page.js"
 }
