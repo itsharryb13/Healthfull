@@ -27,7 +27,7 @@ interface Recipe {
 
 // Define the props interface to include docNumber as an optional prop
 interface NewRecipeFormProps {
-  docNumber: string; 
+  docNumber?: string; 
   draftData?: Recipe | null;
 }
 

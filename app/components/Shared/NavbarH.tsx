@@ -11,7 +11,7 @@ import RoundLogo from "../../public/RoundLogo.svg";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { signOut } from "firebase/auth";
-import { db } from "../../../firebaseConfig";
+import { db, auth } from "../../../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import router from "next/router";
 

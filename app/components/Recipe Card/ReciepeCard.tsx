@@ -24,7 +24,7 @@ type Checked = DropdownMenuCheckboxItemProps["checked"];
 export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: RecipeCardProps) {
 
   const auth = getAuth();
-  const user = auth.currentUser ;
+  const user = auth.currentUser;
   const [showSavedStatus, setSavedStatus] = useState<boolean>(false);
   const [showEverydayStatus, setEverydayStatus] = useState<boolean>(false);
   const [showMStatus, setMStatus] = useState<boolean>(false);
@@ -35,15 +35,17 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
   const [showSStatus, setSStatus] = useState<boolean>(false);
   const [showSunStatus, setSunStatus] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // Track initialization
-  const [displayButton, setdisplayButton] = useState<boolean>(true);
-  
-  const router = useRouter(); 
+  const [displayButton, setDisplayButton] = useState<boolean>(true);
 
-  // Function to fetch the initial recipe status
+  const router = useRouter();
+
   const fetchRecipeStatus = async () => {
-    if (!user){ return;} else{
+    if (!user) return;
     try {
-      const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
+      const DocumentSearch = query(
+        collection(db, "users"),
+        where("uid", "==", user.uid)
+      );
       const userDocument = await getDocs(DocumentSearch);
       if (!userDocument.empty) {
         const userData = userDocument.docs[0].data();
@@ -56,33 +58,30 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
         setFStatus(userData.FridayMeals?.includes(ID) || false);
         setSStatus(userData.SaturdayMeals?.includes(ID) || false);
         setSunStatus(userData.SundayMeals?.includes(ID) || false);
-        setIsInitialized(true); // Mark as initialized
+        setIsInitialized(true);
       } else {
         alert("No matching user document found.");
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-    }
   };
 
-  // Effect to fetch recipe status on mount
   useEffect(() => {
     fetchRecipeStatus();
-    if(onSaveButton == false){
-      setdisplayButton(false);
+    if (onSaveButton === false) {
+      setDisplayButton(false);
     }
   }, [user]);
 
-  // Effect to handle changes to the status once it's set
   useEffect(() => {
-    if (!isInitialized) return; // Ensure initialization is complete
+    if (!isInitialized) return;
 
     const handleStatusChange = async () => {
-      if (!user){
+      if (!user) {
         alert("No user logged in, cannot retrieve saved recipes.");
         return;
-      } // Ensure user is logged in
+      }
 
       const updates = [
         { status: showEverydayStatus, setStatus: setEverydayStatus, container: "Everyday" },
@@ -98,16 +97,14 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
 
       for (const { status, setStatus, container } of updates) {
         if (status) {
-          await addDayStatus(status, setStatus as React.Dispatch<React.SetStateAction<boolean>>, container);
+          await addDayStatus(status, setStatus, container);
         } else {
-          await removeDayStatus(status, setStatus as React.Dispatch<React.SetStateAction<boolean>>, container);
+          await removeDayStatus(status, setStatus, container);
         }
       }
     };
 
     handleStatusChange();
-
-   
   }, [
     showEverydayStatus,
     showSavedStatus,
@@ -123,172 +120,70 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
     isInitialized,
   ]);
 
-
-  // Reusable function for handling day status change
-  const addDayStatus = async (status: Checked, setStatus: React.Dispatch<React.SetStateAction<Checked>>, container: string ) => {
-      if (!user) {
-        alert('No Signed in yet, Please sign in and try again');
-        setStatus(false);
-        return;
-        // Reset the status to false if no user is signed in
-      }else{
-        try{
-          const DocumentSearch = query(collection(db,"users"),where("uid","==",user.uid)); // why getDoc is not working;
-        const userDocument = await getDocs(DocumentSearch);
-        if(userDocument.empty){
-          alert("No matching user document found.");
-          setStatus(false);
-        }else{
-          const userdata = userDocument.docs[0];
-          const user = userdata.ref;
-
-          console.log(userdata.data().SavedRecipe.includes(ID));
-
-          if(container == "Everyday"){
-            await updateDoc(user, {
-              EverydayForWeek: arrayUnion(ID)
-            });
-            setSavedStatus(true);
-          }  if(container == "Saved") {
-            await updateDoc(user, {
-              SavedRecipe:arrayUnion(ID)
-            });
-          } if(container == "Monday") {
-            await updateDoc(user, {
-              MondayMeals: arrayUnion(ID)
-             
-            });
-            setSavedStatus(true);
-
-          } if(container == "Tuesday") {
-            await updateDoc(user, {
-              TuesdayMeals: arrayUnion(ID)
-             
-            });
-            setSavedStatus(true);
-
-          } if(container == "Wednesday") {
-            await updateDoc(user, {
-              WednesdayMeals: arrayUnion(ID)              
-            });
-            setSavedStatus(true);
-
-          } if(container == "Thursday") {
-            await updateDoc(user, {
-              ThursdayMeals: arrayUnion(ID)
-            
-            });
-            setSavedStatus(true);
-
-          } if(container == "Friday") {
-            await updateDoc(user, {
-              FridayMeals: arrayUnion(ID)
-             
-            });
-            setFStatus(true);
-
-          } if(container == "Saturday") {
-            await updateDoc(user, {
-              SaturdayMeals: arrayUnion(ID)
-             
-            });
-            setSavedStatus(true);
-
-           } if(container == "Sunday") {
-            await updateDoc(user, {
-              SundayMeals: arrayUnion(ID)
-              
-            });
-            setSavedStatus(true);
-          }
-         
-        }
-        }catch(error){
-          console.error("Error fetching user data:", error);
-          setStatus(false);
-        }
-        
-      }
-    
-  };
-
-  // Reusable function for handling day status change
-  const removeDayStatus = async (status: Checked, setStatus: React.Dispatch<React.SetStateAction<Checked>>, container: string ) => {
+  const addDayStatus = async (
+    status: boolean,
+    setStatus: React.Dispatch<React.SetStateAction<boolean>>,
+    container: string
+  ) => {
     if (!user) {
-      // alert('No Signed in yet, Please sign in and try again');
+      alert("No user signed in. Please sign in and try again.");
       setStatus(false);
-      // Reset the status to false if no user is signed in
-    }else{
-      try{
-        const DocumentSearch = query(collection(db,"users"),where("uid","==",user.uid)); // why getDoc is not working;
+      return;
+    }
+
+    try {
+      const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
       const userDocument = await getDocs(DocumentSearch);
-      if(userDocument.empty){
+      if (userDocument.empty) {
         alert("No matching user document found.");
         setStatus(false);
-      }else{
-        const userdata = userDocument.docs[0];
-        const user = userdata.ref;
-      
-        if(container == "Everyday"){
-          await updateDoc(user, {
-            EverydayForWeek: arrayRemove(ID)
-          });
-          
-        } if(container == "Saved") {
-          await updateDoc(user, {
-            SavedRecipe:arrayRemove(ID)
-          });
-        }if(container == "Monday") {
-          await updateDoc(user, {
-            MondayMeals: arrayRemove(ID)
-          });
-          //setMStatus(false);
-        }if(container == "Tuesday") {
-          await updateDoc(user, {
-            TuesdayMeals: arrayRemove(ID)
-          });
-          //setTStatus(false);
-        }if(container == "Wednesday") {
-          await updateDoc(user, {
-            WednesdayMeals: arrayRemove(ID)
-          });
-          //setWStatus(false);
-        } if(container == "Thursday") {
-          await updateDoc(user, {
-            ThursdayMeals: arrayRemove(ID)
-          });
-          //setThStatus(false);
-        }if(container == "Friday") {
-          await updateDoc(user, {
-            FridayMeals: arrayRemove(ID)
-          });
-          //setFStatus(false);
-        } if(container == "Saturday") {
-          await updateDoc(user, {
-            SaturdayMeals: arrayRemove(ID)
-          });
-          //setSStatus(false);
-        }if(container == "Sunday") {
-          await updateDoc(user, {
-            SundayMeals: arrayRemove(ID)
-          });
-          //setSunStatus(false);
-        }
+      } else {
+        const userRef = userDocument.docs[0].ref;
 
+        await updateDoc(userRef, {
+          [`${container}Meals`]: arrayUnion(ID),
+        });
+        setStatus(true);
       }
-      }catch(error){
-        console.error("Error fetching user data:", error);
-        setStatus(false);
-      }
-      
+    } catch (error) {
+      console.error("Error updating status:", error);
+      setStatus(false);
     }
-  
   };
 
-  // Function to navigate to recipe page
+  const removeDayStatus = async (
+    status: boolean,
+    setStatus: React.Dispatch<React.SetStateAction<boolean>>,
+    container: string
+  ) => {
+    if (!user) {
+      setStatus(false);
+      return;
+    }
+
+    try {
+      const DocumentSearch = query(collection(db, "users"), where("uid", "==", user.uid));
+      const userDocument = await getDocs(DocumentSearch);
+      if (userDocument.empty) {
+        alert("No matching user document found.");
+        setStatus(false);
+      } else {
+        const userRef = userDocument.docs[0].ref;
+
+        await updateDoc(userRef, {
+          [`${container}Meals`]: arrayRemove(ID),
+        });
+        setStatus(false);
+      }
+    } catch (error) {
+      console.error("Error removing status:", error);
+      setStatus(false);
+    }
+  };
+
   const handleCardClick = () => {
     if (ID) {
-      router.push(`/recipes/${ID}`); 
+      router.push(`/recipes/${ID}`);
     } else {
       console.error("Invalid recipe ID");
     }
