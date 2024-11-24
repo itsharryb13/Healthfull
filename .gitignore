@@ -1,3 +1,4 @@
 node_modules
-.env.local
+.next/
+app/recipes/.env.local
 .env.local

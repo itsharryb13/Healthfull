@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { doc, getDoc, addDoc, collection, where, query, getDocs, onSnapshot, Timestamp, DocumentData, updateDoc, increment, deleteDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
-import { getAuth } from "firebase/auth";
+import { doc, getDoc,arrayUnion, addDoc, collection, where, query, getDocs, onSnapshot, Timestamp, DocumentData, updateDoc, increment, deleteDoc } from "firebase/firestore";
+import { db, storage } from "@/firebaseConfig";
+import { getAuth, User,onAuthStateChanged } from "firebase/auth";
 import { NavBarH } from "@/app/components/Shared/NavbarH";
 import { Footer } from "@/app/components/Shared/Footer";
 import { RecipeCard } from "@/app/components/Recipe Card/ReciepeCard";
@@ -43,11 +43,23 @@ interface Ingredients{
   measurement: string;
 }
 
-// function servingSizeManipulator(Ingridients: Ingredients[] , portionSize: number){
+interface Ingredient{
+  name: string;
+  quantity: number;
+  measurement: string;
+  recipeID?:string;
+}
 
+interface IngredientMacros{
+  name: string;
+  quantity: number;
+  measurement: string;
+  calories: string;
+  fat:string;
+  sodium:string; 
+  fiber:string;
+}
 
-
-// }
 
 export default function RecipePage({ params }: { params: { id: string } }) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -58,14 +70,25 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [userHasLiked, setUserHasLiked] = useState(false);
   const [portionSize, setPortionSize] = useState<number>(0);
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [draftRecipeData, setDraftRecipeData] = useState<Recipe | null>(null);
-  const [nutritionFacts, setNutritionFacts] = useState<String | null>(null);
+  const [nutritionFacts, setNutritionFacts] = useState<string | null>(null);
+  const [groceryItem, setGroceryItem] = useState<Ingredient[]>([]);
+  const [ingredientAddStatus, setIngredientAddStatus] = useState <boolean>(true);
+  const [updatednutritionFacts, setUpdatedNutritionFacts] = useState<IngredientMacros | null>(null);
+ 
 
-  // Used as a test placeholder
-  //const ingredientsList = ["3 large eggs", "5 grams green onion", ];
+
+   // Monitor authentication state
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser); // Handle null or User
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const ingredientsList: string[] = adjustedIngredients.map((Ingredients) => Ingredients.quantity + Ingredients.measurement + " " + Ingredients.name);
 
@@ -73,24 +96,59 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     try {
       // Make an API call to your backend to fetch the nutrition facts
       console.log("Calling OpenAI API");
+      let nurtituion = [];
+      let updatedNutrition2 =[];
+      
+      nurtituion = adjustedIngredients.map((element) => ({
+        name: element.name,
+        quantity: element.quantity,
+        measurement: element.measurement,
+        calories: 0,
+        fat:0,
+        sodium:0, 
+        fiber:0,
+        
+      }));
 
-      setNutritionFacts(await NutritionAPI(ingredientsList));
-      console.log("nutritionfacts: " + nutritionFacts);
+      for(const element of nurtituion){
+        console.log("element",element);
+
+        const nutritionData = await NutritionAPI(element);
+        // const updatedElement = {
+        //   ...element,
+        //   calories: nutritionData.calories,
+        //   fat: nutritionData.fat,
+        //   sodium: nutritionData.sodium,
+        //   fiber: nutritionData.fiber,
+        // };
+        
+        //console.log("this is the output of the updatedElement)
+        element.calories = nutritionData.calories;
+        element.fat = nutritionData.calories;
+        element.fiber = nutritionData.fiber;
+        element.sodium = nutritionData.sodium;
+
+        
+        console.log("element2",element);
+      }
+
+      
+      console.log("nutritionfacts: ", nurtituion);
     } catch (error) {
       console.error('Error fetching nutrition facts:', error);
     }
   };
 
   useEffect(() => {
-    fetchNutritionFacts();
-    console.log("nutritionfacts again" + nutritionFacts);
+    //fetchNutritionFacts();
+    //console.log("nutritionfacts again" + nutritionFacts);
 
     const nutritionFactsDisplay = nutritionFacts?.split(',').join('\n');
-    console.log("nutritionFactsDisplay: " + nutritionFactsDisplay);
+    //console.log("nutritionFactsDisplay: " + nutritionFactsDisplay);
     const nutritionOutput = document.getElementById('output');
   
     const forcedString: string = nutritionFactsDisplay as string;
-    console.log("forcedString: " + forcedString);
+    //console.log("forcedString: " + forcedString);
     if (nutritionOutput) {
       nutritionOutput.textContent = forcedString;
     };
@@ -234,20 +292,70 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const checkIfUserLiked = async () => {
       if (!user) return;
+      console.log(user);
   
       try {
         const likesRef = collection(db, "recipes", params.id, "likes");
         const q = query(likesRef, where("userId", "==", user.uid));
         const querySnapshot = await getDocs(q);
+        
   
         setUserHasLiked(!querySnapshot.empty); // Set to true if the user has liked
       } catch (error) {
         console.error("Error checking like status:", error);
       }
     };
+    const handleGroceryList = async () => {
+     // Return early if `user` is not available
   
+
+  if (loading) {
+    // Ensure the loading process is complete before proceeding
+    console.log("Data is still loading, please wait.");
+    return;
+  }else if(!user) {
+    alert("No user login found");
+    return;
+  }
+
+  
+      try {
+        const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+        const userSnapshot = await getDocs(userQuery);
+  
+        if (userSnapshot.empty) {
+          console.log("No user found with the specified UID");
+          return;
+        }
+  
+        const userData = userSnapshot.docs[0].data();
+  
+        // Ensure that userData.groceryList is an array and each item is an object
+        if (!Array.isArray(userData.groceryList)) {
+          console.log("Grocery list is not available or is not an array");
+          return;
+        }
+  
+        // Map over the array and extract the fields
+        const existingItems: Ingredient[] = userData.groceryList.map((doc: any) => ({
+          name: doc.name,
+          quantity: doc.quantity,
+          measurement: doc.measurement,
+          recipeID: doc.recipeID
+        }));
+  
+        setGroceryItem(existingItems);
+        const recipeExists = existingItems.some((item) => item.recipeID === recipe?.recipeName);
+        setIngredientAddStatus(!recipeExists);
+
+      } catch (error) {
+        console.log("Error fetching the grocery ingredients:", error);
+      }
+    };
+
+    handleGroceryList();
     checkIfUserLiked();
-  }, [user, params.id]);
+  }, [user, recipe?.recipeName]);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -257,7 +365,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   
         if (docSnap.exists()) {
           const data = docSnap.data();
-          console.log("Fetched recipe data:", data); 
+          //console.log("Fetched recipe data:", data); 
           if (isRecipe(data)) {
             setRecipe(data);
             setRecipe({ ...data, ID: docSnap.id }); // Store Firebase document ID as ID
@@ -320,6 +428,70 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     console.log("Recipe ID:", recipe?.ID);
   }, [recipe]);
 
+  const addIngredientstoList = async () => {
+    if (!user) {
+      alert("No user login found");
+      return;
+    }
+  
+    let updatedGroceryItems = [];
+  
+    // If the groceryItem array is empty, add the adjustedIngredients to the list
+    if (groceryItem.length === 0) {
+      console.log("empty");
+      updatedGroceryItems = adjustedIngredients.map((element) => ({
+        name: element.name,
+        quantity: element.quantity,
+        measurement: element.measurement,
+        recipeID: recipe?.recipeName,
+      }));
+    } else {
+      // If the groceryItem array is not empty, check if ingredients are already present
+      updatedGroceryItems = [...groceryItem];
+      adjustedIngredients.forEach((element) => {
+        const exists = groceryItem.some(
+          (item) => item.name === element.name && item.recipeID === recipe?.recipeName
+        );
+  
+        if (!exists) {
+          updatedGroceryItems.push({
+            name: element.name,
+            quantity: element.quantity,
+            measurement: element.measurement,
+            recipeID: recipe?.recipeName,
+          });
+        }
+      });
+    }
+  
+    try {
+      const userQuery = query(
+        collection(db, "users"),
+        where("uid", "==", user.uid)
+      );
+      const userSnapshot = await getDocs(userQuery);
+  
+      if (userSnapshot.empty) {
+        console.log("No user found with the specified UID");
+        return;
+      }
+  
+      const userDocRef = userSnapshot.docs[0].ref;
+  
+      // Update Firestore with the new grocery list
+      await updateDoc(userDocRef, {
+        groceryList: updatedGroceryItems, // Update with the new list
+      });
+  
+      // Update the local state with the new grocery list
+      setGroceryItem(updatedGroceryItems);
+      setIngredientAddStatus(false);
+      console.log("Ingredients added to grocery list and status updated.");
+    } catch (error) {
+      console.error("Error adding ingredients to grocery list:", error);
+    }
+  };
+  
 
   if (loading) return <div>Loading...</div>;
 
@@ -379,14 +551,36 @@ export default function RecipePage({ params }: { params: { id: string } }) {
               </div>
 
               <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
+                
                 <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
-                <ul className="list-disc list-inside">
+              
+                
+                <ul className="list-disc list-inside pb-[2%]">
                   {adjustedIngredients.map((ingredient, index) => (
                     <li key={index} className="text-lg">
                       {ingredient.name} ({ingredient.quantity} {ingredient.measurement})
                     </li>
                   ))}
                 </ul>
+                {ingredientAddStatus ? (
+                    <button  onClick={addIngredientstoList}
+                      className={`w-full h-[10%] ${
+                      userHasLiked ? "bg-gray-500" : "bg-gray-800"
+                      } text-white rounded`
+                    }>
+                    Add Ingredients to the Grocery list
+                    </button>) : (<button
+                    onClick={fetchNutritionFacts}
+                    className={`w-full h-[10%] ${
+                    userHasLiked ? "bg-gray-500" : "bg-gray-800"
+                    } text-white rounded`}>
+                      Ingredients Added to the Grocery list
+                    </button>)
+
+                }
+                
+                
+                
               </div>
 
               <div className="bg-[#e5dece] rounded-lg p-6 mb-10">

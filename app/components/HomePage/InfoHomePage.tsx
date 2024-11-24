@@ -23,6 +23,7 @@ interface Ingredient {
   name: string;
   quantity: number;
   measurement: string;
+  recipeID: string;
 }
 
 export default function InfoHomePage() {
@@ -62,6 +63,7 @@ export default function InfoHomePage() {
       name: ingredient,
       quantity: quantity,
       measurement: measurement,
+      recipeID:"Personal"
     };
 
     if (!user) {
@@ -154,6 +156,7 @@ export default function InfoHomePage() {
           name: doc.name,
           quantity: doc.quantity,
           measurement: doc.measurement,
+          recipeID:doc.recipeID
         }));
 
         setGroceryItem(existingGroceryItems);
