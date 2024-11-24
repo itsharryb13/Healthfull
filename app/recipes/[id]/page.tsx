@@ -11,7 +11,7 @@ import { RecipeCard } from "@/app/components/Recipe Card/ReciepeCard";
 import Link from "next/link";
 import NewRecipeForm from "@/app/components/NewRecipe/NewRecipeForm";
 import NutritionAPI from "../NutritionAPI";
-
+import AlertSystem from "../AlertSystem";
 interface Recipe {
   recipeName: string;
   recipeDescription: string;
@@ -76,7 +76,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   const [nutritionFacts, setNutritionFacts] = useState<string | null>(null);
   const [groceryItem, setGroceryItem] = useState<Ingredient[]>([]);
   const [ingredientAddStatus, setIngredientAddStatus] = useState <boolean>(true);
-  const [updatednutritionFacts, setUpdatedNutritionFacts] = useState<IngredientMacros | null>(null);
+  const [allergies, setAllergies] = useState<string[] | null> (null);
  
 
 
@@ -140,8 +140,8 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    //fetchNutritionFacts();
-    //console.log("nutritionfacts again" + nutritionFacts);
+    fetchNutritionFacts();
+    console.log("nutritionfacts again" + nutritionFacts);
 
     const nutritionFactsDisplay = nutritionFacts?.split(',').join('\n');
     //console.log("nutritionFactsDisplay: " + nutritionFactsDisplay);
@@ -347,6 +347,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
         setGroceryItem(existingItems);
         const recipeExists = existingItems.some((item) => item.recipeID === recipe?.recipeName);
         setIngredientAddStatus(!recipeExists);
+        setAllergies(userData.Allergies);
 
       } catch (error) {
         console.log("Error fetching the grocery ingredients:", error);
@@ -355,7 +356,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
 
     handleGroceryList();
     checkIfUserLiked();
-  }, [user, recipe?.recipeName]);
+  }, [user, recipe?.recipeName, recipe?.ingredientsList]);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -491,6 +492,51 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       console.error("Error adding ingredients to grocery list:", error);
     }
   };
+
+
+  const alertSystem = async () => {
+    console.log("User allergies:", allergies);
+  
+    // Validate input
+    if (!allergies) {
+      console.warn("No allergies specified.");
+      return;
+    }
+  
+    if (!recipe?.ingredientsList || recipe.ingredientsList.length === 0) {
+      console.warn("Recipe ingredients list is missing or empty.");
+      return;
+    }
+  
+    // Create a copy of the ingredients list
+    const ingredientList = [...recipe.ingredientsList];
+    console.log("Recipe ingredients:", ingredientList);
+  
+    // Check for allergens
+    try {
+      const allergen = await AlertSystem(allergies, ingredientList);
+  
+      if (!allergen || allergen.length === 0) {
+        console.log("No allergens found in the recipe.");
+      } else {
+        // Create detailed alert
+        const allergenList = allergen.join(", ");
+        const alertMessage = `Warning: This recipe can contains the following ingredient(s) that may pose health risks to you based on your allergies:\n${allergenList} \nPlease consult with your doctor or dietitian before consuming this dish.
+        `;
+  
+        // Display the alert with title and message
+        alert(`${alertMessage}`);
+      }
+    } catch (error) {
+      console.error("Error occurred while checking allergens:", error);
+    }
+  };
+  
+  useEffect(() => {
+  if (allergies && recipe?.ingredientsList) {
+    alertSystem();
+  }
+}, [allergies, recipe?.ingredientsList]);
   
 
   if (loading) return <div>Loading...</div>;
@@ -570,7 +616,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                     }>
                     Add Ingredients to the Grocery list
                     </button>) : (<button
-                    onClick={fetchNutritionFacts}
+                    onClick={alertSystem}
                     className={`w-full h-[10%] ${
                     userHasLiked ? "bg-gray-500" : "bg-gray-800"
                     } text-white rounded`}>
