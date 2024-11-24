@@ -557,7 +557,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
               {/* Main published recipe content */}
               <div className="flex items-center bg-[#e5dece] rounded-lg gap-10 p-6 mb-10">
                 <img
-                  src={recipe.imageUrl}
+                  src={recipe.imagePreview}
                   alt={recipe.recipeName}
                   className="w-96 h-96 object-cover rounded-lg"
                 />
@@ -616,7 +616,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                     }>
                     Add Ingredients to the Grocery list
                     </button>) : (<button
-                    onClick={alertSystem}
+                    disabled
                     className={`w-full h-[10%] ${
                     userHasLiked ? "bg-gray-500" : "bg-gray-800"
                     } text-white rounded`}>

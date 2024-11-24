@@ -196,13 +196,17 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
         <div 
          onDoubleClick={handleCardClick}
         className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
-          <Image
-            src={imageUrl || '/image'}
-            alt={name ?? "item"}
-            fill
-            sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
-            objectFit="cover"
-          />
+          <img
+  src={imageUrl || '/image'}
+  alt={name ?? 'item'}
+  sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
+  style={{
+    width: '100%', // Make the image take up the full width of its container
+    height: '100%', // Adjust the height to match the container
+    objectFit: 'cover', // Ensures the image covers the container while maintaining aspect ratio
+    borderRadius: '8px', // Optional: Add rounded corners
+  }}
+/>
         </div>
         <div 
         onDoubleClick={handleCardClick}
