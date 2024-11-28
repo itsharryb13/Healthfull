@@ -76,10 +76,10 @@ export function SignInBox() {
   };
 
   return (
-    <div className='flex flex-col w-[520px] h-[315px] p-[24px] bg-[#e5dece] rounded-[8px] border border-[#d9d9d9] mx-auto'>
+    <div className='flex flex-col w-[520px] h-[315px] p-[24px] bg-container rounded-[8px] border border-[#d9d9d9] mx-auto'>
       {/* Email Input */}
       <div className='flex flex-col gap-[8px]'>
-        <label className="text-[#1e1e1e] text-[16px] font-normal">
+        <label className="text-foreground text-[16px] font-normal">
           Email
         </label>
         <input
@@ -87,14 +87,14 @@ export function SignInBox() {
           type="text"
           ref={inputUserRef}
           placeholder="Email"
-          className='w-full h-[40px] p-[12px] bg-white border border-[#d9d9d9] rounded-[8px] focus:outline-none'
+          className='w-full h-[40px] p-[12px] bg-input border border-[#d9d9d9] rounded-[8px] focus:outline-none'
         />
       </div>
 
 
       {/* Password Input */}
       <div className='flex flex-col gap-[8px] mt-[5%]'>
-        <label className="text-[#1e1e1e] text-[16px] font-normal">
+        <label className="text-foreground text-[16px] font-normal">
           Password
         </label>
         <div className='flex items-center'>
@@ -103,12 +103,12 @@ export function SignInBox() {
             type={showPassword ? "text" : "password"} // Toggle input type
             ref={inputPassRef}
             placeholder="Password"
-            className='w-full h-[40px] p-[12px] bg-white border border-[#d9d9d9] rounded-[8px] focus:outline-none'
+            className='w-full h-[40px] p-[12px] bg-input border border-[#d9d9d9] rounded-[8px] focus:outline-none'
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
-            className='ml-2 text-[#2c2c2c] hover:text-[#1e1e1e]'
+            className='ml-2 text-foreground hover:text-[#1e1e1e]'
           >
             {showPassword ? "Hide" : "Show"}
           </button>
@@ -116,7 +116,7 @@ export function SignInBox() {
       </div>
 
       {/* Sign In Button */}
-      <button onClick={handleClick} className='flex items-center justify-center h-[40px] bg-[#2c2c2c] rounded-[8px] text-[#f5f5f5] mt-[5%]'>
+      <button onClick={handleClick} className='flex items-center justify-center h-[40px] bg-button rounded-[8px] text-[#f5f5f5] mt-[5%]'>
         <span className="text-[16px] font-normal">
           Sign In
         </span>
@@ -127,7 +127,7 @@ export function SignInBox() {
 
       {/* Forgot Password Link */}
       <div className='flex justify-start mt-[5%]'>
-        <Link href="/forgot-password" className="underline text-[#1e1e1e] text-[16px] font-normal">
+        <Link href="/forgot-password" className="underline text-foreground text-[16px] font-normal">
           Forgot password?
         </Link>
       </div>

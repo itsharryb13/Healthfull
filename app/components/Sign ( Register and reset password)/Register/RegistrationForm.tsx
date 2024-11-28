@@ -138,23 +138,23 @@ export default function RegistrationForm() {
 
 
  return (
-   <form onSubmit={handleSubmit} className="main-container w-[500px] relative mx-auto my-0 space-y-4">
+   <form onSubmit={handleSubmit} className="flex flex-col w-[520px] h-[600px] p-[24px] mb-8 bg-container rounded-[8px] border border-[#d9d9d9] mx-auto">
      {/* Name Field */}
-     <div className="w-full">
-       <label className="block text-[16px] font-normal text-[#1e1e1e]">Name</label>
+     <div className="flex flex-col gap-[8px]">
+       <label className="block text-[16px] font-normal text-foreground">Name</label>
        <input
          type="text"
          placeholder="Full Name"
          value={name}
          onChange={(e) => setName(e.target.value)}
-         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3] bg-input"
        />
      </div>
 
 
      {/* Email Field */}
-     <div className="w-full">
-       <label className="block text-[16px] font-normal text-[#1e1e1e]">Email</label>
+     <div className="flex flex-col gap-[6px] mt-[4%]">
+       <label className="block text-[16px] font-normal text-foreground">Email</label>
        <input
          type="email"
          placeholder="email@example.com"
@@ -163,7 +163,7 @@ export default function RegistrationForm() {
            setEmail(e.target.value);
            setEmailError("");
          }}
-         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3] bg-input"
        />
        {emailError && (
          <span className="block text-red-500 text-sm mt-1">
@@ -174,8 +174,8 @@ export default function RegistrationForm() {
 
 
      {/* Username Field */}
-     <div className="w-full">
-       <label className="block text-[16px] font-normal text-[#1e1e1e]">Username</label>
+     <div className="flex flex-col gap-[6px] mt-[4%]">
+       <label className="block text-[16px] font-normal text-foreground">Username</label>
        <input
          type="text"
          placeholder="Username"
@@ -184,7 +184,7 @@ export default function RegistrationForm() {
            setUsername(e.target.value);
            setUsernameError(""); // Clear username error on typing
          }}
-         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3] bg-input"
        />
        {usernameError && (
          <span className="block text-red-500 text-sm mt-1">
@@ -195,8 +195,8 @@ export default function RegistrationForm() {
 
 
      {/* Password Field */}
-     <div className="w-full">
-       <label className="block text-[16px] font-normal text-[#1e1e1e]">Password</label>
+     <div className="flex flex-col gap-[6px] mt-[4%]">
+       <label className="block text-[16px] font-normal text-foreground">Password</label>
        <input
          type="password"
          placeholder="Password"
@@ -205,7 +205,7 @@ export default function RegistrationForm() {
            setPassword(e.target.value);
            validatePassword();
          }}
-         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3] bg-input"
        />
        {passwordError && (
          <span className="block text-red-500 text-sm mt-1">
@@ -216,8 +216,8 @@ export default function RegistrationForm() {
 
 
      {/* Confirm Password Field */}
-     <div className="w-full">
-       <label className="block text-[16px] font-normal text-[#1e1e1e]">Confirm Password</label>
+     <div className="flex flex-col gap-[6px] mt-[4%]">
+       <label className="block text-[16px] font-normal text-foreground">Confirm Password</label>
        <input
          type="password"
          placeholder="Confirm Password"
@@ -226,7 +226,7 @@ export default function RegistrationForm() {
            setConfirmPassword(e.target.value);
            validateConfirmPassword();
          }}
-         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3]"
+         className="w-full h-[40px] bg-[#fff] rounded-[8px] border border-[#d9d9d9] p-[12px] text-[#b3b3b3] bg-input"
        />
        {confirmPasswordError && (
          <span className="block text-red-500 text-sm mt-1">
@@ -239,7 +239,7 @@ export default function RegistrationForm() {
      {/* Submit Button */}
      <button
        type="submit"
-       className="w-full h-[40px] mt-[10px] p-[12px] bg-[#2c2c2c] text-white rounded-[12px] text-center"
+       className="w-full gap-[6px] mt-[4%] h-[40px]  bg-button text-white rounded-[12px] text-center"
      >
        Register
      </button>
@@ -247,7 +247,7 @@ export default function RegistrationForm() {
 
      {/* Sign In Link */}
      <Link href="../SignIn">
-       <span className="block text-[16px] font-normal text-[#1e1e1e] underline text-right mt-4">
+       <span className="block text-[16px] font-normal text-foreground underline text-right mt-4">
          Already have an account?
        </span>
      </Link>

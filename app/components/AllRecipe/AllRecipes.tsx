@@ -62,11 +62,11 @@ export default function AllRecipes() {
  return (
    <div className="flex flex-col items-center w-full h-[70vw] pb-[2%] overflow-hidden">
      {/* Main Container */}
-     <div className="flex flex-row gap-6 w-full bg-[#e5dece] rounded-lg mt-8 h-[98%] px-[2%] py-[2%]">
+     <div className="flex flex-row gap-6 w-full bg-background rounded-lg mt-8 h-[98%] px-[2%] py-[2%]">
       
        {/* Filters Section */}
-       <div className="filters w-[12%] bg-[#f5f5f5] p-6 rounded-lg shadow-md">
-         <h2 className="text-2xl font-semibold mb-4">Filters</h2>
+       <div className="filters w-[12%] bg-container p-6 rounded-lg shadow-md">
+         <h2 className="text-2xl text-foreground mb-4">Filters</h2>
          <div className="flex flex-col space-y-2">
            {filterOptions.map(option => (
              <label key={option} className="flex items-center space-x-2">
@@ -76,7 +76,7 @@ export default function AllRecipes() {
                  onChange={() => handleFilterChange(option)}
                  className="w-4 h-4"
                />
-               <span className="text-lg">{option}</span>
+               <span className="text-lg text-foreground">{option}</span>
              </label>
            ))}
          </div>
@@ -89,9 +89,9 @@ export default function AllRecipes() {
        </div>
 
        {/* Recipes Section */}
-       <div className="recipes w-[88%] bg-[#fdf9f3] p-6 rounded-lg max-h-full shadow-md overflow-y-scroll">
+       <div className="recipes w-[88%] bg-container p-6 rounded-lg max-h-full shadow-md overflow-y-scroll">
          <div className="flex justify-between items-center mb-6">
-           <h2 className="text-3xl font-semibold">All Recipes</h2>
+           <h2 className="text-3xl text-foreground">All Recipes</h2>
            <input
              type="text"
              placeholder="Search for recipes"

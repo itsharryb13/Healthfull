@@ -139,12 +139,12 @@ export default function InfoContainer() {
       <Tabs defaultValue="Saved" className="flex flex-col w-auto pt-[2%] pb-[2%] gap-y-[2%] mx-auto">
         <TabsList>
           <TabsTrigger value="Saved" className="text-lg w-[50%]">Saved Recipes</TabsTrigger>
-          <TabsTrigger value="draft_create" className="text-lg w-[50%]">Draft/Created Recipes</TabsTrigger>
+          <TabsTrigger value="draft_create" className="text-lg w-[50%]">Draft Recipes</TabsTrigger>
         </TabsList>
 
         {/* Saved Recipes Tab */}
         <TabsContent value="Saved">
-          <div className="w-[85vw] h-[70vw] bg-[#e5dece] rounded-[21px] pt-[1vw] pb-[1vw] mx-auto recipe-cards grid grid-cols-3 gap-x-10 overflow-y-scroll">
+          <div className="w-[85vw] h-[70vw] bg-container rounded-[21px] pt-[1vw] pb-[1vw] mx-auto recipe-cards grid grid-cols-3 gap-x-10 overflow-y-scroll">
             {loading ? (
               <p>Loading saved recipes...</p>
             ) : (
@@ -162,7 +162,7 @@ export default function InfoContainer() {
 
         {/* Draft/Created Recipes Tab */}
         <TabsContent value="draft_create">
-          <div className="w-[85vw] h-[70vw] bg-[#e5dece] rounded-[21px] pt-[1vw] pb-[1vw] mx-auto recipe-cards grid grid-cols-3 gap-x-10 overflow-y-scroll">
+          <div className="w-[85vw] h-[70vw] bg-container rounded-[21px] pt-[1vw] pb-[1vw] mx-auto recipe-cards grid grid-cols-3 gap-x-10 overflow-y-scroll">
           {loading ? (
               <p>Loading saved recipes...</p>
             ) : (

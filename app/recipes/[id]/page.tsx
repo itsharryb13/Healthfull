@@ -555,26 +555,26 @@ export default function RecipePage({ params }: { params: { id: string } }) {
           ) : (
             <>
               {/* Main published recipe content */}
-              <div className="flex items-center bg-[#e5dece] rounded-lg gap-10 p-6 mb-10">
+              <div className="flex items-center bg-container rounded-lg gap-10 p-6 mb-10">
                 <img
                   src={recipe.imagePreview}
                   alt={recipe.recipeName}
                   className="w-96 h-96 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <h1 className="text-5xl font-bold mb-5">{recipe.recipeName}</h1>
-                  <p className="text-xl mb-4">{recipe.recipeDescription}</p>
-                  <p className="text-lg mb-2"><strong>Servings:</strong> {recipe.portionSize}</p>
-                  <p className="text-lg mb-2"><strong>Prep Time:</strong> {recipe.hours}h {recipe.minutes}m</p>
-                  <p className="text-lg mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
-                  <p className="text-lg mb-2"><strong>Likes:</strong> {recipe.likes}</p>
+                  <h1 className="text-5xl text-foreground font-bold mb-5">{recipe.recipeName}</h1>
+                  <p className="text-xl text-foreground mb-4">{recipe.recipeDescription}</p>
+                  <p className="text-lg text-foreground mb-2"><strong>Servings:</strong> {recipe.portionSize}</p>
+                  <p className="text-lg text-foreground mb-2"><strong>Prep Time:</strong> {recipe.hours}h {recipe.minutes}m</p>
+                  <p className="text-lg text-foreground mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
+                  <p className="text-lg text-foreground mb-2"><strong>Likes:</strong> {recipe.likes}</p>
 
                   <div className="flex flex-row gap-x-[4vw]">
                     {/* Like Button */}
                     <button
                       onClick={handleLike}
-                      className={`w-[20%] h-[10%] mt-2 px-4 py-2 ${
-                        userHasLiked ? "bg-gray-500" : "bg-gray-800"
+                      className={`w-[17%] h-[10%] mt-2 px-4 py-2 ${
+                        userHasLiked ? "bg-gray-800" : "bg-button"
                       } text-white rounded`}
                     >
                       {userHasLiked ? "Unlike" : "Like"}
@@ -590,20 +590,20 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                         min="1"
                         step="1"
                       />
-                      <p className="text mt-4"> Please select the serving size</p>
+                      <p className="text-foreground mt-4"> Please select the serving size</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
+              <div className="bg-container rounded-lg p-6 mb-10">
                 
-                <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
+                <h2 className="text-2xl text-foreground font-semibold mb-4">Ingredients</h2>
               
                 
                 <ul className="list-disc list-inside pb-[2%]">
                   {adjustedIngredients.map((ingredient, index) => (
-                    <li key={index} className="text-lg">
+                    <li key={index} className="text-lg text-foreground">
                       {ingredient.name} ({ingredient.quantity} {ingredient.measurement})
                     </li>
                   ))}
@@ -611,7 +611,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                 {ingredientAddStatus ? (
                     <button  onClick={addIngredientstoList}
                       className={`w-full h-[10%] ${
-                      userHasLiked ? "bg-gray-500" : "bg-gray-800"
+                      userHasLiked ? "bg-gray-800" : "bg-button"
                       } text-white rounded`
                     }>
                     Add Ingredients to the Grocery list
@@ -629,9 +629,9 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                 
               </div>
 
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-10">
-                <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
-                <div className="space-y-4">
+              <div className="bg-container rounded-lg p-6 mb-10">
+                <h2 className="text-2xl text-foreground font-semibold mb-4">Instructions</h2>
+                <div className="space-y-4 text-foreground">
                   {recipe.instructions.map((step, index) => (
                     <p key={index} className="text-lg">
                       {index + 1}. {step}
@@ -641,16 +641,16 @@ export default function RecipePage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Comments Section */}
-              <div className="bg-[#e5dece] rounded-lg p-6 mb-14.1">
-                <h2 className="text-2xl font-semibold mb-4">Comments</h2>
+              <div className="bg-container rounded-lg p-6 mb-14.1">
+                <h2 className="text-2xl font-semibold mb-4 text-foreground">Comments</h2>
                 <div className="space-y-4">
                   {comments.length > 0 ? (
                     comments.map((comment) => (
                       <div key={comment.id} className="border-b pb-2 mb-2 flex justify-between">
                         <div>
-                          <p className="text-lg font-semibold">{comment.user}</p>
-                          <p className="text-gray-700">{comment.text}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-lg text-foreground font-semibold">{comment.user}</p>
+                          <p className="text-foreground">{comment.text}</p>
+                          <p className="text-sm text-foreground">
                             {new Date(comment.timestamp.toDate()).toLocaleString()}
                           </p>
                         </div>
@@ -667,7 +667,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                       </div>
                     ))
                   ) : (
-                    <p>No comments yet. Be the first to comment!</p>
+                    <p className="text-foreground">No comments yet. Be the first to comment!</p>
                   )}
                 </div>
 
@@ -675,12 +675,12 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                   <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 bg-input border rounded"
                     placeholder="Write your comment..."
                   />
                   <button
                     onClick={handleAddComment}
-                    className="mt-2 px-4 py-2 bg-gray-800 text-white rounded"
+                    className="mt-2 px-4 py-2 bg-button text-white rounded"
                   >
                     Add Comment
                   </button>
@@ -696,14 +696,14 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       {/* Right column: Related recipes or other sidebar content */}
       <div className="col-span-1 flex flex-col h-full space-y-8">
         {/* Nutrients Section */}
-        <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-hidden">
-          <h2 className="text-2xl font-semibold mb-2">Nutrients</h2>
+        <div className="bg-container p-6 rounded-lg flex-1 overflow-hidden">
+          <h2 className="text-2xl text-foreground font-semibold mb-2">Nutrients</h2>
           <label>{nutritionFacts}</label>
         </div>
 
         {/* Related Recipes Section */}
-        <div className="bg-[#e5dece] p-6 rounded-lg flex-1 overflow-y-auto">
-          <h2 className="text-2xl font-semibold mb-4">Related Recipes</h2>
+        <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto">
+          <h2 className="text-2xl text-foreground font-semibold mb-4">Related Recipes</h2>
           <div className="space-y-4">
             {relatedRecipes.length > 0 ? (
               relatedRecipes.map((relatedRecipe) => (

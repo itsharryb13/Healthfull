@@ -14,6 +14,11 @@ import { signOut } from "firebase/auth";
 import { db, auth } from "../../../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import router from "next/router";
+import SunIcon from "../../public/sun.svg"; 
+import MoonIcon from "../../public/moon.svg"; 
+import user from "../../public/user.svg"
+
+
 
 interface Recipe {
   id: string;
@@ -27,6 +32,20 @@ export function NavBarH() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<Recipe[]>([]);
+  const [theme, setTheme] = useState<string>("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.classList.toggle("dark", savedTheme === "dark");
+  }, []);
+  
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("theme", newTheme);
+  };
 
   // Fetch all published recipes on component mount
   useEffect(() => {
@@ -81,14 +100,14 @@ export function NavBarH() {
   return (
     <nav className="flex w-full h-[4vw] items-center justify-between px-[2vw] md:px-[1vw]">
       {/* Logo Section */}
-      <div className="flex w-[35%] md:w-[15%] h-full items-center">
+      <div className="flex justify-center items-center w-[3vw] h-[3vw] rounded-full">
         <Link href="../HomePage">
-          <Image src={Logo} alt="Logo" className="w-full max-w-[30vw]" />
+          <Image src={RoundLogo} alt="Logo" className="w-full max-w-[30vw]" />
         </Link>
       </div>
 
       {/* Menu Buttons */}
-      <div className="flex gap-x-[6vw] md:gap-x-[4vw] md:text-2xl items-center">
+      <div className="flex gap-x-[6vw] md:gap-x-[3.5vw] md:text-2xl text-foreground items-center">
         <Link href="../AllRecipesPage">
           <button className="btn-nav hover:underline">All Recipes</button>
         </Link>
@@ -100,15 +119,15 @@ export function NavBarH() {
           <button className="btn-nav hover:underline">Planner</button>
         </Link>
         <Link href="../../MyAccount">
-          <button className="btn-nav hover:underline">My Account</button>
+          <button className="btn-nav hover:underline">My Recipes</button>
         </Link>
 
         {/* Search Bar */}
-        <div className="relative flex items-center w-[20vw] max-w-[30vw] h-[2.5vw] bg-white border border-gray-300 rounded-full px-4 shadow-sm">
+        <div className="relative flex items-center w-[27vw] max-w-[35vw] h-[2.5vw] bg-white border bg-input border-gray-300 rounded-full px-4 shadow-sm">
           <input
             type="text"
             className="w-full bg-transparent text-gray-700 placeholder-gray-400 text-sm md:text-base focus:outline-none"
-            placeholder="Search recipes or ingredients"
+            placeholder="Search Recipes or Ingredients"
             value={searchInput}
             onChange={handleSearch}
           />
@@ -132,11 +151,23 @@ export function NavBarH() {
           )}
         </div>
 
+         {/* Dark Mode Toggle */}
+         <button
+          onClick={toggleTheme}
+          className="flex justify-center items-center w-[2vw] h-[2vw] p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+        >
+          <Image
+            src={theme === "dark" ? SunIcon : MoonIcon}
+            alt="Toggle Theme"
+            className="w-6 h-6"
+          />
+        </button>
+
         {/* Profile Icon */}
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Image
-              src={RoundLogo}
+              src={user}
               alt="Round Logo"
               className="flex justify-center items-center w-[3vw] h-[3vw] rounded-full"
             />
@@ -146,7 +177,7 @@ export function NavBarH() {
               className="hover:underline"
               onClick={handleClickSetting}
             >
-              Settings
+              Account
             </DropdownMenuItem>
             <DropdownMenuItem
               className="hover:underline"

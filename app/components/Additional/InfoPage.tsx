@@ -158,105 +158,78 @@ export default function InfoPage() {
     }
   }, [user]);
   return (
-    <div className="w-full h-[65vw] pt-[2%]">
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <form className="flex flex-col space-y-4 p-8 bg-[#e5dece] rounded-lg w-[90%] h-[95%] mx-auto">
-          <div className="flex flex-wrap justify-between">
-            {/* Image Upload */}
-            <div className="flex flex-col items-center w-[20%]">
-              <label className="text-lg font-semibold mb-2">
-                Upload an Image:
-              </label>
-              <div className="w-[15vw] h-[10vw] bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center mb-4">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <span className="text-gray-400">No image uploaded</span>
-                )}
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="block w-[15vw] text-sm text-gray-900 border border-gray-300 cursor-pointer bg-gray-50 focus:outline-none"
+    <div className="w-full h-auto pt-8 px-8">
+  
+    <form className="flex flex-col space-y-6 p-10 bg-container rounded-lg w-[96%] mx-auto">
+      <div className="flex">
+        {/* Image Upload */}
+        <div className="flex flex-col items-center w-1/4">
+          <label className="text-lg text-foreground font-semibold mb-4">Upload an Image:</label>
+          <div className="w-[200px] h-[200px] bg-input border border-gray-300 rounded-lg flex items-center justify-center mb-4">
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg"
               />
-            </div>
+            ) : (
+              <span className="text-gray-400">No Image Uploaded</span>
+            )}
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="block w-[200px] text-sm text-foreground border border-gray-300 cursor-pointer focus:outline-none"
+          />
+        </div>
 
-            {/* User Info Fields */}
-            <div className="w-[80%] flex flex-col space-y-4">
-              <div className="flex flex-col items-start">
-                <label className="text-lg font-semibold mb-1">
-                  Username:
-                </label>
-                <span className="w-full text-lg p-2 border rounded border-gray-400 bg-white">
-                  {username}
-                </span>
+        {/* Profile Fields */}
+        <div className="flex-1 space-y-6">
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Username:</label>
+            <span className="flex-1 p-2 border rounded bg-input text-foreground">{username}</span>
+          </div>
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Name:</label>
+            <span className="flex-1 p-2 border rounded bg-input text-foreground">{name}</span>
+          </div>
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Email:</label>
+            <span className="flex-1 p-2 border rounded bg-input text-foreground">{email}</span>
+          </div>
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Birthday:</label>
+            <input
+              type="date"
+              className="flex-1 p-2 border rounded bg-input text-foreground"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Gender:</label>
+            <RadioGroup
+              value={gender}
+              className="flex flex-1 gap-8"
+              onValueChange={(value) => handleGenderChange(value)}
+            >
+              <div className="flex items-center text-foreground">
+                <RadioGroupItem value="male" id="option-male" />
+                <label htmlFor="option-male" className="ml-2">Male</label>
               </div>
-
-              <div className="flex flex-col items-start">
-                <label className="text-lg font-semibold mb-1">
-                  Name:
-                </label>
-                <span className="w-full text-lg p-2 border rounded border-gray-400 bg-white">
-                  {name}
-                </span>
+              <div className="flex items-center text-foreground">
+                <RadioGroupItem value="female" id="option-female" />
+                <label htmlFor="option-female" className="ml-2">Female</label>
               </div>
-
-              <div className="flex flex-col items-start">
-                <label className="text-lg font-semibold mb-1">
-                  Email:
-                </label>
-                <span className="w-full text-lg p-2 border rounded border-gray-400 bg-white">
-                  {email}
-                </span>
-              </div>
-
-              {/* Birthday Date Picker */}
-              <div className="flex flex-row items-start">
-                <div className="flex w-[50%] flex-col items-start">
-                  <label className="text-lg font-semibold mb-1">
-                    Birthday:
-                  </label>
-                  <input
-                    type="date"
-                    className="w-[80%] p-2 border rounded border-gray-400"
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
-                  />
-                </div>
-                <div className="flex w-[50%] flex-col items-start">
-                  <label className="text-lg font-semibold mb-1">
-                    Gender:
-                  </label>
-                  <RadioGroup
-                    value={gender}
-                    className="flex flex-row mt-4 gap-x-5"
-                    onValueChange={(value) => handleGenderChange(value)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="male" id="option-male" />
-                      <label htmlFor="option-male">Male</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="female" id="option-female" />
-                      <label htmlFor="option-female">Female</label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-               {/* Height Fields */}
-          <div className="flex flex-col w-full">
-            <label className="text-lg font-semibold mb-1">Height:</label>
-            <div className="flex space-x-4">
+            </RadioGroup>
+          </div>
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Height:</label>
+            <div className="flex flex-1 gap-4">
               <input
                 type="number"
-                className="w-1/3 p-2 border rounded border-gray-400"
+                className="w-1/2 p-2 border rounded bg-input text-foreground"
                 placeholder="Feet"
                 value={height.feet}
                 onChange={(e) => setHeight({ ...height, feet: e.target.value })}
@@ -264,7 +237,7 @@ export default function InfoPage() {
               />
               <input
                 type="number"
-                className="w-1/3 p-2 border rounded border-gray-400"
+                className="w-1/2 p-2 border rounded bg-input text-foreground"
                 placeholder="Inches"
                 value={height.inches}
                 onChange={(e) => setHeight({ ...height, inches: e.target.value })}
@@ -272,21 +245,19 @@ export default function InfoPage() {
               />
             </div>
           </div>
-
-          {/* Weight Fields */}
-          <div className="flex flex-col w-full">
-            <label className="text-lg font-semibold mb-1">Weight:</label>
-            <div className="flex space-x-4">
+          <div className="flex items-center">
+            <label className="w-1/4 text-lg text-foreground font-semibold">Weight:</label>
+            <div className="flex flex-1 gap-4">
               <input
                 type="number"
-                className="w-1/3 p-2 border rounded border-gray-400"
+                className="w-1/2 p-2 border rounded bg-input text-foreground"
                 placeholder="Weight"
                 value={weight.value}
                 onChange={(e) => setWeight({ ...weight, value: e.target.value })}
                 min="0"
               />
               <select
-                className="w-1/3 p-2 border rounded border-gray-400"
+                className="w-1/2 p-2 border rounded bg-input text-foreground"
                 value={weight.unit}
                 onChange={(e) => setWeight({ ...weight, unit: e.target.value })}
               >
@@ -295,55 +266,55 @@ export default function InfoPage() {
               </select>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Allergies Section */}
+      <div>
+        <label className="text-lg text-foreground font-semibold mb-4">Allergies (select all that apply):</label>
+        <div className="grid grid-cols-3 gap-4">
+          {["Milk", "Peanuts", "Eggs", "Tree Nuts", "Soy", "Wheat", "Shell Fish", "Sesame", "Mustard"].map((allergy) => (
+            <div key={allergy} className="flex items-center text-foreground">
+              <Checkbox
+                checked={allergies.includes(allergy)}
+                onCheckedChange={(checked) => handleAllergyChange(allergy, checked)}
+                id={`allergy-${allergy}`}
+              />
+              <label htmlFor={`allergy-${allergy}`} className="ml-2">{allergy}</label>
             </div>
-          </div>
+          ))}
+        </div>
+      </div>
 
-           {/* Allergies Section */}
-           <label className="text-lg font-semibold pt-[2%]">Allergies (select all that apply)</label>
-          <div className="flex flex-row mt-4 gap-x-[5%]">
-            {["Milk", "Peanuts", "Eggs", "Tree Nuts", "Soy", "Wheat", "Shell Fish", "Sesame", "Mustard"].map((allergy) => (
-              <div key={allergy} className="flex items-center space-x-2">
-                <Checkbox
-                  checked={allergies.includes(allergy)}
-                  onCheckedChange={(checked) => handleAllergyChange(allergy, checked)}
-                  id={`allergy-${allergy}`}
-                />
-                <label htmlFor={`allergy-${allergy}`}>{allergy}</label>
-              </div>
-            ))}
-          </div>
+      {/* Health Issues Section */}
+      <div>
+        <label className="text-lg text-foreground font-semibold mb-4">Health Issues (select all that apply):</label>
+        <div className="grid grid-cols-3 gap-4">
+          {["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Celiac Disease"].map((issue) => (
+            <div key={issue} className="flex items-center text-foreground">
+              <Checkbox
+                checked={healthIssues.includes(issue)}
+                onCheckedChange={(checked) => handleHealthIssueChange(issue, checked)}
+                id={`health-issue-${issue}`}
+              />
+              <label htmlFor={`health-issue-${issue}`} className="ml-2">{issue}</label>
+            </div>
+          ))}
+        </div>
+      </div>
 
-          {/* Health Issues Section */}
-          <label className="text-lg font-semibold pt-[2%]">Health Issues (select all that apply)</label>
-          <div className="flex flex-row mt-4 gap-x-[5%]">
-            {["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Celiac Disease"].map((issue) => (
-              <div key={issue} className="flex items-center space-x-2">
-                <Checkbox
-                  checked={healthIssues.includes(issue)}
-                  onCheckedChange={(checked) => handleHealthIssueChange(issue, checked)}
-                  id={`health-issue-${issue}`}
-                />
-                <label htmlFor={`health-issue-${issue}`}>{issue}</label>
-              </div>
-            ))}
-          </div>
-          
-          {/* Save Button */}
-          <div className="flex justify-center pt-[2%]">
-            <button
-              type="button"
-              className="w-1/2 p-2 bg-gray-800 text-white rounded"
-              onClick={submitbutton}
-            >
-              Save Profile
-            </button>
-          </div>
-
-          
-        </form>
-      )}
-    </div>
-    
-   
-  );
+      {/* Save Button */}
+      <div className="flex justify-center">
+        <button
+          type="button"
+          className="w-1/2 p-3 bg-button text-white rounded-lg hover: "
+          onClick={submitbutton}
+        >
+          Save Profile
+        </button>
+      </div>
+    </form>
+  
+</div>
+);
 }

@@ -14,7 +14,7 @@ export default function ResetPwdText() {
         objectFit="cover" 
       />
     </div>
-    <div className='w-1/2 flex flex-col justify-center items-center bg-[#e5dece]'>
+    <div className='w-1/2 flex flex-col justify-center items-center bg-container'>
     <div className='mb-[17px]'>
           <Image 
             src={RoundLogo} 
@@ -23,7 +23,7 @@ export default function ResetPwdText() {
             width={150}
           />
         </div>
-        <span className="font-['Inter'] text-[40px] font-normal leading-[50px] text-[#000] tracking-[-0.4px] text-center mb-[24px]">
+        <span className="font-['Inter'] text-[40px] font-normal leading-[50px] text-foreground tracking-[-0.4px] text-center mb-[24px]">
           Reset your password
         </span>
         <ResetPwdForm />

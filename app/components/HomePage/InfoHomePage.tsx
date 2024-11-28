@@ -51,6 +51,8 @@ export default function InfoHomePage() {
   const [ingredient, setIngredient] = useState('');
   const [measurement, setMeasurement] = useState('');
   const [quantity, setQuantity] = useState<number>(0);
+  const [suggestedRecipe, setSuggestedRecipe] = useState<Recipe | null>(null);
+  
 
   // Function to add an ingredient to the grocery list
   const handleAddIngredient = async () => {
@@ -203,15 +205,75 @@ export default function InfoHomePage() {
     handleGroceryList();
   }, [user]);
 
+  const handleSuggestedRecipeButton = async () => {
+    if (!user) return;
+  
+    try {
+      const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+      const userSnapshot = await getDocs(userQuery);
+  
+      if (userSnapshot.empty) {
+        console.log("No user found with the specified UID");
+        return;
+      }
+  
+      const userData = userSnapshot.docs[0].data();
+      const savedRecipe = userData.savedRecipe || [];
+      const groceryList = userData.groceryList || [];
+  
+      let recipeQuery;
+      
+      if (savedRecipe.length > 0) {
+        // If the user has saved recipes, suggest recipes based on those
+        recipeQuery = query(
+          collection(db, "recipes"),
+          where("status", "==", "published"),
+          where("__name__", "in", savedRecipe) // Using document ID for matching saved recipes
+        );
+      } else if (groceryList.length > 0) {
+        // If the user has a grocery list
+        recipeQuery = query(
+          collection(db, "recipes"),
+          where("status", "==", "published"),
+          where("ingredients", "array-contains-any", groceryList.map((item: Ingredient) => item.name))
+        );
+      } else {
+        // No saved recipes or grocery list, suggest a random recipe
+        const allRecipesSnapshot = await getDocs(
+          query(collection(db, "recipes"), where("status", "==", "published"))
+        );
+        const allRecipes = allRecipesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Recipe[];
+  
+        const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)];
+        setSuggestedRecipe(randomRecipe);
+        return;
+      }
+  
+      const suggestedRecipesSnapshot = await getDocs(recipeQuery);
+      const suggestedRecipes: Recipe[] = suggestedRecipesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Recipe[];
+  
+      setItems(suggestedRecipes);
+    } catch (error) {
+      console.error("Error fetching suggested recipes:", error);
+    }
+  };
+
   return (
+    <div className="bg-background min-h-screen">
     <div className="flex flex-row w-auto h-[70vw] p-[2vw] gap-x-[2vw]">
       {/* Left Column: Carousel Section for Trending and Suggested Recipes */}
       <div className="flex flex-col gap-y-10 w-[70%] h-full">
         {/* Trending Recipes Section */}
-        <div className="flex flex-col w-full h-[50%] bg-[#e5dece] rounded-[21px] p-[2vw] relative">
-          <span className="ml-[28px] font-['Inter'] text-[2vw] text-[#000] z-[1] pb-[5%]">Trending Recipes</span>
+        <div className="flex flex-col w-full h-[48%] bg-container rounded-[21px] p-[2vw] relative">
+          <span className="ml-[28px] font-['Inter'] text-[2vw] text-foreground z-[1] pb-[3%]">Trending Recipes</span>    
           <Carousel className="w-[90%] h-full mx-[5%] pt-[2%]" plugins={[Autoplay({ delay: 8000 })]} onMouseEnter={stopAutoplay} onMouseLeave={startAutoplay}>
-            <CarouselPrevious />
+            <CarouselPrevious className="text-gray-300 hover:text-gray-400"/>
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
@@ -219,15 +281,15 @@ export default function InfoHomePage() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselNext />
+            <CarouselNext className="text-gray-300 hover:text-gray-400"/>
           </Carousel>
         </div>
 
         {/* Suggested Recipes Section */}
-        <div className="flex flex-col w-full h-[50%] bg-[#e5dece] rounded-[21px] p-[2vw] relative">
-          <span className="ml-[28px] font-['Inter'] text-[2vw] text-[#000] z-[1] pb-[5%]">Suggested for you</span>
+        <div className="flex flex-col w-full h-[48%] bg-container rounded-[21px] p-[2vw] relative">
+          <span className="ml-[28px] font-['Inter'] text-[2vw] text-foreground z-[1] pb-[3%]">Recipes for You</span>
           <Carousel className="w-[90%] h-full mx-[5%] pt-[2%]" plugins={[Autoplay({ delay: 8000 })]} onMouseEnter={stopAutoplay} onMouseLeave={startAutoplay}>
-            <CarouselPrevious />
+            <CarouselPrevious className="text-gray-300 hover:text-gray-400"/>
             <CarouselContent>
               {items.map((item) => (
                 <CarouselItem className="basis-1/2" key={item.id}>
@@ -235,46 +297,57 @@ export default function InfoHomePage() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselNext />
+            <CarouselNext className="text-gray-300 hover:text-gray-400"/>
           </Carousel>
         </div>
       </div>
 
       {/* Right Column: Grocery List Section */}
-      <div className="flex flex-col w-[30%] h-full bg-[#e5dece] rounded-[21px] p-[1vw]">
-        <div className="flex flex-col gap-[1vw] p-[1vw]">
-          <span className="text-[2vw] text-[#1d1b20]">Grocery List</span>
-          <div className="flex flex-col gap-y-4">
-            <input className="flex-1 p-[0.5vw] border rounded border-gray-400" placeholder="Ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
-            <input type="number" className="flex-1 p-[0.5vw] border rounded border-gray-400" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(e.target.valueAsNumber)} min="1" step="1" />
-            <select className="flex-1 p-2 border rounded border-gray-400" value={measurement} onChange={(e) => setMeasurement(e.target.value)}>
+      <div className="w-full col-span-1 flex flex-col h-full space-y-10">
+        <div className="bg-container p-6 rounded-lg flex-1 overflow-hidden">
+        <div className="mb-4"> 
+         <span className="text-[2vw] text-foreground">Grocery List</span>
+         </div>
+          <div className="flex flex-col space-y-4">
+            <input className="flex-1 p-[0.5vw] bg-input border border-custom rounded" placeholder="Ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
+            <input type="number" className="flex-1 p-[0.5vw] bg-input border border-custom rounded" placeholder="Quantity"  value={quantity || ''} onChange={(e) => setQuantity(e.target.valueAsNumber)} min="0" />
+            <select className="flex-1 p-2 bg-input border border-custom rounded" value={measurement} onChange={(e) => setMeasurement(e.target.value)}>
               <option value="--">Please select from here</option>
-              <option value="kg">KG</option>
+              <option value="kg">Kilograms</option>
               <option value="count">Count</option>
-              <option value="cup">Cup</option>
+              <option value="cup">Cups</option>
               <option value="g">Grams</option>
-              <option value="lb">Pound</option>
-              <option value="gl">Gallon</option>
-              <option value="l">Liter</option>
-              <option value="ml">ML</option>
-              <option value="oz">OZ</option>
-              <option value="tsp">Tea_Spoon</option>
+              <option value="lb">Pounds</option>
+              <option value="gl">Gallons</option>
+              <option value="l">Liters</option>
+              <option value="ml">Mililiters</option>
+              <option value="oz">Ounces</option>
+              <option value="tsp">Teaspoon</option>
             </select>
 
-            <button type="button" onClick={handleAddIngredient} className="p-[0.2vw] bg-gray-800 text-white rounded">Add</button>
+            <button type="button" onClick={handleAddIngredient} className="p-[0.2vw] bg-button text-button rounded">Add</button>
           </div>
 
           <div className="mt-4">
             {groceryItem.map((ingredient, index) => (
               <div key={index} className="flex items-center space-x-2 mb-2">
-                <span className="bg-gray-100 p-2 rounded">{ingredient.name} ({ingredient.quantity} {ingredient.measurement})</span>
+                <span className="bg-card p-2 rounded">{ingredient.name} ({ingredient.quantity} {ingredient.measurement})</span>
                 <button type="button" onClick={() => handleRemoveIngredient(index)} className="text-red-500">&times;</button>
               </div>
             ))}
           </div>
         </div>
+        <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto">
+              <button type="button" onClick= {handleSuggestedRecipeButton} className="w-full p-[0.5vw] bg-button text-button rounded" > Suggest a Recipe</button>
+              {suggestedRecipe && (
+            <div className="mt-4 p-4 bg-container rounded ">
+              <RecipeCard ID={suggestedRecipe.id} name={suggestedRecipe.recipeName} description={suggestedRecipe.recipeDescription} imageUrl={suggestedRecipe.imagePreview} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
+    </div>  
   );
 }
 /*

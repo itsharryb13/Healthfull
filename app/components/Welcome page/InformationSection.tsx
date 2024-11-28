@@ -113,12 +113,12 @@ export function InformationSection({ collectionName }: RecipeListProps) {
   return (
     <>
       <div className="information-container flex flex-col w-full h-[60%] mx-auto pt-[5%] pb-[5%] pr-[2%] pl-[2%] gap-[5%] items-start relative drop-shadow ">
-        <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-[#1e1e1e] relative text-center whitespace-nowrap z-[1] justify-left pt-[5%] pb-[2%]">
+        <span className="self-stretch shrink-0 basis-auto font-['Inter'] text-[2vw] leading-xl text-foreground relative text-center whitespace-nowrap z-[1] justify-left pt-[5%] pb-[2%]">
           Get Access to Thousands of Recipes
         </span>
 
         <Carousel  className="w-[90%] h-full relative mr-[5%] ml-[5%] pt-[2%]" plugins={[Autoplay({ delay: 8000})]} onMouseEnter={stopAutoplay} onMouseLeave={startAutoplay}>
-          <CarouselPrevious />
+          <CarouselPrevious   className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
           <CarouselContent>
             {/* Map through the items (recipes) and render each one in the carousel */}
             {items.map((item) => (
@@ -127,7 +127,7 @@ export function InformationSection({ collectionName }: RecipeListProps) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselNext />
+          <CarouselNext className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
         </Carousel>
       </div>
     </>

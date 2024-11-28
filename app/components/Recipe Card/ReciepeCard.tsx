@@ -36,6 +36,7 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
   const [showSunStatus, setSunStatus] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // Track initialization
   const [displayButton, setDisplayButton] = useState<boolean>(true);
+  const [isDropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -189,100 +190,80 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
     }
   };
 
+  const handleDropdownToggle = () => {
+    setDropdownOpen((prev) => !prev); // Toggle dropdown open state
+  };
+
 
   return (
-    <>
-      <div className='main-container flex flex-row w-[18vw] h-[18vw] pt-[1%] pr-[1%] pb-[1%] pl-[1%] items-start bg-[#fff] rounded-[8px] border border-[#d9d9d9] relative mx-auto gap-y-1'>
-        <div 
-         onDoubleClick={handleCardClick}
-        className='flex w-[50%] h-full flex-col items-center relative overflow-hidden rounded-lg'>
-          <img
-  src={imageUrl || '/image'}
-  alt={name ?? 'item'}
-  sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
-  style={{
-    width: '100%', // Make the image take up the full width of its container
-    height: '100%', // Adjust the height to match the container
-    objectFit: 'cover', // Ensures the image covers the container while maintaining aspect ratio
-    borderRadius: '8px', // Optional: Add rounded corners
-  }}
-/>
-        </div>
-        <div 
-        onDoubleClick={handleCardClick}
-        className="flex w-[50%] h-full flex-col relative justify-center items-center">
-          <div className="flex flex-col justify-center items-center h-[20%] self-stretch pt-[1%] pb-[1%]">
-            <span className="font-['Inter'] text-center text-[2vw] font-normal leading-lg text-[#1e1e1e]">
-              {name || "Unnamed Item"}
-            </span>
-          </div>
-          <div className="flex flex-col justify-center items-center h-[50%] self-stretch px-[5%]">
-            <span className="font-['Inter'] text-center text-[1vw] font-normal text-[#757575] break-words whitespace-normal max-h-[40%]">
-              {description || "No Description available"}
-            </span>
-          </div>
-        </div>
+    <div
+    className="main-container flex flex-col w-[18vw] h-[22vw] p-[1%] items-center bg-card rounded-lg shadow-lg border-border-custom relative mx-auto transition-transform duration-300 hover:scale-105 hover:shadow-xl"
+    onDoubleClick={handleCardClick}
+  >
+    {/* Image Section */}
+    <div className="w-full h-[60%] relative overflow-hidden rounded-lg">
+      <Image
+        src={imageUrl || '/default-image.svg'}
+        alt={name ?? "Recipe Image"}
+        fill
+        sizes="(max-width: 200px) 100vw, (max-width: 400px) 50vw, 33vw"
+        className="object-cover"
+      />
+    </div>
 
-        
-        {displayButton ? (<DropdownMenu  >
-          <DropdownMenuTrigger className="w-[6%] absolute right-[.5%] bg-transparent cursor-pointer" >
-          <Image
-            src={saveButton}
-            alt="Save Recipe"
-            width={30}
-            height={20}
-            className="hover:bg-[#e5dece]"
-          />
+    {/* Recipe Details */}
+    <div className="w-full h-[40%] flex flex-col justify-center items-center text-center p-2">
+      <h3 className="font-semibold text-lg text-foreground">{name || "Unnamed Recipe"}</h3>
+      <p className="text-sm text-foreground line-clamp-3 overflow-hidden">{description || "No Description available"}</p>
+    </div>
+
+    {/* Dropdown Save Button */}
+    {displayButton && (
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+            <button
+              onClick={handleDropdownToggle} // Toggle dropdown on click
+              className="absolute top-2 right-2 p-1 bg-card rounded-full shadow-md hover:bg-button-hover"
+            >
+              <Image
+                src={saveButton}
+                alt="Save Recipe"
+                width={24}
+                height={24}
+                className="hover:opacity-80"
+              />
+            </button>
           </DropdownMenuTrigger>
-
-          <DropdownMenuContent className=" w-full bg-[#e5dece]">
-            <DropdownMenuItem>
-              <DropdownMenuLabel className="mx-auto">Select all that Apply</DropdownMenuLabel>
-              <DropdownMenuSeparator/>
-              <DropdownMenuCheckboxItem checked={showSavedStatus} onCheckedChange={setSavedStatus}>
-                Saved Recipe
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showEverydayStatus} onCheckedChange={setEverydayStatus}>
-                Every day of week
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuSeparator/>
-              <div className="flex flex-row ">
-              <div className="flex flex-col">
-              <DropdownMenuCheckboxItem checked={showMStatus} onCheckedChange={setMStatus}>
-                M
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showTStatus} onCheckedChange={setTStatus}>
-                T
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showWStatus} onCheckedChange={setWStatus}>
-                W
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showThStatus} onCheckedChange={setThStatus}>
-                TH
-              </DropdownMenuCheckboxItem>
-              </div>
-              <DropdownMenuSeparator/>
-              <div className="flex flex-col">
-              <DropdownMenuCheckboxItem checked={showFStatus} onCheckedChange={setFStatus}>
-                F
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showSStatus} onCheckedChange={setSStatus}>
-                S
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked={showSunStatus} onCheckedChange={setSunStatus}>
-                Sun.
-              </DropdownMenuCheckboxItem>
-              </div>
-              </div>
-            </DropdownMenuItem>
+        <DropdownMenuPortal>
+          <DropdownMenuContent
+            className="w-48 bg-input shadow-lg border border-gray-200 rounded-lg p-2"
+            sideOffset={4} 
+            alignOffset={-5} 
+          >
+            <DropdownMenuLabel className="text-center text-foreground font-semibold">Select days to save to Planner</DropdownMenuLabel>
+            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuCheckboxItem className="text-foreground" checked={showSavedStatus} onCheckedChange={setSavedStatus}>
+              Save Recipe
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem className="text-foreground" checked={showEverydayStatus} onCheckedChange={setEverydayStatus}>
+              Everyday
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuSeparator className="my-1" />
+            <div className="grid grid-cols-3 gap-1">
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showMStatus} onCheckedChange={setMStatus}>Mon</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showTStatus} onCheckedChange={setTStatus}>Tue</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showWStatus} onCheckedChange={setWStatus}>Wed</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showThStatus} onCheckedChange={setThStatus}>Th</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showFStatus} onCheckedChange={setFStatus}>Fri</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showSStatus} onCheckedChange={setSStatus}>Sat</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem className="text-foreground" checked={showSunStatus} onCheckedChange={setSunStatus}>Sun</DropdownMenuCheckboxItem>
+            </div>
           </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null }
-
-        
-      </div>
-    </>
-  );
+        </DropdownMenuPortal>
+      </DropdownMenu>
+    )}
+  </div>
+);
 }
 {/*
   

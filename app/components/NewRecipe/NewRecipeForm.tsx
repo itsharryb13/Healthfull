@@ -27,7 +27,7 @@ interface Recipe {
 
 // Define the props interface to include docNumber as an optional prop
 interface NewRecipeFormProps {
-  docNumber?: string; 
+  docNumber: string; 
   draftData?: Recipe | null;
 }
 
@@ -337,19 +337,19 @@ useEffect(() => {
 
 
  return (
-   <form className='flex flex-col space-y-6 p-10 bg-[#e5dece] rounded-lg w-[96%] mx-auto'>
+   <form className='flex flex-col space-y-6 p-10 bg-container rounded-lg w-[96%] mx-auto'>
      <div className='flex'>
     
        <div className='flex flex-col items-center mr-8'>
-         <label className='text-lg font-semibold mb-2'>Upload an Image:</label>
-         <div className='w-[200px] h-[200px] bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center mb-4'>
+         <label className='text-foreground font-semibold mb-2'>Upload an Image:</label>
+         <div className='w-[200px] h-[200px] bg-input bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center mb-4'>
            {image ? (
-             <img src={image} alt="Preview" className='w-full h-full object-cover rounded-lg' />
+             <img src={image} alt="Preview" className='w-full h-full object-cover rounded-lg bg-input' />
            ) : (
              <span className='text-gray-400'>No image uploaded</span>
            )}
          </div>
-         <input type='file' accept='image/*' onChange={handleImageUpload} className='block w-full text-sm text-gray-900 border border-gray-300 cursor-pointer bg-gray-50 focus:outline-none' />
+         <input type='file' accept='image/*' onChange={handleImageUpload} className='block w-full text-sm text-gray-900 border border-gray-300 cursor-pointer bg-gray-50 focus:outline-none bg-input' />
        </div>
 
 
@@ -357,9 +357,9 @@ useEffect(() => {
 
 
          <div className='flex items-center mt-8'>
-           <label className='w-1/3 text-lg font-semibold'>Recipe Title:</label>
+           <label className='w-1/3 text-lg text-foreground font-semibold'>Recipe Title:</label>
            <input
-             className='flex-1 p-2 border rounded border-gray-400'
+             className='flex-1 p-2 border rounded border-gray-400 bg-input'
              placeholder="Give your recipe a name"
              value={recipeName}
              onChange={(e) => setRecipeName(e.target.value)}
@@ -367,9 +367,9 @@ useEffect(() => {
          </div>
 
          <div className='flex items-center'>
-           <label className='w-1/3 text-lg font-semibold'>Description:</label>
+           <label className='w-1/3 text-lg text-foreground font-semibold'>Description:</label>
            <textarea
-             className='flex-1 p-2 border rounded border-gray-400'
+             className='flex-1 p-2 border rounded border-gray-400 bg-input'
              placeholder="Introduce your recipe"
              value={recipeDescription}
              onChange={(e) => setRecipeDescription(e.target.value)}
@@ -378,10 +378,10 @@ useEffect(() => {
 
   
          <div className='flex items-center'>
-           <label className='w-1/3 text-lg font-semibold'>Cooking Time:</label>
+           <label className='w-1/3 text-lg font-semibold text-foreground'>Cooking Time:</label>
            <div className='flex-1 flex space-x-1 w-1/2'>
            <input
-             className='flex-1 p-2 border rounded border-gray-400 w-1/2'
+             className='flex-1 p-2 border rounded border-gray-400 w-1/2 bg-input'
              placeholder="Hours"
              type="number"
              min="0"
@@ -389,7 +389,7 @@ useEffect(() => {
              onChange={(e) => setHours(e.target.value)}
            />
            <input
-             className='flex-1 p-2 border rounded border-gray-400 w-1/2'
+             className='flex-1 p-2 border rounded border-gray-400 w-1/2 bg-input'
              placeholder="Minutes"
              type="number"
              min="0"
@@ -402,17 +402,17 @@ useEffect(() => {
      </div>
 
      <div>
-       <label className='text-lg font-semibold'>Ingredients:</label>
+       <label className='text-lg font-semibold text-foreground'>Ingredients:</label>
        <div className='flex space-x-2'>
          <input
-           className='flex-1 p-2 border rounded border-gray-400'
+           className='flex-1 p-2 border rounded border-gray-400 bg-input'
            placeholder="Ingredient"
            value={ingredient}
            onChange={(e) => setIngredient(e.target.value)}
          />
          <input
            type = 'number'
-           className='flex-1 p-2 border rounded border-gray-400'
+           className='flex-1 p-2 border rounded border-gray-400 bg-input'
            placeholder="Quantity"
            value={quantity}
            min="0"
@@ -420,7 +420,7 @@ useEffect(() => {
          />
      
           <select
-           className='flex-1 p-2 border rounded border-gray-400'
+           className='flex-1 p-2 border rounded border-gray-400 bg-input'
            value={measurement}
            onChange={(e) => setMeasurement(e.target.value)}       
            >
@@ -440,7 +440,7 @@ useEffect(() => {
          <button
            type="button"
            onClick={handleAddIngredient}
-           className='p-2 bg-gray-800 text-white rounded'>
+           className='p-2 bg-gray-800 text-white bg-button rounded'>
            Add
          </button>
        </div>
@@ -462,9 +462,9 @@ useEffect(() => {
      </div>
     
      <div className='flex flex-col'>
-       <label className='w-1/3 text-lg font-semibold'>Instructions:</label>
+       <label className='w-1/3 text-lg font-semibold text-foreground'>Instructions:</label>
        <textarea
-        className='flex-1 p-2 border rounded border-gray-400'
+        className='flex-1 p-2 border rounded border-gray-400 bg-input'
         placeholder="Add each step on a new line"
         value={instructions}
         onChange={(e) => setInstructions(e.target.value)}
@@ -474,8 +474,8 @@ useEffect(() => {
 
       {/* Tags Checkboxes */}
       <div className='flex flex-col '>
-        <label className='text-lg font-semibold'>Tags:</label>
-        <div className='grid grid-cols-2 gap-2'>
+        <label className='text-lg font-semibold text-foreground'>Tags:</label>
+        <div className='grid grid-cols-2 gap-2 text-foreground'>
           <label>
             <input
               type="checkbox"
@@ -542,9 +542,9 @@ useEffect(() => {
 
 
       <div className='flex items-center'>
-       <label className='w-1/3 text-lg font-semibold'>Portion Size:</label>
+       <label className='w-1/3 text-lg text-foreground font-semibold'>Portion Size:</label>
        <input
-         className='flex-1 p-2 border rounded border-gray-400'
+         className='flex-1 p-2 border rounded border-gray-400 bg-input'
          placeholder="Number of people this recipe can serve"
          type="number"
          value={portionSize}
@@ -554,9 +554,9 @@ useEffect(() => {
 
 
       <div className='flex items-center'>
-       <label className='w-1/3 text-lg font-semibold'>Difficulty Level:</label>
+       <label className='w-1/3 text-lg font-semibold text-foreground'>Difficulty Level:</label>
        <select
-         className='flex-1 p-2 border rounded border-gray-400'
+         className='flex-1 p-2 border rounded border-gray-40 bg-input'
          value={difficulty}
          onChange={(e) => setDifficulty(e.target.value)}
        >
@@ -569,17 +569,19 @@ useEffect(() => {
 
    
      <div className='flex justify-center space-x-4 mt-8'>
-       <button type="button"  onClick={() => handleSubmit("published")} className='w-1/4 p-2 bg-gray-800 text-white rounded'>
+       <button type="button"  onClick={() => handleSubmit("published")} className='w-1/4 p-2 text-white rounded bg-button'>
          Publish
        </button>
-       <button type="button"  onClick={() => handleSubmit("draft")}  className='w-1/4 p-2 bg-gray-800 text-white rounded'>
+       <button type="button"  onClick={() => handleSubmit("draft")}  className='w-1/4 p-2 bg-gray-800 text-white rounded bg-button'>
          Draft
        </button>
-       <button type="button" onClick={handleCancel} className='w-1/4 p-2 bg-gray-800 text-white rounded'>
+       <button type="button" onClick={handleCancel} className='w-1/4 p-2 bg-gray-800 text-white rounded bg-button'>
          Clear
        </button>
      </div>
    </form>
  );
 }
+
+
 

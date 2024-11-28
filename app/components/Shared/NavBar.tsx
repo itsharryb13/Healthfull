@@ -1,35 +1,68 @@
 
 import Image from "next/image";
-import Logo from '../../public/Logo.svg';
-import Link from  'next/link';
+import Link from "next/link";
+import SunIcon from "../../public/sun.svg";
+import MoonIcon from "../../public/moon.svg";
+import RoundLogo from "../../public/RoundLogo.svg";
+import { useState, useEffect } from "react";
 
+export function NavBar() {
+    const [theme, setTheme] = useState<string>("light");
 
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme") || "light";
+        setTheme(savedTheme);
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }, []);
 
-export function NavBar(){
-    return(
-        <nav className='flex w-full h-[3.5vw] main-containerNav relative mx-auto overflow-hidden'>
-            
-            <div className = 'w-[20%] h-[90%] mx-auto absolute left-0 overflow-hidden'>
-                <Link href="/">
-                <Image src={Logo} alt="Logo" className='w-[60%]  object-scale-down'/>
+    const toggleTheme = () => {
+        const newTheme = theme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+        localStorage.setItem("theme", newTheme);
+    };
+
+    return (
+        <nav className="flex items-center justify-between w-full h-12 px-6 py-4 bg-background text-foreground shadow-md">
+            {/* Logo */}
+            <Link href="/">
+                <div className="flex items-center">
+                    <Image
+                        src={RoundLogo}
+                        alt="Round Logo"
+                        className="w-12 h-12 object-contain"
+                    />
+                </div>
+            </Link>
+
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+                {/* Dark Mode Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                >
+                    <Image
+                        src={theme === "dark" ? SunIcon : MoonIcon}
+                        alt="Toggle Theme"
+                        className="w-6 h-6"
+                    />
+                </button>
+
+                {/* Sign-In & Register Buttons */}
+                <Link
+                    href="../SignIn"
+                    className="px-4 py-2 bg-signin signintext rounded-lg border border-gray-500 hover-bg-button  transition"
+                >
+                    Sign In
                 </Link>
-            </div>
-
-
-            <div className='flex w-[40%] h-[80%] gap-x-5 items-right flex-nowrap absolute right-[2%] pt-2 '>
-                <Link href="../SignIn"  className="flex h-[95%] justify-center items-center grow shrink-0 basis-0 flex-nowrap bg-[#FFFFFF] rounded-lg border-solid border border-[#FFFFFF] relative overflow-hidden drop-shadow hover:underline">
-                    <button className=" w- fullh-full shrink-0 basis-auto font-['Inter'] text-lg font-normal leading-lg text-[#303030] relative text-left whitespace-nowrap">
-                                Sign In
-                    </button>
-                </Link>    
-                <Link href="../Registration" className='flex h-[95%] justify-center items-right grow shrink-0 basis-0 flex-nowrap bg-[#2c2c2c] rounded-lg border-solid border border-[#2c2c2c] relative overflow-hidden'>
-                    <button className="h-full shrink-0 basis-auto font-['Inter'] lg:text-lg font-normal leading-lg text-[#f5f5f5] relative text-center whitespace-nowrap z-[6]">
-                    <span >
-                        Register
-                    </span>
-                    </button>
+                <Link
+                    href="../Registration"
+                    className="px-4 py-2 bg-button text-white rounded-lg border border-gray-700 hover-bg-button transition"
+                >
+                    Register
                 </Link>
             </div>
         </nav>
     );
-} 
+}

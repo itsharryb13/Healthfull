@@ -6,7 +6,9 @@ export default function Homepage(){
     return(
         <>
         <NavBarH/>
-        <InfoHomePage/>
+        <div className="mb-8">
+        <InfoHomePage />
+      </div>
         <Footer/>
         </>
     );

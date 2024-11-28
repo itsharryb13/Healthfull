@@ -7,7 +7,36 @@
       Ubuntu, "Helvetica Neue", Helvetica, Arial, "PingFang SC",
       "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei",
       "Source Han Sans CN", sans-serif;
+
+  --background: #ffffff; 
+  --backgroundContainer: #e5dece;
+  --foreground: #333333; 
+  --card-bg: #ffffff;
+  --button-text: #ffffff; 
+  --input-bg: #ffffff;
+  --button-bg: #1f2937; 
+  --button-hover-bg: #384a63; 
+  --border-color: #bcb5a7; 
+  --radius: 0.5rem;
+  --signinbtn:  #ffffff;
+  --signintext: #010101;
   }
+
+.dark {
+  --background:#131815; /* #2f443f*/
+  --foreground: #e5dece; 
+  --card-bg: #282d2a; 
+  --input-bg: #556762; 
+  --button-bg: #121212; /* #171e1c;*/
+  --button-hover-bg: #333232; 
+  --button-text: #ffffff; 
+  --border-color: #444; 
+  --backgroundContainer: #303833; /* #1E373A */
+  --signinbtn:  #ebe8ee;
+  --signintext:  #edebf1;
+}
+
+
 
   main-containerNav {
     overflow: hidden;
@@ -21,9 +50,80 @@
   .main-container * {
     box-sizing: border-box;
   }
+
+  body {
+    background-color: var(--background); /* Set the entire page background */
+    font-family: var(--default-font-family); /* Apply consistent font */
+  }
   
   @layer base {
   :root {
-        --radius: 0.5rem;
+
+        
+/* Utility classes for custom colors and backgrounds */
+.bg-background {
+  background-color: var(--background);
+}
+
+.bg-container {
+  background-color: var(--backgroundContainer); 
+}
+
+.bg-card{
+  background-color: var(--backgroundCard); 
+
+}
+
+.text-foreground {
+  color: var(--foreground);
+}
+
+.bg-card {
+  background-color: var(--card-bg);
+}
+
+.bg-input {
+  background-color: var(--input-bg);
+}
+
+.bg-button {
+  background-color: var(--button-bg);
+  color: var(--button-text); /* Ensure button text color is applied */
+}
+
+.hover-bg-button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.border-custom {
+  border-color: var(--border-color);
+}
+
+.bg-signin {
+  border-color: var(--signinbtn);
+}
+
+.signintext {
+  border-color: var(--signintext);
+}
+
+.carousel-container:hover {
+  transform: translateY(-5px);
+}
+
+/* Ensure consistent box sizing */
+.main-containerNav,
+.main-container * {
+  box-sizing: border-box;
+}
+      
+        /* Ensure consistent font family and box sizing */
+        body {
+          font-family: var(--default-font-family);
+        }
+        .main-containerNav,
+        .main-container * {
+          box-sizing: border-box;
+        }
     }
 }

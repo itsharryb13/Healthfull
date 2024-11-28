@@ -21,31 +21,11 @@ interface Recipe {
 
 export default function Planner() {
   // Setup seven independent carousels
-  const [emblaRef1] = useEmblaCarousel({ loop: true });
-  const [emblaRef2] = useEmblaCarousel({ loop: true });
-  const [emblaRef3] = useEmblaCarousel({ loop: true });
-  const [emblaRef4] = useEmblaCarousel({ loop: true });
-  const [emblaRef5] = useEmblaCarousel({ loop: true });
-  const [emblaRef6] = useEmblaCarousel({ loop: true });
-  const [emblaRef7] = useEmblaCarousel({ loop: true });
-
-  const [mondayRecipes, setMondayRecipes] = useState<Recipe[]>([]);
-  const [tuesdayRecipes, setTuesdayRecipes] = useState<Recipe[]>([]);
-  const [wednesdayRecipes, setWednesdayRecipes] = useState<Recipe[]>([]);
-  const [thursdayRecipes, setThursdayRecipes] = useState<Recipe[]>([]);
-  const [fridayRecipes, setFridayRecipes] = useState<Recipe[]>([]);
-  const [saturdayRecipes, setSaturdayRecipes] = useState<Recipe[]>([]);
-  const [sundayRecipes, setSundayRecipes] = useState<Recipe[]>([]);
+  const emblaRefs = Array(7).fill(null).map(() => useEmblaCarousel({ loop: true })[0]);
+  
+  const [dayRecipes, setDayRecipes] = useState<Recipe[][]>(Array(7).fill([]));
+  const [dayCalories, setDayCalories] = useState<number[]>(Array(7).fill(0));
   const [loading, setLoading] = useState(true);
-
-  // State for daily calorie totals
-  const [mondayCalories, setMondayCalories] = useState(0);
-  const [tuesdayCalories, setTuesdayCalories] = useState(0);
-  const [wednesdayCalories, setWednesdayCalories] = useState(0);
-  const [thursdayCalories, setThursdayCalories] = useState(0);
-  const [fridayCalories, setFridayCalories] = useState(0);
-  const [saturdayCalories, setSaturdayCalories] = useState(0);
-  const [sundayCalories, setSundayCalories] = useState(0);
 
   useEffect(() => {
     const fetchDayRecipes = async () => {
@@ -65,20 +45,22 @@ export default function Planner() {
         if (!userSnapshot.empty) {
           const userData = userSnapshot.docs[0].data();
 
-          const dayKeys = [
-            { key: "MondayMeals", setter: setMondayRecipes, calorieSetter: setMondayCalories },
-            { key: "TuesdayMeals", setter: setTuesdayRecipes, calorieSetter: setTuesdayCalories },
-            { key: "WednesdayMeals", setter: setWednesdayRecipes, calorieSetter: setWednesdayCalories },
-            { key: "ThursdayMeals", setter: setThursdayRecipes, calorieSetter: setThursdayCalories },
-            { key: "FridayMeals", setter: setFridayRecipes, calorieSetter: setFridayCalories },
-            { key: "SaturdayMeals", setter: setSaturdayRecipes, calorieSetter: setSaturdayCalories },
-            { key: "SundayMeals", setter: setSundayRecipes, calorieSetter: setSundayCalories },
+          const days = [
+            "MondayMeals",
+            "TuesdayMeals",
+            "WednesdayMeals",
+            "ThursdayMeals",
+            "FridayMeals",
+            "SaturdayMeals",
+            "SundayMeals",
           ];
 
-          // Fetch each day's recipes and calculate calories
-          for (const { key, setter, calorieSetter } of dayKeys) {
-            const recipeIds: string[] = userData[key] || [];
-            const fetchedRecipes: Recipe[] = [];
+          const fetchedRecipes = [];
+          const caloriesCount = [];
+
+          for (const day of days) {
+            const recipeIds: string[] = userData[day] || [];
+            const recipes: Recipe[] = [];
             let dayCalories = 0;
 
             for (const recipeId of recipeIds) {
@@ -87,26 +69,24 @@ export default function Planner() {
 
               if (recipeSnapshot.exists()) {
                 const recipeData = recipeSnapshot.data();
-                const recipeCalories = recipeData.calories || 0;
-                dayCalories += recipeCalories;
+                dayCalories += recipeData.calories || 0;
 
-                fetchedRecipes.push({
+                recipes.push({
                   id: recipeId,
                   recipeName: recipeData.recipeName,
                   recipeDescription: recipeData.recipeDescription,
                   imagePreview: recipeData.imagePreview,
-                  calories: recipeCalories,
+                  calories: recipeData.calories || 0,
                 });
-              } else {
-                console.error(`No recipe found with ID: ${recipeId}`);
               }
             }
 
-            // Set recipes and calorie count for the day
-            setter(fetchedRecipes);
-            calorieSetter(dayCalories);
+            fetchedRecipes.push(recipes);
+            caloriesCount.push(dayCalories);
           }
 
+          setDayRecipes(fetchedRecipes);
+          setDayCalories(caloriesCount);
         } else {
           console.error("No matching user document found.");
         }
@@ -136,24 +116,21 @@ export default function Planner() {
   ) => {
     if (recipes.length === 0) {
       return (
-        <div className="carousel-container w-full h-48 mx-auto py-8 flex items-center justify-center relative drop-shadow bg-f5f5f5 rounded-lg text-center">
-          <p className="text-lg text-gray-500">{`${dayName} is currently empty.`}</p>
+        <div className="carousel-container w-full h-48 mx-auto py-8 flex items-center justify-center relative rounded-lg text-center shadow-md">
+        <p className="text-lg text-gray-500 ">{`${dayName} is currently empty.`}</p>
         </div>
       );
     }
   
     return (
-      <div className="carousel-container w-[80%] h-auto mx-auto py-8 items-center justify-center relative drop-shadow bg-f5f5f5 rounded-lg">
+      <div className="carousel-container w-[90%] mx-auto py-6 relative bg-container shadow-md rounded-lg">
+      <div className="embla" ref={emblaRef}></div>
         <div className="embla" ref={emblaRef}>
-          <Carousel className="w-full h-full relative">
-            <CarouselPrevious />
-            <CarouselContent className="flex justify-center">
+          <Carousel>
+            <CarouselPrevious className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
+            <CarouselContent>
               {recipes.map((item) => (
-                <CarouselItem
-                  key={item.id}
-                  className="basis-[30%] flex-shrink-0 mx-4"
-                  style={{ minWidth: "30%" }}
-                >
+                <CarouselItem key={item.id} className="flex-shrink-0 px-4">
                   <RecipeCard
                     ID={item.id}
                     name={item.recipeName}
@@ -163,41 +140,49 @@ export default function Planner() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselNext />
+            <CarouselNext className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
           </Carousel>
         </div>
-      </div>
+        </div>
     );
   };
 
   return (
     <>
       <NavBarH />
-      <div className="scroll-container w-full h-screen mx-auto py-8 px-8 gap-8 items-start relative drop-shadow bg-[#ffffff] rounded-lg overflow-y-scroll max-h-screen">
-        {[
-          { day: "Monday", recipes: mondayRecipes, calories: mondayCalories, emblaRef: emblaRef1 },
-          { day: "Tuesday", recipes: tuesdayRecipes, calories: tuesdayCalories, emblaRef: emblaRef2 },
-          { day: "Wednesday", recipes: wednesdayRecipes, calories: wednesdayCalories, emblaRef: emblaRef3 },
-          { day: "Thursday", recipes: thursdayRecipes, calories: thursdayCalories, emblaRef: emblaRef4 },
-          { day: "Friday", recipes: fridayRecipes, calories: fridayCalories, emblaRef: emblaRef5 },
-          { day: "Saturday", recipes: saturdayRecipes, calories: saturdayCalories, emblaRef: emblaRef6 },
-          { day: "Sunday", recipes: sundayRecipes, calories: sundayCalories, emblaRef: emblaRef7 },
-        ].map(({ day, recipes, calories, emblaRef }, index) => (
-          <div key={index} className="mb-8 text-center">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-semibold">
-                {day} {calories}/2000
-              </h3>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                Add to Grocery List
-              </button>
-            </div>
-            {renderCarousel(recipes, emblaRef, day, calories)}
-          </div>
-        ))}
+      <div className="scroll-container w-full h-screen py-6 px-4 bg-background overflow-y-auto">
+  <div className="text-center mb-10">
+    <h1 className="text-4xl font-extrabold text-foreground">
+      Your Weekly Meal Planner
+    </h1>
+    <p className="text-gray-500 mt-3 text-lg ">
+      Plan your meals for the week and track your calorie goals!
+    </p>
+  </div>
+
+  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
+    (day, index) => (
+      <div
+        key={index}
+        className="mb-12 px-4 py-6 bg-container shadow-lg rounded-lg transition-transform transform hover:scale-105"
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {day}
+            <span className="text-sm text-gray-500 ml-2">
+              ({dayCalories[index]}/2000 Calories)
+            </span>
+          </h2>
+          <button className="bg-button text-white px-4 py-2 rounded hover-bg-button transition-colors">
+            Add to Grocery List
+          </button>
+        </div>
+        {renderCarousel(dayRecipes[index], emblaRefs[index], day, dayCalories[index])}
       </div>
+    )
+  )}
+</div>
       <Footer />
     </>
   );
 }
-
