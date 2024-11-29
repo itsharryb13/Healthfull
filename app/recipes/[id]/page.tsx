@@ -12,6 +12,7 @@ import Link from "next/link";
 import NewRecipeForm from "@/app/components/NewRecipe/NewRecipeForm";
 import NutritionAPI from "../NutritionAPI";
 import AlertSystem from "../AlertSystem";
+import jsPDF from "jspdf";
 interface Recipe {
   recipeName: string;
   recipeDescription: string;
@@ -288,6 +289,66 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     }
   };
   
+  const handlePdfDownload = () => {
+    if (!recipe) {
+      alert("No recipe data available to generate a PDF.");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(recipe.recipeName, 10, 10);
+   
+    doc.setFontSize(14);
+    doc.text("Description:", 10, 20);
+    doc.setFontSize(12);
+    doc.text(recipe.recipeDescription, 10, 30);
+    doc.setFontSize(14);
+    doc.text("Servings:", 10, 40);
+    doc.setFontSize(12);
+    doc.text(recipe.portionSize.toString(), 10, 50); 
+
+    doc.setFontSize(14);
+    doc.text("Prep Time:", 10, 60);
+    doc.setFontSize(12);
+    doc.text(`${recipe.hours}h ${recipe.minutes}m`, 10, 70); 
+
+    doc.setFontSize(14);
+    doc.text("Difficulty Level:", 10, 80);
+    doc.setFontSize(12);
+    doc.text(recipe.difficulty, 10, 90); 
+
+    doc.setFontSize(14);
+    doc.text("Ingredients:", 10, 100);
+    let yPosition = 110; 
+
+    recipe.ingredientsList.forEach((ingredient) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${ingredient.quantity} ${ingredient.measurement} ${ingredient.name}`,
+        10,
+        yPosition
+      );
+      yPosition += 10;
+    });
+
+    doc.setFontSize(14);
+    doc.text("Instructions:", 10, (yPosition += 5));
+    recipe.instructions.forEach((step, index) => {
+      doc.setFontSize(12);
+      const line = `${index + 1}. ${step}`;
+      const lineHeight = 10; 
+      const maxWidth = 190; 
+      const lines = doc.splitTextToSize(line, maxWidth); 
+      lines.forEach((linePart) => {
+        doc.text(linePart, 10, (yPosition += lineHeight));
+      });
+    });
+
+
+    doc.save(`${recipe.recipeName}.pdf`);
+  };
 
   useEffect(() => {
     const checkIfUserLiked = async () => {
@@ -307,7 +368,6 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     };
     const handleGroceryList = async () => {
      // Return early if `user` is not available
-  
 
   if (loading) {
     // Ensure the loading process is complete before proceeding
@@ -591,6 +651,12 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                         step="1"
                       />
                       <p className="text-foreground mt-4"> Please select the serving size</p>
+                      <button
+                          onClick={handlePdfDownload}
+                          className="bg-gray-800 text-white px-4 py-2 rounded ml-4 mt-3"
+                        >
+                          Print PDF
+                        </button>
                     </div>
                   </div>
                 </div>
