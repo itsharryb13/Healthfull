@@ -5,6 +5,7 @@ import { db, storage } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { ref, uploadString, getDownloadURL  } from 'firebase/storage';
 import { useRouter } from "next/router";
+import NutritionAPI from '@/NutritionAPI';
 
 interface Ingredient {
   name: string;
@@ -170,10 +171,43 @@ const removeDraftFromUser = async (draftId: string) => {
   }
 };
 
+const fetchNutritionFacts = async () => {
+  const iList: string[] = ingredientsList.map(
+    (ingredient) => `${ingredient.quantity} ${ingredient.measurement} ${ingredient.name}`
+  );
+  console.log(ingredientsList);
+
+  try {
+    console.log("Calling OpenAI API");
+    setLoading(true);
+    const nutritionDataString = await NutritionAPI(iList);
+
+    console.log("Nutrition Facts String:", nutritionDataString);
+
+    if (!nutritionDataString) {
+      throw new Error("Received null or undefined response form the API");
+    }
+
+    // Parse the string response into a JSON object
+    const nutritionData = JSON.parse(nutritionDataString);
+    console.log("Parsed Nutrition Data:", nutritionData);
+
+    return nutritionData;
+  } catch (error) {
+    console.error("Error fetching or saving nutrition facts:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 const handleSubmit = async (recipeStatus: string) => {
   console.log(`Submitting recipe with status: ${recipeStatus}`); // Debug log
   console.log(`docNumber: ${docNumber}`); // Log to check docNumber value
+
+  const nutritionData = await fetchNutritionFacts();
+  if(nutritionData) {
+    console.log("in the then:", nutritionData);
+  }
 
   if (!validateForm(recipeStatus)) {
     const errorMessage =
@@ -206,7 +240,8 @@ const handleSubmit = async (recipeStatus: string) => {
       ingredientsList,
       imagePreview,
       status: recipeStatus,
-      likes: 0
+      likes: 0,
+      nutritionData
     };
 
      if (!docNumber) {

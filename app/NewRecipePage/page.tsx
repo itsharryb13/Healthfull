@@ -10,7 +10,7 @@ const NewRecipePage = () => {
   <NavBarH />
 
   <div className='flex-grow flex justify-center items-start mt-8 mb-8'>
-    <NewRecipeForm />
+    <NewRecipeForm docNumber={""} />
   </div>
  
   <Footer />

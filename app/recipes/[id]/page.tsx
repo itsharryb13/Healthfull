@@ -10,7 +10,6 @@ import { Footer } from "@/app/components/Shared/Footer";
 import { RecipeCard } from "@/app/components/Recipe Card/ReciepeCard";
 import Link from "next/link";
 import NewRecipeForm from "@/app/components/NewRecipe/NewRecipeForm";
-import NutritionAPI from "../NutritionAPI";
 import AlertSystem from "../AlertSystem";
 import jsPDF from "jspdf";
 interface Recipe {
@@ -89,70 +88,6 @@ export default function RecipePage({ params }: { params: { id: string } }) {
     });
 
     return () => unsubscribe();
-  }, []);
-
-  const ingredientsList: string[] = adjustedIngredients.map((Ingredients) => Ingredients.quantity + Ingredients.measurement + " " + Ingredients.name);
-
-  const fetchNutritionFacts = async () => {
-    try {
-      // Make an API call to your backend to fetch the nutrition facts
-      console.log("Calling OpenAI API");
-      let nurtituion = [];
-      let updatedNutrition2 =[];
-      
-      nurtituion = adjustedIngredients.map((element) => ({
-        name: element.name,
-        quantity: element.quantity,
-        measurement: element.measurement,
-        calories: 0,
-        fat:0,
-        sodium:0, 
-        fiber:0,
-        
-      }));
-
-      for(const element of nurtituion){
-        console.log("element",element);
-
-        const nutritionData = await NutritionAPI(element);
-        // const updatedElement = {
-        //   ...element,
-        //   calories: nutritionData.calories,
-        //   fat: nutritionData.fat,
-        //   sodium: nutritionData.sodium,
-        //   fiber: nutritionData.fiber,
-        // };
-        
-        //console.log("this is the output of the updatedElement)
-        element.calories = nutritionData.calories;
-        element.fat = nutritionData.calories;
-        element.fiber = nutritionData.fiber;
-        element.sodium = nutritionData.sodium;
-
-        
-        console.log("element2",element);
-      }
-
-      
-      console.log("nutritionfacts: ", nurtituion);
-    } catch (error) {
-      console.error('Error fetching nutrition facts:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNutritionFacts();
-    console.log("nutritionfacts again" + nutritionFacts);
-
-    const nutritionFactsDisplay = nutritionFacts?.split(',').join('\n');
-    //console.log("nutritionFactsDisplay: " + nutritionFactsDisplay);
-    const nutritionOutput = document.getElementById('output');
-  
-    const forcedString: string = nutritionFactsDisplay as string;
-    //console.log("forcedString: " + forcedString);
-    if (nutritionOutput) {
-      nutritionOutput.textContent = forcedString;
-    };
   }, []);
 
   const isRecipe = (data: DocumentData): data is Recipe => {
@@ -341,7 +276,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       const lineHeight = 10; 
       const maxWidth = 190; 
       const lines = doc.splitTextToSize(line, maxWidth); 
-      lines.forEach((linePart) => {
+      lines.forEach((linePart: string | string[]) => {
         doc.text(linePart, 10, (yPosition += lineHeight));
       });
     });
