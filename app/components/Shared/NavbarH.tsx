@@ -113,10 +113,12 @@ export function NavBarH() {
         </Link>
         <Link href="../../NewRecipePage">
           <button className="btn-nav hover:underline">New Recipe</button>
-        </Link>
-        <button className="btn-nav hover:underline">Macros</button>
+          </Link>
         <Link href="../../Planner">
           <button className="btn-nav hover:underline">Planner</button>
+        </Link>
+        <Link href="../../Macros">
+        <button className="btn-nav hover:underline">Macros</button>
         </Link>
         <Link href="../../MyAccount">
           <button className="btn-nav hover:underline">My Recipes</button>

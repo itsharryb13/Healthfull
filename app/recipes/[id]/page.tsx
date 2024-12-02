@@ -27,6 +27,7 @@ interface Recipe {
   ID: string;
   imagePreview: string;
   status: "draft" | "published";
+  nutritionData?: Record<string, string>; 
 }
 
 interface Comment {
@@ -73,7 +74,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [draftRecipeData, setDraftRecipeData] = useState<Recipe | null>(null);
-  const [nutritionFacts, setNutritionFacts] = useState<string | null>(null);
+  const [nutritionFacts, setNutritionFacts] = useState<Record<string, string> | null>(null);
   const [groceryItem, setGroceryItem] = useState<Ingredient[]>([]);
   const [ingredientAddStatus, setIngredientAddStatus] = useState <boolean>(true);
   const [allergies, setAllergies] = useState<string[] | null> (null);
@@ -354,20 +355,53 @@ export default function RecipePage({ params }: { params: { id: string } }) {
   }, [user, recipe?.recipeName, recipe?.ingredientsList]);
 
   useEffect(() => {
+    const fetchRelatedRecipes = async (tags: string[]) => {
+      if (!tags || tags.length === 0) {
+        console.warn("No tags available for related recipes.");
+        setRelatedRecipes([]);
+        return;
+      }
+  
+      try {
+        const recipesRef = collection(db, "recipes");
+        const q = query(recipesRef, where("tags", "array-contains-any", tags));
+        const querySnapshot = await getDocs(q);
+  
+        const related = querySnapshot.docs
+          .map((doc) => ({ ...doc.data(), ID: doc.id } as Recipe))
+          .filter((r) => r.ID !== params.id);
+  
+        console.log("Fetched related recipes:", related);
+        setRelatedRecipes(related);
+      } catch (error) {
+        console.error("Error fetching related recipes:", error);
+      }
+    };
+  
+    if (recipe?.tags && recipe.tags.length > 0) {
+      fetchRelatedRecipes(recipe.tags);
+    }
+  }, [recipe?.tags, params.id]);
+
+
+  useEffect(() => {
     const fetchRecipe = async () => {
       try {
         const docRef = doc(db, "recipes", params.id);
         const docSnap = await getDoc(docRef);
-  
+    
         if (docSnap.exists()) {
           const data = docSnap.data();
-          //console.log("Fetched recipe data:", data); 
           if (isRecipe(data)) {
-            setRecipe(data);
-            setRecipe({ ...data, ID: docSnap.id }); // Store Firebase document ID as ID
-            fetchRelatedRecipes(data.tags);
-            fetchComments(); 
-            setPortionSize(data.portionSize);
+            setRecipe({
+              ...data,
+              ID: docSnap.id,
+              nutritionData: data.nutritionData || {}, // Use an empty object as fallback
+            });
+    
+            if (data.nutritionData) {
+              setNutritionFacts(data.nutritionData);
+            }
           } else {
             console.error("Invalid recipe data structure!");
             router.push("/404");
@@ -564,7 +598,7 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                   <p className="text-lg text-foreground mb-2"><strong>Difficulty Level:</strong> {recipe.difficulty}</p>
                   <p className="text-lg text-foreground mb-2"><strong>Likes:</strong> {recipe.likes}</p>
 
-                  <div className="flex flex-row gap-x-[4vw]">
+                  <div className="flex flex-row gap-x-[3vw]">
                     {/* Like Button */}
                     <button
                       onClick={handleLike}
@@ -575,10 +609,17 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                       {userHasLiked ? "Unlike" : "Like"}
                     </button>
 
+                    <button
+                          onClick={handlePdfDownload}
+                          className="w-[17%] h-[10%] mt-2 px-4 py-2 bg-button rounded"
+                        >
+                          PDF
+                        </button>
+
                     <div className="flex flex-row h-[10%] gap-x-1">
                       <input
                         type="number"
-                        className="flex w-[25%] h-full mt-3 px-2 py-2 rounded border-gray-400"
+                        className="flex w-[35%] h-full mt-3 px-2 py-2 rounded border-gray-400"
                         placeholder="Quantity"
                         value={portionSize}
                         onChange={(e) => setPortionSize(e.target.valueAsNumber)}
@@ -586,12 +627,6 @@ export default function RecipePage({ params }: { params: { id: string } }) {
                         step="1"
                       />
                       <p className="text-foreground mt-4"> Please select the serving size</p>
-                      <button
-                          onClick={handlePdfDownload}
-                          className="bg-gray-800 text-white px-4 py-2 rounded ml-4 mt-3"
-                        >
-                          Print PDF
-                        </button>
                     </div>
                   </div>
                 </div>
@@ -694,34 +729,47 @@ export default function RecipePage({ params }: { params: { id: string } }) {
         )}
       </div>
 
-      {/* Right column: Related recipes or other sidebar content */}
-      <div className="col-span-1 flex flex-col h-full space-y-8">
-        {/* Nutrients Section */}
-        <div className="bg-container p-6 rounded-lg flex-1 overflow-hidden">
-          <h2 className="text-2xl text-foreground font-semibold mb-2">Nutrients</h2>
-          <label>{nutritionFacts}</label>
-        </div>
+     {/* Right column: Nutrients and Related Recipes */}
+<div className="col-span-1 space-y-8">
+  {/* Nutrients Section */}
+  <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto max-h-[510px]">
+    <h2 className="text-2xl text-foreground font-semibold mb-2">Nutrients</h2>
+    <div>
+      {nutritionFacts ? (
+        <ul className="list-disc list-inside">
+          {Object.entries(nutritionFacts).map(([key, value]) => (
+            <li key={key} className="text-lg text-foreground capitalize">
+              <strong>{key.replace(/([A-Z])/g, " $1")}: </strong>
+              {value}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-foreground">No nutrition facts available.</p>
+      )}
+    </div>
+  </div>
 
-        {/* Related Recipes Section */}
-        <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto">
-          <h2 className="text-2xl text-foreground font-semibold mb-4">Related Recipes</h2>
-          <div className="space-y-4">
-            {relatedRecipes.length > 0 ? (
-              relatedRecipes.map((relatedRecipe) => (
-                <RecipeCard
-                  key={relatedRecipe.ID}
-                  ID={relatedRecipe.ID}
-                  name={relatedRecipe.recipeName}
-                  imageUrl={relatedRecipe.imageUrl}
-                  description={relatedRecipe.recipeDescription}
-                />
-              ))
-            ) : (
-              <p>No related recipes found.</p>
-            )}
-          </div>
-        </div>
-      </div>
+  {/* Related Recipes Section */}
+  <div className="bg-container p-7 rounded-lg flex-1 overflow-y-auto max-h-[725px]">
+    <h2 className="text-2xl text-foreground font-semibold mb-4">Related Recipes</h2>
+    <div className="space-y-4">
+      {relatedRecipes.length > 0 ? (
+        relatedRecipes.map((relatedRecipe) => (
+          <RecipeCard
+            key={relatedRecipe.ID}
+            ID={relatedRecipe.ID}
+            name={relatedRecipe.recipeName}
+            imageUrl={relatedRecipe.imageUrl}
+            description={relatedRecipe.recipeDescription}
+          />
+        ))
+      ) : (
+        <p>No related recipes found.</p>
+      )}
+    </div>
+  </div>
+</div>
     </div>
     <Footer />
   </div>

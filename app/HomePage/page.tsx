@@ -8,8 +8,6 @@ export default function Homepage(){
     return(
         <>
        <NavBarH/>
-        <Banner/>
-        <div style={{ marginBottom: "20px" }}></div>
         <InfoHomePage/>
         <Footer/>
         </>
