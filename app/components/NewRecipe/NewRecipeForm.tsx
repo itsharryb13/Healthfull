@@ -133,21 +133,22 @@ export default function NewRecipeForm({ docNumber, draftData }: NewRecipeFormPro
    setErrors(newErrors);
    return isValid;
  };
-
  const handleUpload = async () => {
   try {
     if (image) {
-      // Upload image to Firebase Storage
       await uploadString(storageRef, image, "data_url");
       const url = await getDownloadURL(storageRef);
       console.log("URL from storage:", url);
-      setImagePreview(url); // Set the preview image URL after upload
+      setImagePreview(url); // Optional: if you want to update the preview
       setLoading(true);
+      return url; // Return the URL
     } else {
       console.log("No image to upload");
+      return null;
     }
   } catch (error) {
     console.log("Upload error:", error);
+    return null;
   }
 };
 
@@ -219,9 +220,14 @@ const handleSubmit = async (recipeStatus: string) => {
   }
 
   try {
+    let imageURL = imagePreview; // Default to current imagePreview
+
     // Upload the image if publishing and an image exists
     if (recipeStatus === "published" && image) {
-      await handleUpload();
+      const uploadedImageUrl = await handleUpload();
+      if (uploadedImageUrl) {
+        imageURL = uploadedImageUrl; // Use the uploaded image URL
+      }
     }
 
     const instructionsArray = instructions
@@ -238,7 +244,7 @@ const handleSubmit = async (recipeStatus: string) => {
       difficulty,
       tags,
       ingredientsList,
-      imagePreview,
+      imagePreview: imageURL,
       status: recipeStatus,
       likes: 0,
       nutritionData

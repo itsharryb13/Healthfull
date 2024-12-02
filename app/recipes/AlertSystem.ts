@@ -61,7 +61,7 @@ export default async function NutritionAPI(
     console.log("Parsed Similar Ingredients:", similarIngredients);
     return similarIngredients;
   } catch (error) {
-    console.error("Error comparing ingredients:", error.message);
+    console.error("Error comparing ingredients:", error);
     return null;
   }
 }
