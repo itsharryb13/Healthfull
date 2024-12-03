@@ -202,7 +202,7 @@ export default function Planner() {
                       name={item.recipeName}
                       description={item.recipeDescription}
                       imageUrl={item.imagePreview}
-                      onClickAdd={() => handleRecipeAdd(dayIndex, item.id)}
+                      //onClickAdd={() => handleRecipeAdd(dayIndex, item.id)}
                     />
                   </CarouselItem>
                 ))}

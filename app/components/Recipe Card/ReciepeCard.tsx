@@ -50,8 +50,8 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
       const userDocument = await getDocs(DocumentSearch);
       if (!userDocument.empty) {
         const userData = userDocument.docs[0].data();
-        setSavedStatus(userData.SavedRecipe?.includes(ID) || false);
-        setEverydayStatus(userData.EverydayForWeek?.includes(ID) || false);
+        setSavedStatus(userData.SavedMeals?.includes(ID) || false);
+        setEverydayStatus(userData.EverydayMeals?.includes(ID) || false);
         setMStatus(userData.MondayMeals?.includes(ID) || false);
         setTStatus(userData.TuesdayMeals?.includes(ID) || false);
         setWStatus(userData.WednesdayMeals?.includes(ID) || false);
@@ -245,11 +245,11 @@ export function RecipeCard({ ID, name, imageUrl, description, onSaveButton}: Rec
             <DropdownMenuCheckboxItem className="text-foreground" checked={showSavedStatus} onCheckedChange={setSavedStatus}>
               Save Recipe
             </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem className="text-foreground" checked={showEverydayStatus} onCheckedChange={setEverydayStatus}>
+            {/* <DropdownMenuCheckboxItem className="text-foreground" checked={showEverydayStatus} onCheckedChange={setEverydayStatus}>
               Everyday
-            </DropdownMenuCheckboxItem>
+            </DropdownMenuCheckboxItem> */}
             <DropdownMenuSeparator className="my-1" />
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-x-1 pr-3">
               <DropdownMenuCheckboxItem className="text-foreground" checked={showMStatus} onCheckedChange={setMStatus}>Mon</DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem className="text-foreground" checked={showTStatus} onCheckedChange={setTStatus}>Tue</DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem className="text-foreground" checked={showWStatus} onCheckedChange={setWStatus}>Wed</DropdownMenuCheckboxItem>

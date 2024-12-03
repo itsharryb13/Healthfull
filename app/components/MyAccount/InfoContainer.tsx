@@ -41,7 +41,7 @@ export default function InfoContainer() {
   
         if (!userSnapshot.empty) {
           const userData = userSnapshot.docs[0].data();
-          const savedRecipeIds: string[] = userData.SavedRecipe || [];
+          const savedRecipeIds: string[] = userData.SavedMeals || [];
           
           // Array to collect valid recipes
           const fetchedRecipes: Recipe[] = [];
