@@ -1,4 +1,5 @@
 "use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,18 +15,16 @@ import { signOut } from "firebase/auth";
 import { db, auth } from "../../../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import router from "next/router";
-import SunIcon from "../../public/sun.svg"; 
-import MoonIcon from "../../public/moon.svg"; 
-import user from "../../public/user.svg"
-
-
+import SunIcon from "../../public/sun.svg";
+import MoonIcon from "../../public/moon.svg";
+import user from "../../public/user.svg";
 
 interface Recipe {
   id: string;
   recipeName: string;
   recipeDescription?: string;
   imagePreview?: string;
-  ingredientsList?: string[]; // Array of ingredients
+  ingredientsList?: { name: string; measurement?: string; quantity?: number }[]; // Array of ingredient objects
 }
 
 export function NavBarH() {
@@ -39,7 +38,7 @@ export function NavBarH() {
     setTheme(savedTheme);
     document.documentElement.classList.toggle("dark", savedTheme === "dark");
   }, []);
-  
+
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -76,10 +75,8 @@ export function NavBarH() {
       const filteredResults = recipes.filter(
         (recipe) =>
           recipe.recipeName.toLowerCase().includes(lowerCaseValue) ||
-          recipe.ingredientsList?.some(
-            (ingredient) =>
-              typeof ingredient === "string" &&
-              ingredient.toLowerCase().includes(lowerCaseValue)
+          recipe.ingredientsList?.some((ingredient) =>
+            ingredient.name?.toLowerCase().includes(lowerCaseValue)
           )
       );
       setSearchResults(filteredResults);
@@ -113,12 +110,12 @@ export function NavBarH() {
         </Link>
         <Link href="../../NewRecipePage">
           <button className="btn-nav hover:underline">New Recipe</button>
-          </Link>
+        </Link>
         <Link href="../../Planner">
           <button className="btn-nav hover:underline">Planner</button>
         </Link>
         <Link href="../../Macros">
-        <button className="btn-nav hover:underline">Macros</button>
+          <button className="btn-nav hover:underline">Macros</button>
         </Link>
         <Link href="../../MyAccount">
           <button className="btn-nav hover:underline">My Recipes</button>
@@ -153,8 +150,8 @@ export function NavBarH() {
           )}
         </div>
 
-         {/* Dark Mode Toggle */}
-         <button
+        {/* Dark Mode Toggle */}
+        <button
           onClick={toggleTheme}
           className="flex justify-center items-center w-[2vw] h-[2vw] p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"
         >
