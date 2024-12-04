@@ -8,7 +8,7 @@ export default function MyAccount(){
 
         <NavBarH/>
         <InfoContainer/>
-        <Footer/>
+        {/* <Footer/> */}
 
         </>
     );

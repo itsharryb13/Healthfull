@@ -11,7 +11,7 @@ const MacrosPage = () => {
 
   <MacrosInfo />
  
-  <Footer />
+  {/* <Footer /> */}
 </div>
  );
 };

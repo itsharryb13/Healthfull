@@ -207,62 +207,20 @@ export default function InfoHomePage() {
 
   const handleSuggestedRecipeButton = async () => {
     if (!user) return;
-  
+
     try {
-      const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
-      const userSnapshot = await getDocs(userQuery);
-  
-      if (userSnapshot.empty) {
-        console.log("No user found with the specified UID");
-        return;
-      }
-  
-      const userData = userSnapshot.docs[0].data();
-      const savedRecipe = userData.savedRecipe || [];
-      const groceryList = userData.groceryList || [];
-  
-      let recipeQuery;
-      
-      if (savedRecipe.length > 0) {
-        // If the user has saved recipes, suggest recipes based on those
-        recipeQuery = query(
-          collection(db, "recipes"),
-          where("status", "==", "published"),
-          where("__name__", "in", savedRecipe) // Using document ID for matching saved recipes
-        );
-      } else if (groceryList.length > 0) {
-        // If the user has a grocery list
-        recipeQuery = query(
-          collection(db, "recipes"),
-          where("status", "==", "published"),
-          where("ingredients", "array-contains-any", groceryList.map((item: Ingredient) => item.name))
-        );
-      } else {
-        // No saved recipes or grocery list, suggest a random recipe
-        const allRecipesSnapshot = await getDocs(
-          query(collection(db, "recipes"), where("status", "==", "published"))
-        );
-        const allRecipes = allRecipesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Recipe[];
-  
-        const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)];
-        setSuggestedRecipe(randomRecipe);
-        return;
-      }
-  
-      const suggestedRecipesSnapshot = await getDocs(recipeQuery);
-      const suggestedRecipes: Recipe[] = suggestedRecipesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Recipe[];
-  
-      setItems(suggestedRecipes);
+      const recipeQuery = query(collection(db, "recipes"), where("status", "==", "published"));
+      const querySnapshot = await getDocs(recipeQuery);
+
+      const recipes = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Recipe[];
+      const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+      setSuggestedRecipe(randomRecipe);
     } catch (error) {
-      console.error("Error fetching suggested recipes:", error);
+      console.error("Error suggesting recipe:", error);
+      setError("Failed to suggest a recipe.");
     }
   };
+
 
   return (
     <div className="bg-background min-h-screen">
@@ -303,7 +261,7 @@ export default function InfoHomePage() {
       </div>
 
       {/* Right Column: Grocery List Section */}
-      <div className="w-full col-span-1 flex flex-col h-full space-y-10">
+      <div className="w-[30%] col-span-1 flex flex-col h-full space-y-10">
         <div className="bg-container p-6 rounded-lg flex-1 overflow-hidden overflow-y-scroll">
         <div className="mb-4"> 
          <span className="text-[2vw] text-foreground">Grocery List</span>
@@ -337,7 +295,7 @@ export default function InfoHomePage() {
             ))}
           </div>
         </div>
-        <div className="bg-container w-full p-6 rounded-lg flex-1 overflow-y-auto h-[40%]">
+        <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto h-[40%] w-[100%]">
               <button type="button" onClick= {handleSuggestedRecipeButton} className="w-full p-[0.5vw] bg-button text-button rounded" > Suggest a Recipe</button>
               {suggestedRecipe && (
             <div className="mt-4 p-4 bg-container rounded ">

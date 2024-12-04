@@ -28,6 +28,7 @@ export default function InfoPage() {
   const [healthIssues, setHealthIssues] = useState<string[]>([]); // Track health issues
   const [height, setHeight] = useState({ feet: "", inches: "" }); // Height state
   const [weight, setWeight] = useState({ value: "", unit: "kg" }); // Weight state
+  const [customAllergens, setCustomAllergens] = useState<string>("");
 
 
 
@@ -80,6 +81,12 @@ export default function InfoPage() {
         where("uid", "==", user.uid)
       );
       const userSnapshot = await getDocs(userQuery);
+      if (userSnapshot.empty) {
+        console.error("No data found for the logged-in user.");
+        setLoading(false);
+        return;
+      }
+      
       const userData = userSnapshot.docs[0]?.data();
 
       if (userData) {
@@ -120,10 +127,32 @@ export default function InfoPage() {
     );
   };
 
-  const submitbutton = async() => {
+  const submitbutton = async () => {
+    const requiredFields = [
+      { key: "Birthday", value: birthday },
+      { key: "Gender", value: gender },
+      { key: "Allergies", value: allergies.length ? "filled" : "" },
+      { key: "HealthIssues", value: healthIssues.length ? "filled" : "" },
+      { key: "Height", value: height.feet && height.inches ? "filled" : "" },
+      { key: "Weight", value: weight.value ? "filled" : "" },
+    ];
+  
+    const emptyFields = requiredFields.filter(field => !field.value);
+  
+    if (emptyFields.length > 0) {
+      alert(
+        `Please fill out the following fields: ${emptyFields
+          .map(field => field.key)
+          .join(", ")}`
+      );
+      return;
+    }
+  
     if (!user) return;
-    try{
-      handleUpload();
+  
+    try {
+      await handleUpload(); // Ensure the upload is completed before proceeding
+  
       const DocumentSearch = query(
         collection(db, "users"),
         where("uid", "==", user.uid)
@@ -133,7 +162,7 @@ export default function InfoPage() {
         alert("No matching user document found.");
       } else {
         const userRef = userDocument.docs[0].ref;
-
+  
         await updateDoc(userRef, {
           Birthday: birthday,
           Gender: gender,
@@ -141,22 +170,49 @@ export default function InfoPage() {
           Allergies: allergies,
           HealthIssues: healthIssues,
           Height: height,
-          Weight: weight
+          Weight: weight,
         });
+  
+        alert("Information saved successfully to the Database");
       }
-
-    }catch(error){
-      console.error("fetchUserData error:", error);
+    } catch (error) {
+      console.error("Error during form submission:", error);
     }
-    console.log(allergies);
-    console.log(healthIssues);
-  }
+  };
+  
 
   useEffect(() => {
     if (user) {
       fetchUserData();
     }
   }, [user]);
+
+  const addCustomAllergens = () => {
+    if (!customAllergens.trim()) {
+      alert("Please enter valid allergens.");
+      return;
+    }
+  
+    // Split input by commas and remove whitespace
+    const newAllergens = customAllergens
+      .split(",")
+      .map((allergen) => allergen.trim())
+      .filter((allergen) => allergen);
+  
+    // Filter out duplicates
+    const uniqueNewAllergens = newAllergens.filter(
+      (allergen) => !allergies.includes(allergen)
+    );
+  
+    if (uniqueNewAllergens.length === 0) {
+      alert("All entered allergens are already listed.");
+      return;
+    }
+  
+    // Add unique allergens to the list
+    setAllergies((prev) => [...prev, ...uniqueNewAllergens]);
+    setCustomAllergens(""); // Clear the input field
+  };
   return (
     <div className="w-full h-auto pt-8 px-8">
   
@@ -269,28 +325,76 @@ export default function InfoPage() {
         </div>
       </div>
 
-      {/* Allergies Section */}
       <div>
-        <label className="text-lg text-foreground font-semibold mb-4">Allergies (select all that apply):</label>
-        <div className="grid grid-cols-3 gap-4">
-          {["Milk", "Peanuts", "Eggs", "Tree Nuts", "Soy", "Wheat", "Shell Fish", "Sesame", "Mustard"].map((allergy) => (
-            <div key={allergy} className="flex items-center text-foreground">
-              <Checkbox
-                checked={allergies.includes(allergy)}
-                onCheckedChange={(checked) => handleAllergyChange(allergy, checked)}
-                id={`allergy-${allergy}`}
-              />
-              <label htmlFor={`allergy-${allergy}`} className="ml-2">{allergy}</label>
-            </div>
-          ))}
+  <label className="text-lg text-foreground font-semibold mb-4">
+    Allergies (select all that apply):
+  </label>
+
+  {/* Display Selected Allergies */}
+  <div className="mb-4">
+    <h3 className="text-md text-foreground font-semibold mb-2">Selected Allergies:</h3>
+    <div className="flex flex-wrap gap-2">
+      {allergies.length > 0 ? (
+        allergies.map((allergy, index) => (
+          <span
+            key={`${allergy}-${index}`}
+            className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+          >
+            {allergy}
+          </span>
+        ))
+      ) : (
+        <span className="text-gray-500 text-sm">No allergies selected.</span>
+      )}
+    </div>
+  </div>
+
+  {/* Allergen Selection */}
+  <div className="grid grid-cols-3 gap-4">
+    {["Milk", "Peanuts", "Eggs", "Tree Nuts", "Soy", "Wheat", "Shell Fish", "Sesame", "Mustard"].map(
+      (allergy) => (
+        <div key={allergy} className="flex items-center text-foreground">
+          <Checkbox
+            checked={allergies.includes(allergy)}
+            onCheckedChange={(checked) => handleAllergyChange(allergy, checked)}
+            id={`allergy-${allergy}`}
+          />
+          <label htmlFor={`allergy-${allergy}`} className="ml-2">{allergy}</label>
         </div>
-      </div>
+      )
+    )}
+  </div>
+
+  {/* Add New Allergens */}
+  <div className="flex flex-col gap-4 mt-4">
+    <div className="flex items-center gap-4">
+      <input
+        type="text"
+        className="p-2 border rounded bg-input text-foreground flex-1"
+        placeholder="Add custom allergens (comma-separated)"
+        value={customAllergens}
+        onChange={(e) => setCustomAllergens(e.target.value)}
+      />
+      <button
+        type="button"
+        className="p-2 bg-button text-white rounded-lg"
+        onClick={addCustomAllergens}
+      >
+        Add Allergens
+      </button>
+    </div>
+    <small className="text-sm text-gray-500">
+      Enter multiple allergens separated by commas, e.g., "Chocolate, Strawberries".
+    </small>
+  </div>
+</div>
+
 
       {/* Health Issues Section */}
       <div>
         <label className="text-lg text-foreground font-semibold mb-4">Health Issues (select all that apply):</label>
         <div className="grid grid-cols-3 gap-4">
-          {["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Celiac Disease"].map((issue) => (
+          {["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Celiac Disease", 'none'].map((issue) => (
             <div key={issue} className="flex items-center text-foreground">
               <Checkbox
                 checked={healthIssues.includes(issue)}

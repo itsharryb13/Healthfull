@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getDoc, doc, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "@/firebaseConfig";
+import DietPlanner from "./DietPlanner";
 
 interface NutritionData {
   title: string;
@@ -61,6 +62,30 @@ export default function MacrosInfo() {
   const [selectedDay, setSelectedDay] = useState<string>("Monday");
   const [goalData, setGoalData] = useState(defaultGoalData);
   const [editingGoals, setEditingGoals] = useState(false);
+  const [userDetails, setUserDetails] = useState<{
+    height: { feet: number | null; inches: number | null };
+    weight: { value: number | null; unit: string | null };
+    age: number | null;
+    healthConditions: string[] | null;
+  }>({
+    height: { feet: null, inches: null },
+    weight: { value: null, unit: null },
+    age: null,
+    healthConditions: null,
+  });
+
+  const calculateAge = (birthday: string): number => {
+    const birthDate = new Date(birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
 
   const fetchGoals = async () => {
     try {
@@ -78,14 +103,27 @@ export default function MacrosInfo() {
 
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0];
-        const userGoals = userDoc.data().goals;
+        const userData = userDoc.data();
 
-        if (userGoals) {
-          setGoalData(userGoals);
+        if (userData.goals) {
+          setGoalData(userData.goals);
         }
+
+        setUserDetails({
+          height: {
+            feet: userData.height?.feet || null,
+            inches: userData.height?.inches || null,
+          },
+          weight: {
+            value: userData.weight?.value || null,
+            unit: userData.weight?.unit || null,
+          },
+          age: userData.birthday ? calculateAge(userData.birthday) : null,
+          healthConditions: userData.healthConditions || null,
+        });
       }
     } catch (error) {
-      console.error("Error fetching user goals:", error);
+      console.error("Error fetching user data:", error);
     }
   };
 
@@ -187,7 +225,6 @@ export default function MacrosInfo() {
         const userDoc = querySnapshot.docs[0];
         const userDocRef = doc(db, "users", userDoc.id);
 
-        // Save updated goals to Firestore
         await updateDoc(userDocRef, { goals: goalData });
         console.log("Goals updated successfully.");
       }
@@ -196,7 +233,7 @@ export default function MacrosInfo() {
     }
 
     setEditingGoals(false);
-    fetchDailyMacros(selectedDay); // Refresh data with new goals
+    fetchDailyMacros(selectedDay);
   };
 
   useEffect(() => {
@@ -206,6 +243,27 @@ export default function MacrosInfo() {
   useEffect(() => {
     fetchDailyMacros(selectedDay);
   }, [selectedDay, goalData]);
+
+  const handleDietPlanner = async () => {
+    try {
+      const recommendations = await DietPlanner(userDetails);
+      if (recommendations) {
+        console.log("Recommended Dietary Intake:", recommendations);
+
+        setGoalData({
+          calories: recommendations.calories,
+          protein: recommendations.protein,
+          fat: recommendations.fat,
+          carbohydrates: recommendations.carbohydrates,
+          fiber: recommendations.fiber,
+        });
+      } else {
+        console.error("Failed to generate dietary recommendations.");
+      }
+    } catch (error) {
+      console.error("Error in DietPlanner:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-background p-8">
@@ -244,28 +302,40 @@ export default function MacrosInfo() {
           {editingGoals ? "Cancel Editing" : "Edit Goals"}
         </button>
         {editingGoals ? (
-          <div className="mt-6">
+          <div className="mt-6 gap-x-30">
             <h3 className="text-lg font-bold text-foreground mb-4">Edit Your Goals</h3>
             <div className="grid grid-cols-2 gap-4">
               {Object.keys(goalData).map((key) => (
                 <div key={key} className="flex items-center space-x-4">
-                  <label className="text-sm text-foreground w-32">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                  <label className="text-sm text-foreground w-32">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
                   <input
                     type="number"
                     value={goalData[key as keyof typeof goalData]}
-                    onChange={(e) => handleGoalChange(key, parseInt(e.target.value, 10))}
+                    onChange={(e) =>
+                      handleGoalChange(key, parseInt(e.target.value, 10))
+                    }
                     className="p-2 border border-custom rounded-md bg-input text-foreground"
                   />
                 </div>
               ))}
             </div>
+            <div className="flex flex-row gap-[2vw] ">
             <button
               className="mt-4 bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
               onClick={saveGoals}
             >
               Save Goals
             </button>
-          </div>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              onClick={handleDietPlanner}
+            >
+              Get Diet Recommendations
+            </button>
+            </div>
+            </div>
         ) : (
           <>
             {nutritionData.length === 0 ? (

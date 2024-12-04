@@ -13,7 +13,7 @@ const NewRecipePage = () => {
     <NewRecipeForm docNumber={""} />
   </div>
  
-  <Footer />
+  {/* <Footer /> */}
 </div>
  );
 };

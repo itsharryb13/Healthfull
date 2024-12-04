@@ -9,7 +9,7 @@ export default function Homepage(){
         <>
        <NavBarH/>
         <InfoHomePage/>
-        <Footer/>
+        {/* <Footer/> */}
         </>
     );
 

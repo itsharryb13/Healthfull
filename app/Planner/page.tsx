@@ -255,7 +255,7 @@ export default function Planner() {
           </div>
         ))}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
