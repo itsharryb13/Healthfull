@@ -262,7 +262,7 @@ export default function InfoHomePage() {
 
       {/* Right Column: Grocery List Section */}
       <div className="w-[30%] col-span-1 flex flex-col h-full space-y-10">
-        <div className="bg-container p-6 rounded-lg flex-1 overflow-hidden overflow-y-scroll">
+        <div className="bg-container p-6 rounded-[21px] flex-1 overflow-hidden overflow-y-scroll">
         <div className="mb-4"> 
          <span className="text-[2vw] text-foreground">Grocery List</span>
          </div>
@@ -295,7 +295,7 @@ export default function InfoHomePage() {
             ))}
           </div>
         </div>
-        <div className="bg-container p-6 rounded-lg flex-1 overflow-y-auto h-[40%] w-[100%]">
+        <div className="bg-container p-6 rounded-[21px] flex-1 overflow-y-auto h-[40%] w-[100%]">
               <button type="button" onClick= {handleSuggestedRecipeButton} className="w-full p-[0.5vw] bg-button text-button rounded" > Suggest a Recipe</button>
               {suggestedRecipe && (
             <div className="mt-4 p-4 bg-container rounded ">

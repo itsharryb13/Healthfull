@@ -43,6 +43,12 @@ export default function InfoPage() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
   const handleUpload = async () => {
     if (!image) return console.log("No image to upload");
 
@@ -102,6 +108,8 @@ export default function InfoPage() {
         setWeight(userData.Weight || { value: Number, unit: "kg" });
 
       }
+
+      console.log(userData.image);
     } catch (error) {
       console.error("fetchUserData error:", error);
     }
@@ -180,12 +188,6 @@ export default function InfoPage() {
     }
   };
   
-
-  useEffect(() => {
-    if (user) {
-      fetchUserData();
-    }
-  }, [user]);
 
   const addCustomAllergens = () => {
     if (!customAllergens.trim()) {
