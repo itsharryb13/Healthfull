@@ -24,12 +24,11 @@ export function SignInBox() {
         setUser(user);
         // User is already signed in, redirecting to HomePage
         router.push('/HomePage');
-        console.log("after redirect");
+        console.log("Redirecting.");
         const username = auth.currentUser?.email;
         console.log(username);
       }
     });
-    console.log("after after redirect");
     // Cleanup function to prevent memory leaks
     return unsubscribe;
   }, [auth]);
@@ -74,6 +73,18 @@ export function SignInBox() {
       console.error(errorMessage);
     }
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        handleClick();
+      }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleClick]);
 
   return (
     <div className='flex flex-col w-[520px] h-[315px] p-[24px] bg-container rounded-[8px] border border-[#d9d9d9] mx-auto'>

@@ -516,37 +516,7 @@ useEffect(() => {
       {/* Tags Checkboxes */}
       <div className='flex flex-col '>
         <label className='text-lg font-semibold text-foreground'>Tags:</label>
-        <div className='grid grid-cols-2 gap-2 text-foreground'>
-          <label>
-            <input
-              type="checkbox"
-              value="Dairy-Free"
-              onChange={handleTagChange}
-              checked={tags.includes("Dairy-Free")}
-              className='mr-2'
-            />
-            Dairy-Free
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Gluten-Free"
-              onChange={handleTagChange}
-              checked={tags.includes("Gluten-Free")}
-              className='mr-2'
-            />
-            Gluten-Free
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Vegan"
-              onChange={handleTagChange}
-              checked={tags.includes("Vegan")}
-              className='mr-2'
-            />
-            Vegan
-          </label>
+        <div className='grid grid-cols-3 gap-2 text-foreground'>
           <label>
             <input
               type="checkbox"
@@ -576,6 +546,126 @@ useEffect(() => {
               className='mr-2'
             />
             Dinner
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Dessert"
+              onChange={handleTagChange}
+              checked={tags.includes("Dessert")}
+              className='mr-2'
+            />
+            Dessert
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Dairy-Free"
+              onChange={handleTagChange}
+              checked={tags.includes("Dairy-Free")}
+              className='mr-2'
+            />
+            Dairy-Free
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Gluten-Free"
+              onChange={handleTagChange}
+              checked={tags.includes("Gluten-Free")}
+              className='mr-2'
+            />
+            Gluten-Free
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Meat"
+              onChange={handleTagChange}
+              checked={tags.includes("Meat")}
+              className='mr-2'
+            />
+            Meat
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Vegan"
+              onChange={handleTagChange}
+              checked={tags.includes("Vegan")}
+              className='mr-2'
+            />
+            Vegan
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Vegetarian"
+              onChange={handleTagChange}
+              checked={tags.includes("Vegetarian")}
+              className='mr-2'
+            />
+            Vegetarian
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Pescetarian"
+              onChange={handleTagChange}
+              checked={tags.includes("Pescetarian")}
+              className='mr-2'
+            />
+            Pescetarian
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Kosher"
+              onChange={handleTagChange}
+              checked={tags.includes("Kosher")}
+              className='mr-2'
+            />
+            Kosher
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Rich in Iron"
+              onChange={handleTagChange}
+              checked={tags.includes("Rich in Iron")}
+              className='mr-2'
+            />
+            Rich in Iron
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Keto"
+              onChange={handleTagChange}
+              checked={tags.includes("Keto")}
+              className='mr-2'
+            />
+            Keto
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Paleo"
+              onChange={handleTagChange}
+              checked={tags.includes("Paleo")}
+              className='mr-2'
+            />
+            Paleo
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Low Sugar"
+              onChange={handleTagChange}
+              checked={tags.includes("Low Sugar")}
+              className='mr-2'
+            />
+            Low Sugar
           </label>
         </div>
       </div>

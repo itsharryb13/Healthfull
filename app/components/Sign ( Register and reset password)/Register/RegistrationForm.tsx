@@ -4,8 +4,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { auth, db } from "../../../../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, sendSignInLinkToEmail } from "firebase/auth";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 
 export default function RegistrationForm() {
@@ -18,6 +19,7 @@ export default function RegistrationForm() {
  const [confirmPasswordError, setConfirmPasswordError] = useState("");
  const [emailError, setEmailError] = useState("");
  const [usernameError, setUsernameError] = useState("");
+ const router = useRouter();
 
 
  // Validate password
@@ -84,6 +86,7 @@ export default function RegistrationForm() {
 
  // Form submission handler
  const handleSubmit = async (e: React.FormEvent) => {
+  router.prefetch('/additionalInfo');
    e.preventDefault();
     const isPasswordValid = validatePassword();
    const isConfirmPasswordValid = validateConfirmPassword();
@@ -105,7 +108,10 @@ export default function RegistrationForm() {
          username: username,
          createdAt: new Date(),
        });
+       await sendEmailVerification(user);
         alert("User registered successfully!");
+        console.log("Redirecting.");
+        router.push('/additionalInfo');
      } catch (error) {
        console.error("Error adding user to Firestore: ", error);
       
@@ -121,6 +127,23 @@ export default function RegistrationForm() {
      }
    }
  };
+
+ const handleRegister = async () => {
+  // Setting form state
+  await handleSubmit({preventDefault: () => {}} as unknown as React.FormEvent);
+ }
+ 
+ useEffect(() => {
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleRegister();
+    }
+  };
+  document.addEventListener('keydown', handleKeyPress);
+  return () => {
+    document.removeEventListener('keydown', handleKeyPress);
+  };
+}, [handleSubmit]);
 
 
  useEffect(() => {

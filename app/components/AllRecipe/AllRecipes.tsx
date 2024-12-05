@@ -18,7 +18,7 @@ export default function AllRecipes() {
  const [loading, setLoading] = useState(true);
  const [filters, setFilters] = useState<string[]>([]);
  const [searchQuery, setSearchQuery] = useState('');
- const filterOptions = ["Dairy-Free", "Gluten-Free", "Vegan", "Breakfast", "Lunch", "Dinner"];
+ const filterOptions = ["Breakfast", "Lunch", "Dinner", "Dessert", "Dairy-Free", "Gluten-Free", "Meat", "Vegan", "Vegetarian", "Pescetarian", "Kosher", "Rich in Iron", "Keto", "Paleo", "Low Sugar"];
 
  useEffect(() => {
    const fetchPublishedRecipes = async () => {
