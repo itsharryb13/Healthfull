@@ -11,6 +11,8 @@ interface Recipe {
  recipeDescription?: string;
  imagePreview?: string;
  tags?: string[];
+ protein?: string;
+ calories?: string;
 }
 
 export default function AllRecipes() {
@@ -19,6 +21,8 @@ export default function AllRecipes() {
  const [filters, setFilters] = useState<string[]>([]);
  const [searchQuery, setSearchQuery] = useState('');
  const filterOptions = ["Breakfast", "Lunch", "Dinner", "Dessert", "Dairy-Free", "Gluten-Free", "Meat", "Vegan", "Vegetarian", "Pescetarian", "Kosher", "Rich in Iron", "Keto", "Paleo", "Low Sugar"];
+ const [desiredProtein, setDesiredProtein] = useState('');
+ const [desiredCalories, setDesiredCalories] = useState('');
 
  useEffect(() => {
    const fetchPublishedRecipes = async () => {
@@ -28,6 +32,8 @@ export default function AllRecipes() {
        const querySnapshot = await getDocs(q);
        const recipesData: Recipe[] = querySnapshot.docs.map(doc => ({
          id: doc.id,
+         protein: doc.data().nutritionData.protein,
+         calories: doc.data().nutritionData.calories,
          ...doc.data()
        })) as Recipe[];
        setRecipes(recipesData);
@@ -53,10 +59,20 @@ export default function AllRecipes() {
    setSearchQuery(event.target.value);
  };
 
+ const handleProteinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setDesiredProtein(event.target.value);
+};
+
+const handleCaloriesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+ setDesiredCalories(event.target.value);
+};
+
  const filteredRecipes = recipes.filter(recipe => {
    const matchesFilters = filters.length === 0 || filters.every(filter => recipe.tags?.includes(filter));
    const matchesSearch = recipe.recipeName?.toLowerCase().includes(searchQuery.toLowerCase());
-   return matchesFilters && matchesSearch;
+   const matchesProtein = desiredProtein === '' || (parseInt(recipe.protein || "0", 10) >= parseInt(desiredProtein || "0", 10));
+   const matchesCalories = desiredCalories === '' || (parseInt(recipe.calories || "0", 10) <= parseInt(desiredCalories || "0", 10));
+   return matchesFilters && matchesSearch && matchesProtein && matchesCalories;
  });
 
  return (
@@ -86,6 +102,20 @@ export default function AllRecipes() {
          >
            Clear Filter
          </button>
+         <input
+             type="text"
+             placeholder="Protein"
+             value={desiredProtein}
+             onChange={handleProteinChange}
+             className="flex mt-6 px-0.75 py-1 border rounded w-1/3"
+           />
+           <input
+             type="text"
+             placeholder="Calories"
+             value={desiredCalories}
+             onChange={handleCaloriesChange}
+             className="flex mt-4 px-1 py-2 border rounded w-1/3"
+           />
        </div>
 
        {/* Recipes Section */}
