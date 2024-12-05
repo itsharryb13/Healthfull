@@ -241,62 +241,149 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       alert("No recipe data available to generate a PDF.");
       return;
     }
-
+  
     const doc = new jsPDF();
+    const margin = 15;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const fontColor = [0, 0, 0]; 
 
-    doc.setFontSize(18);
-    doc.text(recipe.recipeName, 10, 10);
-   
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...fontColor);
+    doc.text(recipe.recipeName, margin, margin + 10);
+  
+    if (recipe.imagePreview) {
+      const img = new Image();
+      img.src = recipe.imagePreview;
+  
+      img.onload = () => {
+        const imgWidth = 80;
+        const imgHeight = (img.height / img.width) * imgWidth;
+
+        doc.addImage(img, "JPEG", margin, margin + 20, imgWidth, imgHeight);
+  
+        const detailX = margin + imgWidth + 10;
+        let detailY = margin + 25;
+  
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Serves: ${recipe.portionSize}`, detailX, detailY);
+        doc.text(`Prep Time: ${recipe.hours}h ${recipe.minutes}m`, detailX, detailY + 10);
+        doc.text(`Difficulty: ${recipe.difficulty}`, detailX, detailY + 20);
+  
+        const sectionY = margin + imgHeight + 30;
+        generatePDFContent(doc, sectionY, pageHeight, margin, fontColor);
+      };
+  
+      img.onerror = () => {
+        alert("Failed to load the recipe image.");
+        const sectionY = margin + 40;
+        generatePDFContent(doc, sectionY, pageHeight, margin, fontColor);
+      };
+    } else {
+      const sectionY = margin + 40;
+      generatePDFContent(doc, sectionY, pageHeight, margin, fontColor);
+    }
+  };
+  
+  const generatePDFContent = (doc, startY, pageHeight, margin, fontColor) => {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const contentWidth = pageWidth - margin * 2;
+    const columnWidth = contentWidth * 0.5;
+  
+    let currentY = startY;
+  
+    const ingredientsX = margin;
+    let ingredientsY = startY;
+  
     doc.setFontSize(14);
-    doc.text("Description:", 10, 20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...fontColor);
+    doc.text("Ingredients", ingredientsX, ingredientsY);
+  
+    ingredientsY += 10;
     doc.setFontSize(12);
-    doc.text(recipe.recipeDescription, 10, 30);
-    doc.setFontSize(14);
-    doc.text("Servings:", 10, 40);
-    doc.setFontSize(12);
-    doc.text(recipe.portionSize.toString(), 10, 50); 
-
-    doc.setFontSize(14);
-    doc.text("Prep Time:", 10, 60);
-    doc.setFontSize(12);
-    doc.text(`${recipe.hours}h ${recipe.minutes}m`, 10, 70); 
-
-    doc.setFontSize(14);
-    doc.text("Difficulty Level:", 10, 80);
-    doc.setFontSize(12);
-    doc.text(recipe.difficulty, 10, 90); 
-
-    doc.setFontSize(14);
-    doc.text("Ingredients:", 10, 100);
-    let yPosition = 110; 
-
+    doc.setFont("helvetica", "normal");
+  
     recipe.ingredientsList.forEach((ingredient) => {
-      doc.setFontSize(12);
-      doc.text(
-        `${ingredient.quantity} ${ingredient.measurement} ${ingredient.name}`,
-        10,
-        yPosition
-      );
-      yPosition += 10;
-    });
+    
+      const quantity = ingredient.quantity !== null ? ingredient.quantity : "";
+      const measurement = ingredient.measurement !== null ? ingredient.measurement : "";
+      const name = ingredient.name && ingredient.name.toLowerCase() !== "null" ? ingredient.name : "";
 
-    doc.setFontSize(14);
-    doc.text("Instructions:", 10, (yPosition += 5));
-    recipe.instructions.forEach((step, index) => {
-      doc.setFontSize(12);
-      const line = `${index + 1}. ${step}`;
-      const lineHeight = 10; 
-      const maxWidth = 190; 
-      const lines = doc.splitTextToSize(line, maxWidth); 
-      lines.forEach((linePart: string | string[]) => {
-        doc.text(linePart, 10, (yPosition += lineHeight));
+      const ingredientText = `${quantity} ${measurement} ${name}`.trim();
+  
+      if (ingredientText === "") return;
+  
+      const wrappedText = doc.splitTextToSize(ingredientText, columnWidth - 5);
+      wrappedText.forEach((line) => {
+        if (ingredientsY + 10 > pageHeight - margin) {
+          doc.addPage();
+          ingredientsY = margin;
+        }
+        doc.text(line, ingredientsX, ingredientsY);
+        ingredientsY += 8;
       });
     });
-
-
+  
+    const nutritionX = margin + columnWidth + 10;
+    let nutritionY = startY;
+  
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Nutrition Facts", nutritionX, nutritionY);
+  
+    nutritionY += 10;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+  
+    if (recipe.nutritionData) {
+      Object.entries(recipe.nutritionData).forEach(([key, value]) => {
+        if (nutritionY + 10 > pageHeight - margin) {
+          doc.addPage();
+          nutritionY = margin;
+        }
+        doc.text(`${key}: ${value}`, nutritionX, nutritionY);
+        nutritionY += 8;
+      });
+    } else {
+      doc.text("No nutrition facts available.", nutritionX, nutritionY);
+      nutritionY += 8;
+    }
+    const instructionsStartY = Math.max(ingredientsY, nutritionY) + 20;
+  
+    if (instructionsStartY + 10 > pageHeight - margin) {
+      doc.addPage();
+      currentY = margin;
+    } else {
+      currentY = instructionsStartY;
+    }
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Instructions", margin, currentY);
+  
+    currentY += 10;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+  
+    recipe.instructions.forEach((instruction, index) => {
+      const wrappedText = doc.splitTextToSize(
+        `${index + 1}. ${instruction}`,
+        contentWidth
+      );
+      wrappedText.forEach((line) => {
+        if (currentY + 10 > pageHeight - margin) {
+          doc.addPage();
+          currentY = margin;
+        }
+        doc.text(line, margin, currentY);
+        currentY += 8;
+      });
+    });
+  
     doc.save(`${recipe.recipeName}.pdf`);
   };
-
+  
   useEffect(() => {
     if (recipe) {
       setPortionSize(recipe.portionSize);

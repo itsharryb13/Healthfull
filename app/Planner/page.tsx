@@ -175,44 +175,50 @@ export default function Planner() {
   }
 
   const renderCarousel = (
-    recipes: Recipe[], 
-    emblaRef: EmblaViewportRefType, 
-    dayName: string, 
+    recipes: Recipe[],
+    emblaRef: EmblaViewportRefType,
+    dayName: string,
     dayIndex: number
   ) => {
     if (recipes.length === 0) {
       return (
         <div className="carousel-container w-full h-48 mx-auto py-8 flex items-center justify-center relative rounded-lg text-center shadow-md">
-          <p className="text-lg text-gray-500 ">{`${dayName} is currently empty.`}</p>
+          <p className="text-lg text-gray-500">{`${dayName} is currently empty.`}</p>
         </div>
       );
     }
   
     return (
       <div className="carousel-container w-[90%] mx-auto py-6 relative bg-container shadow-md rounded-lg">
-        <div className="embla" ref={emblaRef}></div>
-          <div className="embla" ref={emblaRef}>
-            <Carousel>
-              <CarouselPrevious className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
-              <CarouselContent>
-                {recipes.map((item) => (
-                  <CarouselItem key={item.id} className="flex-shrink-0 px-4">
-                    <RecipeCard
-                      ID={item.id}
-                      name={item.recipeName}
-                      description={item.recipeDescription}
-                      imageUrl={item.imagePreview}
-                      //onClickAdd={() => handleRecipeAdd(dayIndex, item.id)}
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselNext className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110"/>
-            </Carousel>
-          </div>
+        <div className="embla" ref={emblaRef}>
+          <Carousel>
+            <CarouselPrevious className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110" />
+            <CarouselContent className="flex">
+              {recipes.map((item) => (
+                <CarouselItem
+                  key={item.id}
+                  className="flex-shrink-0 px-4"
+                  style={{
+                    width: "33.33%", 
+                    flexBasis: "33.33%",
+                  }}
+                >
+                  <RecipeCard
+                    ID={item.id}
+                    name={item.recipeName}
+                    description={item.recipeDescription}
+                    imageUrl={item.imagePreview}
+                    // onClickAdd={() => handleRecipeAdd(dayIndex, item.id)}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselNext className="bg-button text-button-text border border-custom rounded-full p-2 shadow-md hover:bg-button-hover-bg transition-transform transform hover:scale-110" />
+          </Carousel>
         </div>
-      );
-    };
+      </div>
+    );
+  };
 
   return (
     <>
