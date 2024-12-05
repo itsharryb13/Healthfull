@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where,updateDoc } from "firebase/firestore";
 import {
@@ -42,37 +42,36 @@ export default function InfoPage() {
 
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchUserData();
-    }
-  }, [user]);
-
   const handleUpload = async () => {
-    if (!image) return console.log("No image to upload");
-
     try {
-      await uploadString(storageRef, image, "data_url");
-      const url = await getDownloadURL(storageRef);
-      setImagePreview(url);
-      console.log("Image uploaded successfully:", url);
+      if (imagePreview) {
+        await uploadString(storageRef, imagePreview, "data_url");
+        const url = await getDownloadURL(storageRef);
+        console.log("URL from storage:", url);
+        setImagePreview(url); // Optional: if you want to update the preview
+        setLoading(true);
+        return url; // Return the URL
+      } else {
+        console.log("No image to upload");
+        return null;
+      }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.log("Upload error:", error);
+      return null;
     }
   };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) {
-      return console.log("Invalid file type");
-    }
+ 
+  const handleImageUpload = (e: any) => {
     const reader = new FileReader();
-    reader.onload = (readerEvent) => {
-      setImage(readerEvent.target?.result as string);
+          
+    if(e.target.files && e.target.files[0]){
+        reader.readAsDataURL(e.target.files[0]);
+    }
+    reader.onload = (readerEvent: any) => {
+        setImagePreview(readerEvent.target.result);
+        console.log("picked images >>>", readerEvent.target.result);
     };
-    reader.readAsDataURL(file);
-  };
+   };
 
   const fetchUserData = async () => {
     if (!user) {
@@ -80,13 +79,15 @@ export default function InfoPage() {
       setLoading(false);
       return;
     }
-
+  
     try {
+      // Query Firestore for the user's data
       const userQuery = query(
         collection(db, "users"),
         where("uid", "==", user.uid)
       );
       const userSnapshot = await getDocs(userQuery);
+  
       if (userSnapshot.empty) {
         console.error("No data found for the logged-in user.");
         setLoading(false);
@@ -94,27 +95,34 @@ export default function InfoPage() {
       }
       
       const userData = userSnapshot.docs[0]?.data();
-
+  
       if (userData) {
         setUsername(userData.username || "");
         setName(userData.name || "");
         setEmail(userData.email || "");
         setBirthday(userData.Birthday || "");
         setGender(userData.Gender || "");
-        setImagePreview(userData.image || "");
         setAllergies(userData.Allergies || []);
         setHealthIssues(userData.HealthIssues || []);
-        setHeight(userData.Height || { feet: Number, inches: Number });
-        setWeight(userData.Weight || { value: Number, unit: "kg" });
-
+  
+        // Handling height with default values if they are missing
+        setHeight(userData.Height || { feet: 0, inches: 0 });  // Setting default values of 0 for feet and inches
+  
+        // Handling weight with fallback values
+        setWeight(userData.Weight || { value: 0, unit: "kg" }); // Setting default value of 0 for weight
+  
+        setImagePreview(userData.image || "");
       }
-
-      console.log(userData.image);
+  
+      // console.log(userData?.image);  // Logging the image URL or file path for debugging
+  
     } catch (error) {
       console.error("fetchUserData error:", error);
+    } finally {
+      setLoading(false);  // Ensures that loading state is always reset even after the data fetch is done
     }
-    setLoading(false);
   };
+  
   
   const handleGenderChange = (value: string) => {
     setGender(value); // Update local state
@@ -215,6 +223,13 @@ export default function InfoPage() {
     setAllergies((prev) => [...prev, ...uniqueNewAllergens]);
     setCustomAllergens(""); // Clear the input field
   };
+
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
   return (
     <div className="w-full h-auto pt-8 px-8">
   
@@ -224,15 +239,11 @@ export default function InfoPage() {
         <div className="flex flex-col items-center w-1/4">
           <label className="text-lg text-foreground font-semibold mb-4">Upload an Image:</label>
           <div className="w-[200px] h-[200px] bg-input border border-gray-300 rounded-lg flex items-center justify-center mb-4">
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            ) : (
-              <span className="text-gray-400">No Image Uploaded</span>
-            )}
+          {imagePreview ? (
+             <img src={imagePreview} alt="Preview" className='w-full h-full object-cover rounded-lg bg-input' />
+           ) : (
+             <span className='text-gray-400'>No image uploaded</span>
+           )}
           </div>
           <input
             type="file"

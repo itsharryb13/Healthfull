@@ -5,7 +5,7 @@ import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from 'embla-carousel-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
-import { collection, getDoc, getDocs, doc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { collection, getDoc, getDocs, doc, query, where, updateDoc, arrayUnion, arrayRemove, orderBy, limit } from "firebase/firestore";
 import { db, storage, auth } from '../../../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -18,6 +18,13 @@ interface Recipe {
   recipeDescription?: string;
   imagePreview?: string;
 }
+interface SuggestedRecipe {
+  id: string;
+  recipeName?: string;
+  recipeDescription?: string;
+  imagePreview?: string;
+}
+
 
 interface Ingredient {
   name: string;
@@ -44,6 +51,7 @@ export default function InfoHomePage() {
   const auth = getAuth();
   const user = auth.currentUser;
   const [items, setItems] = useState<Recipe[]>([]);
+  const [suggestedItems, setSuggestedItem] = useState<SuggestedRecipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +60,7 @@ export default function InfoHomePage() {
   const [measurement, setMeasurement] = useState('');
   const [quantity, setQuantity] = useState<number>(0);
   const [suggestedRecipe, setSuggestedRecipe] = useState<Recipe | null>(null);
+  const [macros, setMacros] = useState<number>(0);
   
 
   // Function to add an ingredient to the grocery list
@@ -130,6 +139,19 @@ export default function InfoHomePage() {
     }
   };
 
+  const getTimeOfDay = () => {
+    const currentTime = new Date().getHours();
+    let mealType = "Breakfast";  // Default meal type is breakfast
+  
+    if (currentTime >= 11 && currentTime < 16) {
+      mealType = "Lunch";
+    } else if (currentTime >= 16 && currentTime < 22) {
+      mealType = "Dinner";
+    }
+  
+    return mealType;
+  };
+
   useEffect(() => {
     const handleGroceryList = async () => {
       if (!user) {
@@ -161,6 +183,7 @@ export default function InfoHomePage() {
           recipeID:doc.recipeID
         }));
 
+    
         setGroceryItem(existingGroceryItems);
       } catch (error) {
         console.log("Error fetching the grocery ingredients:", error);
@@ -169,13 +192,23 @@ export default function InfoHomePage() {
 
     const fetchData = async () => {
       try {
-        const recipeQuery = query(collection(db, "recipes"),where("status", "==" , "published") )
+        // Define the Firestore query
+        const recipeQuery = query(
+          collection(db, "recipes"),
+          orderBy("likes", "desc"),
+          limit(5)  // Limit to top 5 recipes
+        );
+    
+        // Execute the query
         const querySnapshot = await getDocs(recipeQuery);
+    
+        // Map the results to an array of recipe objects
         const data: Recipe[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Recipe[];
-
+    
+        // Fetch image URLs for each recipe asynchronously
         const updatedData = await Promise.all(
           data.map(async (recipe) => {
             if (recipe.imagePreview) {
@@ -185,13 +218,14 @@ export default function InfoHomePage() {
                 return { ...recipe, imagePreview: imageURL };
               } catch (error) {
                 console.error(`Error getting URL for ${recipe.imagePreview}:`, error);
-                return recipe;
+                return recipe;  // Return the recipe without image if error occurs
               }
             }
-            return recipe;
+            return recipe;  // Return the recipe if no imagePreview is set
           })
         );
-
+    
+        // Update the state with the fetched data
         setItems(updatedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -201,8 +235,67 @@ export default function InfoHomePage() {
       }
     };
 
+    const fetchSuggestedData = async () => {
+      try {
+        const mealType = getTimeOfDay();  // Get the meal type based on the current time
+
+        // Define the tags based on time of day (this can be customized)
+        let tags: string[] = [];
+        if (mealType === "Breakfast") {
+          tags = ["Breakfast", "Quick"];
+        } else if (mealType === "Lunch") {
+          tags = ["Lunch", "Healthy"];
+        } else if (mealType === "Dinner") {
+        tags = ["Dinner", "Hearty"];
+        }
+
+        // Query Firestore for recipes with the specified tags and status "published"
+        const recipeQuery = query(
+          collection(db, "recipes"),
+          where("status", "==", "published"),
+          where("tags", "array-contains-any", tags),
+          limit(5)  // Match recipes containing any of the tags
+        );
+
+    
+        const querySnapshot = await getDocs(recipeQuery);
+        const data: SuggestedRecipe[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as SuggestedRecipe[];
+        
+        // Fetch image URLs for each recipe asynchronously
+        const updatedData = await Promise.all(
+          data.map(async (recipe) => {
+            if (recipe.imagePreview) {
+              try {
+                const imageRef = ref(storage, recipe.imagePreview);
+                const imageURL = await getDownloadURL(imageRef);
+                return { ...recipe, imagePreview: imageURL };
+              } catch (error) {
+                console.error(`Error getting URL for ${recipe.imagePreview}:`, error);
+                return recipe;  // Return the recipe without image if error occurs
+              }
+            }
+            return recipe;  // Return the recipe if no imagePreview is set
+          })
+        );
+    
+       
+        setSuggestedItem(updatedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to Load Data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    
+
     fetchData();
     handleGroceryList();
+    fetchSuggestedData();
   }, [user]);
 
   const handleSuggestedRecipeButton = async () => {
@@ -249,9 +342,9 @@ export default function InfoHomePage() {
           <Carousel className="w-[90%] h-full mx-[5%] pt-[2%]" plugins={[Autoplay({ delay: 8000 })]} onMouseEnter={stopAutoplay} onMouseLeave={startAutoplay}>
             <CarouselPrevious className="text-gray-300 hover:text-gray-400"/>
             <CarouselContent>
-              {items.map((item) => (
-                <CarouselItem className="basis-1/2" key={item.id}>
-                  <RecipeCard ID={item.id} name={item.recipeName} description={item.recipeDescription} imageUrl={item.imagePreview} />
+              {suggestedItems.map((suggestedItem) => (
+                <CarouselItem className="basis-1/2" key={suggestedItem.id}>
+                  <RecipeCard ID={suggestedItem.id} name={suggestedItem.recipeName} description={suggestedItem.recipeDescription} imageUrl={suggestedItem.imagePreview} />
                 </CarouselItem>
               ))}
             </CarouselContent>

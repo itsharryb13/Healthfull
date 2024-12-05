@@ -133,7 +133,7 @@ export function NavBarH() {
 
           {/* Display search results */}
           {searchResults.length > 0 && (
-            <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-md w-full max-h-60 overflow-y-auto z-50 shadow-lg">
+            <div className="hover:underline absolute top-full mt-2 bg-white border border-gray-300 rounded-md w-full max-h-60 overflow-y-auto z-50 shadow-lg">
               {searchResults.map((recipe) => (
                 <Link href={`../../recipes/${recipe.id}`} key={recipe.id}>
                   <div className="p-3 hover:bg-gray-100 cursor-pointer">
@@ -153,7 +153,7 @@ export function NavBarH() {
         {/* Dark Mode Toggle */}
         <button
           onClick={toggleTheme}
-          className="flex justify-center items-center w-[2vw] h-[2vw] p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+          className="flex hover:underline justify-center items-center w-[2vw] h-[2vw] p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition"
         >
           <Image
             src={theme === "dark" ? SunIcon : MoonIcon}
@@ -168,7 +168,7 @@ export function NavBarH() {
             <Image
               src={user}
               alt="Round Logo"
-              className="flex justify-center items-center w-[3vw] h-[3vw] rounded-full"
+              className="flex justify-center items-center w-[3vw] h-[3vw] rounded-full hover:underline"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>

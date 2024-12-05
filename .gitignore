@@ -2,3 +2,4 @@ node_modules
 .next/
 app/recipes/.env.local
 .env.local
+app/components/Macros/MacroRecorder.tsx
