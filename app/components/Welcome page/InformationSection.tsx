@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { EmblaPluginType } from 'embla-carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState, useCallback } from "react";
-import { collection, getDocs } from "firebase/firestore"; // Firestore methods
+import { collection, getDocs, query, where } from "firebase/firestore"; // Firestore methods
 import { db, storage } from '../../../firebaseConfig'; // Firebase Firestore instance
 import {ref, getDownloadURL } from "firebase/storage"; // Firebase Storage methods
 
@@ -47,7 +47,9 @@ export function InformationSection({ collectionName }: RecipeListProps) {
     const fetchData = async () => {
       try {
         // Fetch documents from Firestore collection
-        const querySnapshot = await getDocs(collection(db, collectionName));
+        const recipesRef = collection(db, "recipes");
+        const q = query(recipesRef, where("status", "==", "published"));
+        const querySnapshot = await getDocs(q);
         const data: Recipe[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

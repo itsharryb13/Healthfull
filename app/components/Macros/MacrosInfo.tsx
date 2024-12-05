@@ -73,6 +73,7 @@ export default function MacrosInfo() {
     age: null,
     healthConditions: null,
   });
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const calculateAge = (birthday: string): number => {
     const birthDate = new Date(birthday);
@@ -245,6 +246,7 @@ export default function MacrosInfo() {
   }, [selectedDay, goalData]);
 
   const handleDietPlanner = async () => {
+    setIsLoading(true);  // Set loading state to true when DietPlanner is clicked
     try {
       const recommendations = await DietPlanner(userDetails);
       if (recommendations) {
@@ -263,6 +265,7 @@ export default function MacrosInfo() {
     } catch (error) {
       console.error("Error in DietPlanner:", error);
     }
+    setIsLoading(false);  // Set loading state to false after the response is received
   };
 
   return (
@@ -322,20 +325,26 @@ export default function MacrosInfo() {
               ))}
             </div>
             <div className="flex flex-row gap-[2vw] ">
-            <button
-              className="mt-4 bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
-              onClick={saveGoals}
-            >
-              Save Goals
-            </button>
-            <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-              onClick={handleDietPlanner}
-            >
-              Get Diet Recommendations
-            </button>
+              <button
+                className="mt-4 bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                onClick={saveGoals}
+              >
+                Save Goals
+              </button>
+              {isLoading ? (
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 border-4 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                <button
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                  onClick={handleDietPlanner}
+                >
+                  Get Diet Recommendations
+                </button>
+              )}
             </div>
-            </div>
+          </div>
         ) : (
           <>
             {nutritionData.length === 0 ? (
