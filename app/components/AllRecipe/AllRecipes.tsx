@@ -102,19 +102,23 @@ const handleCaloriesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
          >
            Clear Filter
          </button>
+         <label className="flex mt-6 px-0.75 py-1 block text-[16px] font-normal text-foreground">Amount of Protein</label>
+         <label className="block text-[16px] font-normal text-foreground">(At Least)</label>
          <input
              type="text"
              placeholder="Protein"
              value={desiredProtein}
              onChange={handleProteinChange}
-             className="flex mt-6 px-0.75 py-1 border rounded w-1/3"
+             className="w-[88%] flex mt-2 px-2 py-1 border rounded w-1/3"
            />
+         <label className="flex mt-3 px-0.75 py-1 block text-[16px] font-normal text-foreground">Amount of Calories</label>
+         <label className="block text-[16px] font-normal text-foreground">(At Most)</label>
            <input
              type="text"
              placeholder="Calories"
              value={desiredCalories}
              onChange={handleCaloriesChange}
-             className="flex mt-4 px-1 py-2 border rounded w-1/3"
+             className="w-[88%] flex mt-2 px-2 py-1 border rounded w-1/3"
            />
        </div>
 
